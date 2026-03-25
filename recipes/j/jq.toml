@@ -1,0 +1,20 @@
+[package]
+name = "jq"
+version = "1.7.1"
+description = "Lightweight and flexible command-line JSON processor"
+license = "MIT"
+homepage = "https://jqlang.github.io/jq"
+
+[source]
+url = "https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz"
+sha256 = "478c9ca129fd2e3443fe27314b455e211e0d8c60bc8ff7df703873deeee580c2"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --with-oniguruma=builtin --disable-docs --disable-maintainer-mode",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["autoconf", "automake", "libtool"]
