@@ -1,0 +1,21 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "starship"
+version = "1.24.2"
+description = "Cross-shell prompt for astronauts"
+license = "ISC"
+homepage = "https://starship.rs/"
+
+[source]
+url = "https://github.com/starship/starship/archive/refs/tags/v1.24.2.tar.gz"
+sha256 = "b7ab0ef364f527395b46d2fb7f59f9592766b999844325e35f62c8fa4d528795"
+
+[build]
+steps = [
+  "cargo install --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["cmake", "pkgconf", "rust"]
+runtime = ["dbus", "zlib-ng-compat"]
