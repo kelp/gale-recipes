@@ -19,3 +19,11 @@ steps = [
 [dependencies]
 build = ["asciidoctor", "pkgconf", "rust"]
 runtime = ["pcre2"]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:1909a367cdf29857d474786c7a29bd49b1046a222c596c7fd0618b63c5f67d34"
+sha256 = "1909a367cdf29857d474786c7a29bd49b1046a222c596c7fd0618b63c5f67d34"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:c3271e438d0059606c31657b7e3cc89a0bc93b22cb72f7f640deeaba37352cbd"
+sha256 = "c3271e438d0059606c31657b7e3cc89a0bc93b22cb72f7f640deeaba37352cbd"

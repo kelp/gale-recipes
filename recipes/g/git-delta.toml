@@ -19,3 +19,11 @@ steps = [
 [dependencies]
 build = ["pkgconf", "rust"]
 runtime = ["libgit2", "oniguruma", "zlib-ng-compat"]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:f81518de78cfd4ba58ab6f74eda1013514db0ccf7c9e75fa3ab06913a9fd976a"
+sha256 = "f81518de78cfd4ba58ab6f74eda1013514db0ccf7c9e75fa3ab06913a9fd976a"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:4bba529c2fbfd5dcedff1017ed3bef300b1cc81548b27811a36a9d769f2a80ef"
+sha256 = "4bba529c2fbfd5dcedff1017ed3bef300b1cc81548b27811a36a9d769f2a80ef"
