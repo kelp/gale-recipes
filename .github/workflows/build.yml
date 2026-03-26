@@ -115,6 +115,7 @@ jobs:
             head -1 | sed 's/.*= *"//' | sed 's/".*//')
           TAG="${VERSION}-${PLATFORM}"
           oras push --disable-path-validation \
+            --annotation "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
             "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"
 
