@@ -13,7 +13,7 @@ sha256 = "a2089af1b86264d45a2b5872708701aca4506d1c092be23017bb610af369f283"
 
 [build]
 steps = [
-  "cargo install --root ${PREFIX}",
+  "cargo install --path . --root ${PREFIX}",
 ]
 
 [dependencies]
