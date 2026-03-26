@@ -62,15 +62,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/checkout@v4
+        with:
+          repository: kelp/gale
+          path: _gale
+
       - uses: actions/setup-go@v5
         with:
           go-version: stable
 
       - name: Build gale
         run: |
-          git clone --depth 1 \
-            https://github.com/kelp/gale.git /tmp/gale
-          cd /tmp/gale
+          cd _gale
           go build -o "${RUNNER_TEMP}/gale" ./cmd/gale/
           echo "${RUNNER_TEMP}" >> "$GITHUB_PATH"
 
