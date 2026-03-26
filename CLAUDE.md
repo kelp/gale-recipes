@@ -42,6 +42,21 @@ crates.io instead of building local source.
 `mkdir -p ${PREFIX}/bin` then
 `go build -o ${PREFIX}/bin/<name>`.
 
+## Two-Repo Architecture
+
+This is the content repo. The tool lives at `../gale`.
+
+- **gale-recipes** (this repo) — recipe TOML files. CI
+  builds every recipe on each platform, pushes tar.zst
+  binaries to GHCR via ORAS, and updates
+  `[binary.<platform>]` sections in the recipe TOML.
+- **gale** — the CLI tool. Pulls prebuilt binaries from
+  GHCR when available, falls back to source builds.
+
+**CI flow**: on push or schedule, GitHub Actions builds
+changed recipes on macOS and Linux runners, pushes
+tar.zst to GHCR, updates binary sections, commits back.
+
 ## Gotchas
 
 - Recipes imported via `gale import homebrew <name>` carry
