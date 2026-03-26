@@ -114,7 +114,7 @@ jobs:
           VERSION=$(grep '^version' "$RECIPE_FILE" | \
             head -1 | sed 's/.*= *"//' | sed 's/".*//')
           TAG="${VERSION}-${PLATFORM}"
-          oras push \
+          oras push --disable-path-validation \
             "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
             "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"
 
