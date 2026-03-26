@@ -1,0 +1,21 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "git-delta"
+version = "0.19.1"
+description = "Syntax-highlighting pager for git and diff output"
+license = "MIT"
+homepage = "https://github.com/dandavison/delta"
+
+[source]
+url = "https://github.com/dandavison/delta/archive/refs/tags/0.19.1.tar.gz"
+sha256 = "a2089af1b86264d45a2b5872708701aca4506d1c092be23017bb610af369f283"
+
+[build]
+steps = [
+  "cargo install --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["pkgconf", "rust"]
+runtime = ["libgit2", "oniguruma", "zlib-ng-compat"]

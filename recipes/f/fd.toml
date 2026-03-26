@@ -1,0 +1,20 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "fd"
+version = "10.4.2"
+description = "Simple, fast and user-friendly alternative to find"
+license = "Apache-2.0"
+homepage = "https://github.com/sharkdp/fd"
+
+[source]
+url = "https://github.com/sharkdp/fd/archive/refs/tags/v10.4.2.tar.gz"
+sha256 = "3a7e027af8c8e91c196ac259c703d78cd55c364706ddafbc66d02c326e57a456"
+
+[build]
+steps = [
+  "cargo install --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

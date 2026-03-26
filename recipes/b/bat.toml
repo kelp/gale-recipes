@@ -1,0 +1,21 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "bat"
+version = "0.26.1"
+description = "Clone of cat(1) with syntax highlighting and Git integration"
+license = "Apache-2.0"
+homepage = "https://github.com/sharkdp/bat"
+
+[source]
+url = "https://github.com/sharkdp/bat/archive/refs/tags/v0.26.1.tar.gz"
+sha256 = "4474de87e084953eefc1120cf905a79f72bbbf85091e30cf37c9214eafcaa9c9"
+
+[build]
+steps = [
+  "cargo install --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["pkgconf", "rust"]
+runtime = ["libgit2", "oniguruma"]
