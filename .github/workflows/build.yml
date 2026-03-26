@@ -139,6 +139,7 @@ jobs:
 
   update-recipes:
     needs: build
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     env:
       GHCR_REPO: ${{ github.repository }}
