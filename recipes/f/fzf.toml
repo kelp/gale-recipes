@@ -13,7 +13,8 @@ sha256 = "a99e0df4dfb6228c8af63a2f99f39f7476b7da614833141be30a6b3a3f9d440f"
 
 [build]
 steps = [
-  "go build",
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/fzf",
 ]
 
 [dependencies]
