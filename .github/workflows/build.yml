@@ -176,14 +176,54 @@ jobs:
           done
 
       - name: Commit updated recipes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email \
-            "github-actions[bot]@users.noreply.github.com"
-          git add recipes/
-          if git diff --cached --quiet; then
+          if git diff --quiet recipes/; then
             echo "No changes to commit"
-          else
-            git commit -m "Update binary sections from build"
-            git push
+            exit 0
           fi
+
+          # Create commit via GitHub API so it's
+          # automatically signed and shows "Verified".
+          BRANCH="main"
+          BASE_SHA=$(gh api "/repos/${REPO}/git/ref/heads/${BRANCH}" \
+            --jq '.object.sha')
+          BASE_TREE=$(gh api "/repos/${REPO}/git/commits/${BASE_SHA}" \
+            --jq '.tree.sha')
+
+          # Create blobs and build tree entries.
+          TREE_JSON="[]"
+          for FILE in $(git diff --name-only recipes/); do
+            BLOB_SHA=$(gh api "/repos/${REPO}/git/blobs" \
+              -f "content=$(base64 < "$FILE")" \
+              -f "encoding=base64" \
+              --jq '.sha')
+            TREE_JSON=$(echo "$TREE_JSON" | jq \
+              --arg p "$FILE" --arg s "$BLOB_SHA" \
+              '. + [{"path":$p,"mode":"100644","type":"blob","sha":$s}]')
+          done
+
+          # Create tree.
+          NEW_TREE=$(jq -n \
+            --arg bt "$BASE_TREE" \
+            --argjson t "$TREE_JSON" \
+            '{"base_tree":$bt,"tree":$t}' | \
+            gh api "/repos/${REPO}/git/trees" \
+              --input - --jq '.sha')
+
+          # Create commit.
+          COMMIT=$(jq -n \
+            --arg msg "Update binary sections from build" \
+            --arg tree "$NEW_TREE" \
+            --arg parent "$BASE_SHA" \
+            '{"message":$msg,"tree":$tree,"parents":[$parent]}' | \
+            gh api "/repos/${REPO}/git/commits" \
+              --input - --jq '.sha')
+
+          # Update branch.
+          gh api "/repos/${REPO}/git/refs/heads/${BRANCH}" \
+            -X PATCH -f "sha=${COMMIT}"
+
+          echo "Committed ${COMMIT}"
