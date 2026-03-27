@@ -23,9 +23,9 @@ build = ["pkgconf", "rust"]
 runtime = ["libgit2", "oniguruma", "zlib-ng-compat"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:f81518de78cfd4ba58ab6f74eda1013514db0ccf7c9e75fa3ab06913a9fd976a"
-sha256 = "f81518de78cfd4ba58ab6f74eda1013514db0ccf7c9e75fa3ab06913a9fd976a"
+url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:84ee30a51ea1a4ba814dae1d5681fdd9d11c3e94e174e9c19cffc6fa624977ee"
+sha256 = "84ee30a51ea1a4ba814dae1d5681fdd9d11c3e94e174e9c19cffc6fa624977ee"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:4bba529c2fbfd5dcedff1017ed3bef300b1cc81548b27811a36a9d769f2a80ef"
-sha256 = "4bba529c2fbfd5dcedff1017ed3bef300b1cc81548b27811a36a9d769f2a80ef"
+url = "https://ghcr.io/v2/kelp/gale-recipes/git-delta/blobs/sha256:4b00ca1ccc06ef00d4dc4fb75399dfe87a1759acf323e179a27cb95a73fe8b4a"
+sha256 = "4b00ca1ccc06ef00d4dc4fb75399dfe87a1759acf323e179a27cb95a73fe8b4a"

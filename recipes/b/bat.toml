@@ -23,9 +23,9 @@ build = ["pkgconf", "rust"]
 runtime = ["libgit2", "oniguruma"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:0cd31c7490a5c051f6523d9e07a5fe8a3540b2622949e23629d01225d16ba84c"
-sha256 = "0cd31c7490a5c051f6523d9e07a5fe8a3540b2622949e23629d01225d16ba84c"
+url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:82052ab93867cb397c36d4bf00246bc2f1479114c8c2b4875ef5f883729cb312"
+sha256 = "82052ab93867cb397c36d4bf00246bc2f1479114c8c2b4875ef5f883729cb312"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:bcf39dfd91ed0cb3f45d9b110b204b09590805a4ca7665edd559b869545fbafc"
-sha256 = "bcf39dfd91ed0cb3f45d9b110b204b09590805a4ca7665edd559b869545fbafc"
+url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:02d7e12bc6fb238d24e3caee007f9da6cff3e369d5d5f6b73f172e575de1b031"
+sha256 = "02d7e12bc6fb238d24e3caee007f9da6cff3e369d5d5f6b73f172e575de1b031"
