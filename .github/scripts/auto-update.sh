@@ -1,7 +1,7 @@
 #!/bin/bash
 # Auto-update agent: checks upstream GitHub releases
 # and creates PRs for version bumps.
-set -euo pipefail
+set -uo pipefail
 
 COOLDOWN_DAYS=3
 FILTER="${1:-}"
@@ -153,6 +153,6 @@ if [ -n "$FILTER" ]; then
   check_recipe "$file"
 else
   for file in recipes/*/*.toml; do
-    check_recipe "$file"
+    check_recipe "$file" || true
   done
 fi
