@@ -10,13 +10,50 @@ Official recipe repository for
 TOML file describing how to build a CLI tool from source.
 See README.md for the format and layout.
 
+## Recipe Format
+
+```toml
+[package]
+name = "jq"                   # required
+version = "1.8.1"             # required
+description = "JSON processor"
+license = "MIT"
+homepage = "https://..."
+
+[source]
+url = "https://..."           # required
+sha256 = "abc123..."          # required
+repo = "jqlang/jq"            # for auto-update
+released_at = "2025-07-01"    # for update cooldown
+
+[build]
+steps = ["./configure ...", "make -j${JOBS}", "make install"]
+
+[dependencies]
+build = ["autoconf", "automake"]
+runtime = []
+
+[binary.darwin-arm64]          # prebuilt, added by CI
+url = "https://ghcr.io/..."
+sha256 = "..."
+```
+
 ## Testing a Recipe
 
-Build and verify from the sibling gale repo:
+Build from the sibling gale repo:
 
 ```
 cd ../gale && go build -o gale ./cmd/gale/
 ./gale build ../gale-recipes/recipes/<letter>/<name>.toml
+```
+
+Verify the binary after build:
+
+```
+tmpdir=$(mktemp -d)
+python3 -c "import tarfile; tarfile.open('<name>-<ver>.tar.zst','r:*').extractall('$tmpdir')"
+$tmpdir/bin/<name> --version
+rm -rf $tmpdir
 ```
 
 ## Build Environment
