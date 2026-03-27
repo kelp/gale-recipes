@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths: ['recipes/**']
+  pull_request:
+    paths: ['recipes/**']
   workflow_dispatch:
     inputs:
       recipe:
@@ -139,7 +141,7 @@ jobs:
 
   update-recipes:
     needs: build
-    if: always() && !cancelled()
+    if: always() && !cancelled() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     env:
       GHCR_REPO: ${{ github.repository }}

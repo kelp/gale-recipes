@@ -1,0 +1,32 @@
+name: Auto-Update Recipes
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+    inputs:
+      recipe:
+        description: 'Recipe name (blank = all)'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for updates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_RECIPE: ${{ inputs.recipe }}
+        run: bash .github/scripts/auto-update.sh "$INPUT_RECIPE"
