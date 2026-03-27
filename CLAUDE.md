@@ -31,7 +31,9 @@ Build steps run in a clean shell with two variables:
 **Autotools** (jq): Use `--disable-docs
 --disable-maintainer-mode` to skip optional tooling.
 Bundle dependencies when possible
-(`--with-oniguruma=builtin`).
+(`--with-oniguruma=builtin`). Prefer static linking
+(`--disable-shared --enable-all-static`) to avoid
+dylib path issues in the installed binary.
 
 **Cargo** (bat, fd, ripgrep, starship): Always use
 `cargo install --path . --root ${PREFIX}`. The `--path .`
