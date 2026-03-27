@@ -16,3 +16,7 @@ steps = [
   "make install",
   "ln -sf pkgconf ${PREFIX}/bin/pkg-config",
 ]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/pkgconf/blobs/sha256:5d9da219e1ecca3ed606d1b2a1efbedc3ede1b793728e721afde43b4492747f3"
+sha256 = "5d9da219e1ecca3ed606d1b2a1efbedc3ede1b793728e721afde43b4492747f3"

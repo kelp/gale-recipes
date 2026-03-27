@@ -16,3 +16,7 @@ steps = [
   "make -j${JOBS}",
   "make install",
 ]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/cmake/blobs/sha256:46fdd857b289e40c19cb736b468455dc1910c4d602d54f582fd13ec4dac857dd"
+sha256 = "46fdd857b289e40c19cb736b468455dc1910c4d602d54f582fd13ec4dac857dd"
