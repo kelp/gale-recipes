@@ -99,6 +99,31 @@ jobs:
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
 
+      - name: Verify binary runs
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+        run: |
+          VERIFY_DIR=$(mktemp -d)
+          tar -I zstd -xf "$ARCHIVE" -C "$VERIFY_DIR" \
+            2>/dev/null || \
+            python3 -c "
+          import tarfile
+          tarfile.open('$ARCHIVE','r:*').extractall('$VERIFY_DIR')
+          "
+          BIN=$(find "$VERIFY_DIR/bin" -type f \
+            -perm +111 2>/dev/null | head -1)
+          if [ -z "$BIN" ]; then
+            echo "::error::No executable found in archive"
+            exit 1
+          fi
+          echo "Testing: $(basename "$BIN")"
+          "$BIN" --version || "$BIN" --help || "$BIN" -V || {
+            echo "::error::Binary failed to run"
+            exit 1
+          }
+          echo "Verified: $(basename "$BIN") runs"
+          rm -rf "$VERIFY_DIR"
+
       - uses: oras-project/setup-oras@v1
 
       - name: Login to GHCR
