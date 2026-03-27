@@ -8,8 +8,10 @@ license = "MIT"
 homepage = "https://github.com/dandavison/delta"
 
 [source]
+repo = "dandavison/delta"
 url = "https://github.com/dandavison/delta/archive/refs/tags/0.19.1.tar.gz"
 sha256 = "a2089af1b86264d45a2b5872708701aca4506d1c092be23017bb610af369f283"
+released_at = "2026-03-22"
 
 [build]
 steps = [
