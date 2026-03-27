@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q '\\[binary\\.' 2>/dev/null; then echo 'BLOCK: binary sections are managed by CI - do not edit manually' >&2; exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .filePath // empty'); if [[ \"$FILE\" == *.toml ]]; then python3 -c \"import tomllib, sys; tomllib.load(open(sys.argv[1],'rb'))\" \"$FILE\" || { echo 'Invalid TOML syntax' >&2; exit 1; }; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
