@@ -22,9 +22,9 @@ steps = [
 build = ["rust"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/just/blobs/sha256:17a8221f1a7e239f2682f36a38ef46986895db4342145c1f5e1b49d4b3398710"
-sha256 = "17a8221f1a7e239f2682f36a38ef46986895db4342145c1f5e1b49d4b3398710"
+url = "https://ghcr.io/v2/kelp/gale-recipes/just/blobs/sha256:41a44cd568f202a042c61960345b304ba6db645e7acb67ced7f297a2fca9e827"
+sha256 = "41a44cd568f202a042c61960345b304ba6db645e7acb67ced7f297a2fca9e827"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/just/blobs/sha256:6ce22acd2575394cc40a2a08096635694cc4a116eaa97528df877b67311ed049"
-sha256 = "6ce22acd2575394cc40a2a08096635694cc4a116eaa97528df877b67311ed049"
+url = "https://ghcr.io/v2/kelp/gale-recipes/just/blobs/sha256:a41bb8b49dde0433f81257635527386eabe42111626e88526136e27e9dc4c2f9"
+sha256 = "a41bb8b49dde0433f81257635527386eabe42111626e88526136e27e9dc4c2f9"
