@@ -104,16 +104,21 @@ jobs:
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
           VERIFY_DIR=$(mktemp -d)
-          tar -I zstd -xf "$ARCHIVE" -C "$VERIFY_DIR" \
-            2>/dev/null || \
-            python3 -c "
+          python3 -c "
           import tarfile
-          tarfile.open('$ARCHIVE','r:*').extractall('$VERIFY_DIR')
+          tarfile.open('${ARCHIVE}','r:*').extractall('${VERIFY_DIR}')
           "
-          BIN=$(find "$VERIFY_DIR/bin" -type f \
-            -perm +111 2>/dev/null | head -1)
-          if [ -z "$BIN" ]; then
+          # Look for the package binary by name first,
+          # fall back to any executable.
+          BIN="${VERIFY_DIR}/bin/${RECIPE_NAME}"
+          if [ ! -x "$BIN" ]; then
+            BIN=$(find "$VERIFY_DIR/bin" -type f \
+              -executable 2>/dev/null | head -1)
+          fi
+          if [ -z "$BIN" ] || [ ! -x "$BIN" ]; then
             echo "::error::No executable found in archive"
+            ls -la "$VERIFY_DIR/bin/" 2>/dev/null || \
+              echo "No bin/ directory"
             exit 1
           fi
           echo "Testing: $(basename "$BIN")"
