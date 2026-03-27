@@ -26,6 +26,7 @@ runtime = ["dbus", "zlib-ng-compat"]
 url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:f3f4762e8f15bd074b83a3962dc332d307c2b8173774be97d524f34442ecdec6"
 sha256 = "f3f4762e8f15bd074b83a3962dc332d307c2b8173774be97d524f34442ecdec6"
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:eb1bfde5afc7c3bf3dc5e0da30d687c5851a75d01e25f392daadbdeb3bf41a8c"
-sha256 = "eb1bfde5afc7c3bf3dc5e0da30d687c5851a75d01e25f392daadbdeb3bf41a8c"
+url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:3b62492f1f8a69b5699d4535fc46233638e5d22e9c5977a9cddf534e87832452"
+sha256 = "3b62492f1f8a69b5699d4535fc46233638e5d22e9c5977a9cddf534e87832452"

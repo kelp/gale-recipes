@@ -25,6 +25,7 @@ build = ["rust"]
 url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:24c1eef4dcde4a55c99001ce49fdde678f7dd2e9e0a1083600856de3ee7a7921"
 sha256 = "24c1eef4dcde4a55c99001ce49fdde678f7dd2e9e0a1083600856de3ee7a7921"
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:798ad1ab16323c7f0b556ea94d7b86a86de56d2c4f1c80ba811c6148158e041b"
-sha256 = "798ad1ab16323c7f0b556ea94d7b86a86de56d2c4f1c80ba811c6148158e041b"
+url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:164d237ff7abf4c603663620bd2d9788f4039430c2cb470f2b09696b7982db62"
+sha256 = "164d237ff7abf4c603663620bd2d9788f4039430c2cb470f2b09696b7982db62"
