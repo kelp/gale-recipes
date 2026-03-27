@@ -25,6 +25,7 @@ build = ["autoconf", "automake", "libtool"]
 url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:895b6ea0f8af6c892d7d51fd55e9d457b39ef537dda56583c61e5bdd8096a5ae"
 sha256 = "895b6ea0f8af6c892d7d51fd55e9d457b39ef537dda56583c61e5bdd8096a5ae"
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:5a4def920c49c0be5f3935c174bcccd5f78627dbac64c2be67982a43f415023c"
-sha256 = "5a4def920c49c0be5f3935c174bcccd5f78627dbac64c2be67982a43f415023c"
+url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:f066a33c7a6210f6cb6c2cf3f50ea8568bced052bb8760886b79e977cfdf9064"
+sha256 = "f066a33c7a6210f6cb6c2cf3f50ea8568bced052bb8760886b79e977cfdf9064"

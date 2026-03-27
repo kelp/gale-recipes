@@ -22,10 +22,10 @@ steps = [
 build = ["cmake", "pkgconf", "rust"]
 runtime = ["dbus", "zlib-ng-compat"]
 
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:a5b8ea0fa89d01a4b94ad1eb52c1370c9055bdf7c073647f399e4edf018ddabe"
-sha256 = "a5b8ea0fa89d01a4b94ad1eb52c1370c9055bdf7c073647f399e4edf018ddabe"
-
 [binary.linux-amd64]
 url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:f3f4762e8f15bd074b83a3962dc332d307c2b8173774be97d524f34442ecdec6"
 sha256 = "f3f4762e8f15bd074b83a3962dc332d307c2b8173774be97d524f34442ecdec6"
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:eb1bfde5afc7c3bf3dc5e0da30d687c5851a75d01e25f392daadbdeb3bf41a8c"
+sha256 = "eb1bfde5afc7c3bf3dc5e0da30d687c5851a75d01e25f392daadbdeb3bf41a8c"

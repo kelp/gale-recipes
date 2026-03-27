@@ -22,10 +22,10 @@ steps = [
 [dependencies]
 build = ["go"]
 
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/fzf/blobs/sha256:889298c522fd0f4e15a75647924a6643c9b43a2eb02ebaea1e6adbb6e4dd51ba"
-sha256 = "889298c522fd0f4e15a75647924a6643c9b43a2eb02ebaea1e6adbb6e4dd51ba"
-
 [binary.linux-amd64]
 url = "https://ghcr.io/v2/kelp/gale-recipes/fzf/blobs/sha256:1b48a676781c97bf0b1f0eafdf2d276e3646fc80699d00eada3cae01bb10e016"
 sha256 = "1b48a676781c97bf0b1f0eafdf2d276e3646fc80699d00eada3cae01bb10e016"
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/fzf/blobs/sha256:fbbed10e4678686cc764caefcefcd6fae82a059c0daf0c7f7683a51ed8e40d23"
+sha256 = "fbbed10e4678686cc764caefcefcd6fae82a059c0daf0c7f7683a51ed8e40d23"
