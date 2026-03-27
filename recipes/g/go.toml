@@ -1,0 +1,32 @@
+[package]
+name = "go"
+version = "1.26.1"
+description = "The Go programming language"
+license = "BSD-3-Clause"
+homepage = "https://go.dev"
+
+[source]
+repo = "golang/go"
+url = "https://go.dev/dl/go1.26.1.src.tar.gz"
+sha256 = "3172293d04b209dc1144698e7ba13f0477f6ba8c5ffd0be66c20fdbc9785dfbb"
+
+# Go builds itself: download a bootstrap binary, use
+# it to compile the source tree, install the result.
+# The full GOROOT (bin/, pkg/, src/) is needed for
+# go build to work, not just the binary.
+
+[build.darwin-arm64]
+steps = [
+  "curl -sL -o /tmp/go-bootstrap.tar.gz https://go.dev/dl/go1.25.8.darwin-arm64.tar.gz",
+  "mkdir -p /tmp/go-bootstrap && tar -xzf /tmp/go-bootstrap.tar.gz -C /tmp/go-bootstrap --strip-components=1",
+  "cd src && GOROOT_BOOTSTRAP=/tmp/go-bootstrap GOROOT_FINAL=${PREFIX} CGO_ENABLED=0 bash make.bash",
+  "cp -R bin pkg src api lib misc doc go.env VERSION ${PREFIX}/",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -sL -o /tmp/go-bootstrap.tar.gz https://go.dev/dl/go1.25.8.linux-amd64.tar.gz",
+  "mkdir -p /tmp/go-bootstrap && tar -xzf /tmp/go-bootstrap.tar.gz -C /tmp/go-bootstrap --strip-components=1",
+  "cd src && GOROOT_BOOTSTRAP=/tmp/go-bootstrap GOROOT_FINAL=${PREFIX} CGO_ENABLED=0 bash make.bash",
+  "cp -R bin pkg src api lib misc doc go.env VERSION ${PREFIX}/",
+]
