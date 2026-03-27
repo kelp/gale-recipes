@@ -26,6 +26,7 @@ url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:24c1eef4dcde4a55c990
 sha256 = "24c1eef4dcde4a55c99001ce49fdde678f7dd2e9e0a1083600856de3ee7a7921"
 
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:164d237ff7abf4c603663620bd2d9788f4039430c2cb470f2b09696b7982db62"
-sha256 = "164d237ff7abf4c603663620bd2d9788f4039430c2cb470f2b09696b7982db62"
+url = "https://ghcr.io/v2/kelp/gale-recipes/fd/blobs/sha256:a92d37b930ebe8371fc93bb929d343172c056b717021a46006829a1a3deba300"
+sha256 = "a92d37b930ebe8371fc93bb929d343172c056b717021a46006829a1a3deba300"
