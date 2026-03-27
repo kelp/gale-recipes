@@ -21,10 +21,10 @@ steps = [
 [dependencies]
 build = ["autoconf", "automake", "libtool"]
 
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:872ed5306b73795b9700fd5de1386604032826091e13c87a674c4877d255ba12"
-sha256 = "872ed5306b73795b9700fd5de1386604032826091e13c87a674c4877d255ba12"
-
 [binary.linux-amd64]
 url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:895b6ea0f8af6c892d7d51fd55e9d457b39ef537dda56583c61e5bdd8096a5ae"
 sha256 = "895b6ea0f8af6c892d7d51fd55e9d457b39ef537dda56583c61e5bdd8096a5ae"
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/jq/blobs/sha256:5a4def920c49c0be5f3935c174bcccd5f78627dbac64c2be67982a43f415023c"
+sha256 = "5a4def920c49c0be5f3935c174bcccd5f78627dbac64c2be67982a43f415023c"
