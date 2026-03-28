@@ -19,8 +19,10 @@ steps = [
   "go build -ldflags \"-X main.version=0.60.0 -X main.buildSource=gale\" -o ${PREFIX}/bin/lazygit",
 ]
 
-
-
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/lazygit/blobs/sha256:498296dd2b397a45bad4421c7e35cec51ae2925ee6f38b74d1a92f8e3abe4c6a"
-sha256 = "498296dd2b397a45bad4421c7e35cec51ae2925ee6f38b74d1a92f8e3abe4c6a"
+url = "https://ghcr.io/v2/kelp/gale-recipes/lazygit/blobs/sha256:9b8012265d01d2b03fba022da7c62cb9bb79d831a58f1f17cf302aaf08c760dd"
+sha256 = "9b8012265d01d2b03fba022da7c62cb9bb79d831a58f1f17cf302aaf08c760dd"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/lazygit/blobs/sha256:3308d2467b4f7a39edf3d394cf74b5fec78680787d242e4b7df9e3d1d1c8b8d3"
+sha256 = "3308d2467b4f7a39edf3d394cf74b5fec78680787d242e4b7df9e3d1d1c8b8d3"
