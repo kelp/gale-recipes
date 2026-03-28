@@ -380,29 +380,29 @@ jobs:
                --jq '.data.repository.ref.target.oid')
 
           # Commit via GraphQL (auto-signed "Verified").
-          gh api graphql \
-            -f query='
-              mutation($input:CreateCommitOnBranchInput!) {
-                createCommitOnBranch(input:$input) {
-                  commit { oid url }
+          QUERY='mutation($input:CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input:$input) {
+              commit { oid url }
+            }
+          }'
+          gh api graphql --input <(jq -n \
+            --arg query "$QUERY" \
+            --arg repo "$REPO" \
+            --arg oid "$HEAD_OID" \
+            --argjson adds "$ADDITIONS" \
+            '{
+              query: $query,
+              variables: {
+                input: {
+                  branch: {
+                    repositoryNameWithOwner: $repo,
+                    branchName: "main"
+                  },
+                  message: {
+                    headline: "Update binary sections from build"
+                  },
+                  expectedHeadOid: $oid,
+                  fileChanges: { additions: $adds }
                 }
-              }' \
-            --input <(jq -n \
-              --arg repo "$REPO" \
-              --arg oid "$HEAD_OID" \
-              --argjson adds "$ADDITIONS" \
-              '{
-                variables: {
-                  input: {
-                    branch: {
-                      repositoryNameWithOwner: $repo,
-                      branchName: "main"
-                    },
-                    message: {
-                      headline: "Update binary sections from build"
-                    },
-                    expectedHeadOid: $oid,
-                    fileChanges: { additions: $adds }
-                  }
-                }
-              }')
+              }
+            }')
