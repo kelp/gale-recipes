@@ -1,0 +1,22 @@
+[package]
+name = "libogg"
+version = "1.3.6"
+description = "Ogg bitstream library"
+license = "BSD-3-Clause"
+homepage = "https://www.xiph.org/ogg/"
+
+[source]
+repo = "xiph/ogg"
+url = "https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.6.tar.gz"
+sha256 = "83e6704730683d004d20e21b8f7f55dcb3383cdf84c0daedf30bde175f774638"
+released_at = "2025-06-16"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]

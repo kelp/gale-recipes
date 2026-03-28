@@ -1,0 +1,24 @@
+[package]
+name = "gmp"
+version = "6.3.0"
+description = "GNU multiple precision arithmetic library"
+license = "LGPL-3.0-or-later"
+homepage = "https://gmplib.org/"
+
+[source]
+url = "https://ftpmirror.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+sha256 = "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898"
+
+[build.darwin-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-cxx --with-pic --build=aarch64-apple-darwin",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[build.linux-amd64]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-cxx --with-pic --build=x86_64-linux-gnu",
+  "make -j${JOBS}",
+  "make install",
+]

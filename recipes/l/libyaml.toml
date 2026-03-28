@@ -1,0 +1,21 @@
+[package]
+name = "libyaml"
+version = "0.2.5"
+description = "YAML 1.1 parser and emitter library"
+license = "MIT"
+homepage = "https://github.com/yaml/libyaml"
+
+[source]
+repo = "yaml/libyaml"
+url = "https://github.com/yaml/libyaml/archive/refs/tags/0.2.5.tar.gz"
+sha256 = "fa240dbf262be053f3898006d502d514936c818e422afdcf33921c63bed9bf2e"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]
