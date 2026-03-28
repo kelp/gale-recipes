@@ -2,117 +2,88 @@
 
 ## Recipes to Create
 
-Ordered by dependency chain. Build deps come before
-the packages that need them. Checked items have recipes.
+### Build Tools
 
-### Foundation (deps for everything else)
+- [ ] autoconf
+- [ ] automake
+- [ ] libtool
+- [ ] protobuf
 
-- [x] openssl
-- [x] pkgconf
-- [x] cmake
-- [x] bzip2
-- [x] zstd
-- [x] rust
-- [x] go
+### Libraries
 
-### Leaf Libraries
+- [ ] sqlite — embedded database
+- [ ] xz — compression library
 
-Needed by packages below. No gale deps beyond
-foundation.
+### Shells
 
-- [ ] gettext — needed by: git, wget, neovim
-- [ ] pcre2 — needed by: git, fish
-- [ ] libidn2 — needed by: curl, wget
-- [ ] libogg — needed by: flac
-- [ ] libyaml — needed by: ruby
-- [ ] gmp — needed by: coreutils
+- [ ] bash — macOS ships 3.2 (2007)
+- [ ] zsh — macOS version is dated
+- [ ] tmux — terminal multiplexer
 
-### Tier 1: Simple Rust (deps: rust)
+### Editors
 
-- [x] atuin
-- [x] bat
-- [x] deadnix
-- [x] difftastic
-- [x] dust
-- [x] eza
-- [x] fd
-- [x] git-delta
-- [x] hyperfine
-- [x] just
-- [x] ouch
-- [x] procs
-- [x] ripgrep
-- [x] starship
-- [x] statix
-- [x] tealdeer
-- [x] tree-sitter
-- [x] trippy
-- [x] zellij
-- [x] zoxide
+- [ ] neovim (deps: cmake, gettext, tree-sitter,
+  luajit, libuv)
 
-### Tier 1: Simple Go (deps: go)
+### Rust CLI Tools
 
-- [x] actionlint
-- [x] chezmoi
-- [x] doctl
-- [x] doggo
-- [x] fzf
-- [x] gh
-- [x] lazygit
-- [x] scc
-- [x] yq
+- [ ] bandwhich — network bandwidth monitor
+- [ ] shellcheck — shell script linter (Haskell, but
+  check if Rust port exists)
+- [ ] tokei — code statistics
+- [ ] xh — modern HTTP client
 
-### Tier 1: Simple C (no gale deps)
+### Go CLI Tools
 
-- [x] gnumake
-- [x] lua
-- [x] patchelf
-- [x] unzip (deps: bzip2)
-- [x] lsof
-- [ ] coreutils (deps: gmp)
-- [ ] traceroute
-- [ ] mtr (deps: pkgconf)
+- [ ] duf — modern df
+- [ ] shfmt — shell formatter
+- [ ] tig — git TUI (C, not Go)
 
-### Tier 2: Rust with Extra Deps
+### Git Ecosystem
 
-- [x] gping (deps: rust, pkgconf)
-- [x] uv (deps: rust, pkgconf)
-- [ ] mise (deps: rust, cmake, pkgconf, openssl)
-- [ ] rustup (deps: rust, pkgconf, openssl)
-- [ ] flac (deps: pkgconf, libogg)
+- [ ] git-lfs — large file storage
 
-### Tier 3: Needs openssl + leaf libs
+### Network
 
-- [ ] curl (deps: openssl, pkgconf, zstd, libidn2)
-- [ ] wget (deps: openssl, pkgconf, gettext, libidn2)
-- [ ] git (deps: openssl, pkgconf, gettext, pcre2)
-- [ ] rsync (deps: openssl, zstd)
-- [ ] ruby (deps: openssl, rust, pkgconf, libyaml)
-- [ ] postgresql (deps: openssl)
+- [ ] nmap — network scanner
 
-### Tier 4: Needs tier 3 or complex deps
+### Compression
 
-- [ ] fish (deps: rust, cmake, pcre2)
-- [ ] nodejs
-- [ ] mariadb (deps: openssl, pkgconf, cmake, pcre2,
-  zstd)
-- [ ] btop (deps: cmake)
-- [ ] fastfetch (deps: cmake, pkgconf)
+- [ ] pigz — parallel gzip
+
+### Containers / Cloud
+
+- [ ] kubectl — Kubernetes CLI (Go)
+- [ ] terraform — infrastructure as code (Go)
+- [ ] helm — Kubernetes packages (Go)
 - [ ] awscli (deps: cmake, openssl)
 - [ ] google-cloud-sdk
 
-### Tier 5: Needs runtimes
-
-- [ ] pnpm (deps: nodejs)
-- [ ] bun
-
 ### Zig
 
-- [ ] vibeutils (deps: zig toolchain)
+- [ ] zig — toolchain
+- [ ] vibeutils (deps: zig)
+- [ ] bun (deps: zig)
 
 ### Binary-Only
 
 - [ ] 1password-cli
+
+## Done
+
+67 recipes shipped:
+
+actionlint, atuin, bat, btop, bzip2, chezmoi, cmake,
+coreutils, curl, deadnix, difftastic, direnv, doctl,
+doggo, dust, eza, fastfetch, fd, fish, flac, fzf,
+gale, gettext, gh, git, git-delta, gmp, gnumake, go,
+gofumpt, golangci-lint, gping, hyperfine, jq, just,
+lazygit, libidn2, libogg, libyaml, lsof, lua,
+mariadb, mise, mtr, nodejs, openssl, ouch, patchelf,
+pcre2, pkgconf, pnpm, postgresql, procs, ripgrep,
+rsync, ruby, rust, rustup, scc, starship, statix,
+tealdeer, tree-sitter, traceroute, trippy, unzip, uv,
+wget, yq, zellij, zoxide, zstd
 
 ## Infrastructure
 
