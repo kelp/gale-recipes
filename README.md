@@ -1,17 +1,23 @@
 # gale-recipes
 
-Official recipe repository for [Gale](https://github.com/kelp/gale).
+Official recipe repository for
+[Gale](https://github.com/kelp/gale). Each recipe
+describes how to build a package from source. CI builds
+every recipe on macOS and Linux, pushes prebuilt
+binaries to GHCR, and attests provenance via Sigstore.
 
 ## Layout
 
-Recipes are TOML files organized by first letter:
+Recipes are TOML files, organized by first letter.
+Binary metadata lives in separate `.binaries.toml`
+files managed by CI.
 
 ```
 recipes/
-  b/bat.toml
-  f/fd.toml
-  j/jq.toml
-  r/ripgrep.toml
+  j/
+    jq.toml             # recipe (human-authored)
+    jq.binaries.toml    # binary index (CI-managed)
+    jq.versions         # version history
 ```
 
 ## Recipe Format
@@ -19,14 +25,15 @@ recipes/
 ```toml
 [package]
 name = "jq"
-version = "1.7.1"
+version = "1.8.1"
 description = "Lightweight and flexible command-line JSON processor"
 license = "MIT"
 homepage = "https://jqlang.github.io/jq"
 
 [source]
-url = "https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz"
-sha256 = "478c9ca..."
+repo = "jqlang/jq"
+url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-1.8.1.tar.gz"
+sha256 = "2be64e71..."
 
 [build]
 steps = [
@@ -34,42 +41,61 @@ steps = [
   "make -j${JOBS}",
   "make install",
 ]
-
-[dependencies]
-build = ["autoconf", "automake", "libtool"]
 ```
+
+Build steps run in a clean shell with `${PREFIX}`,
+`${VERSION}`, `${JOBS}`, `${OS}`, `${ARCH}`, and
+`${PLATFORM}` available.
+
+See [docs/creating-recipes.md](docs/creating-recipes.md)
+for the full guide.
 
 ## Development
 
-Install dev tools with gale:
+Install dev tools:
 
 ```
-gale sync
+gale sync --local
 ```
 
-Or let direnv activate automatically if you have
-`use gale` in your shell (see `gale hook direnv`).
+Or let direnv activate automatically on cd.
 
-Lint workflows:
+Lint recipes and workflows:
 
 ```
-actionlint
+just lint
+```
+
+Update gale from source:
+
+```
+just update-gale
 ```
 
 ## Contributing
 
-See [docs/creating-recipes.md](docs/creating-recipes.md)
-for a full guide.
+Add a recipe at `recipes/<first-letter>/<name>.toml`.
 
-Add a recipe file under `recipes/<first-letter>/<name>.toml`.
-Build and test it locally:
+Get source sha256:
 
 ```
-gale build recipes/<letter>/<name>.toml
+curl -sL <url> | shasum -a 256
 ```
 
-Install from a local recipe:
+Build and test:
+
+```
+gale build --local recipes/<letter>/<name>.toml
+```
+
+Install locally:
 
 ```
 gale install <name> --recipe recipes/<letter>/<name>.toml
+```
+
+Lint before committing:
+
+```
+just lint
 ```
