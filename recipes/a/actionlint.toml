@@ -1,0 +1,20 @@
+[package]
+name = "actionlint"
+version = "1.7.11"
+description = "Static checker for GitHub Actions workflow files"
+license = "MIT"
+homepage = "https://github.com/rhysd/actionlint"
+
+[source]
+repo = "rhysd/actionlint"
+url = "https://github.com/rhysd/actionlint/archive/refs/tags/v1.7.11.tar.gz"
+sha256 = "a2c073d2aac12e9fe6b5b82f0bc1780d08b04bd6a331958cd783e46ee48e9cdf"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/actionlint ./cmd/actionlint",
+]
+
+[dependencies]
+build = ["go"]

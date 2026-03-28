@@ -19,8 +19,8 @@ steps = [
   "echo 'e33cf237cfff8af75581fedece9f3c348e976bb8246078786f1888c3b251d380  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
-  "./configure --prefix=${PREFIX} --release-channel=stable --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc",
-  "OPENSSL_NO_VENDOR=0 python3 x.py build -j${JOBS}",
+  "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
+  "python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
 
@@ -30,8 +30,8 @@ steps = [
   "echo 'ca55df589f7cd68eec883086c5ff63ece04a1820e6d23e514fbb412cc8bf77a4  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
-  "./configure --prefix=${PREFIX} --release-channel=stable --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc",
-  "OPENSSL_NO_VENDOR=0 python3 x.py build -j${JOBS}",
+  "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
+  "python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
 

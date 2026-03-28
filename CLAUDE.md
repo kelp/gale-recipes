@@ -6,37 +6,19 @@ when working with code in this repository.
 ## Overview
 
 Official recipe repository for
-[Gale](https://github.com/kelp/gale). Each recipe is a
-TOML file describing how to build a CLI tool from source.
-See README.md for the format and layout.
+[Gale](https://github.com/kelp/gale), a package manager
+that replaces Homebrew, Nix, and home-manager. Each
+recipe is a TOML file describing how to build a package
+from source. Any package is a valid recipe candidate —
+languages, compilers, system utilities, CLI tools, and
+libraries. See README.md for the format and layout.
 
 ## Recipe Format
 
-```toml
-[package]
-name = "jq"                   # required
-version = "1.8.1"             # required
-description = "JSON processor"
-license = "MIT"
-homepage = "https://..."
-
-[source]
-url = "https://..."           # required
-sha256 = "abc123..."          # required
-repo = "jqlang/jq"            # for auto-update
-released_at = "2025-07-01"    # for update cooldown
-
-[build]
-steps = ["./configure ...", "make -j${JOBS}", "make install"]
-
-[dependencies]
-build = ["autoconf", "automake"]
-runtime = []
-
-[binary.darwin-arm64]          # prebuilt, added by CI
-url = "https://ghcr.io/..."
-sha256 = "..."
-```
+See README.md for the full format. Required fields:
+`[package]` name + version, `[source]` url + sha256,
+`[build]` steps. Optional: `[dependencies]`,
+`[binary.<platform>]` (added by CI).
 
 ## Testing a Recipe
 
@@ -56,6 +38,15 @@ $tmpdir/bin/<name> --version
 rm -rf $tmpdir
 ```
 
+## Adding a Recipe
+
+Recipes live at `recipes/<first-letter>/<name>.toml`.
+Get source sha256:
+
+```
+curl -sL <url> | shasum -a 256
+```
+
 ## Build Environment
 
 Build steps run in a clean shell with two variables:
@@ -68,9 +59,7 @@ Build steps run in a clean shell with two variables:
 **Autotools** (jq): Use `--disable-docs
 --disable-maintainer-mode` to skip optional tooling.
 Bundle dependencies when possible
-(`--with-oniguruma=builtin`). Prefer static linking
-(`--disable-shared --enable-all-static`) to avoid
-dylib path issues in the installed binary.
+(`--with-oniguruma=builtin`).
 
 **Cargo** (bat, fd, ripgrep, starship): Always use
 `cargo install --path . --root ${PREFIX}`. The `--path .`
@@ -85,16 +74,39 @@ crates.io instead of building local source.
 
 This is the content repo. The tool lives at `../gale`.
 
-- **gale-recipes** (this repo) — recipe TOML files. CI
-  builds every recipe on each platform, pushes tar.zst
-  binaries to GHCR via ORAS, and updates
+- **gale-recipes** (this repo) — recipe TOML files for
+  all packages: system tools, languages, compilers,
+  libraries, CLI utilities. CI builds changed recipes
+  on each platform, pushes tar.zst binaries to GHCR
+  via ORAS, attests provenance, and updates
   `[binary.<platform>]` sections in the recipe TOML.
-- **gale** — the CLI tool. Pulls prebuilt binaries from
-  GHCR when available, falls back to source builds.
+- **gale** — the package manager. Pulls prebuilt
+  binaries from GHCR when available, falls back to
+  source builds.
 
-**CI flow**: on push or schedule, GitHub Actions builds
-changed recipes on macOS and Linux runners, pushes
-tar.zst to GHCR, updates binary sections, commits back.
+**CI flow**: on push, GitHub Actions detects changed
+recipes via git diff, builds only those on macOS ARM64
+and Linux AMD64 runners, attests provenance via Sigstore,
+pushes tar.zst to GHCR via ORAS, updates binary sections,
+and commits back via GraphQL (auto-signed "Verified").
+workflow_dispatch builds all or a named recipe.
+
+## Linting
+
+Lint workflows with actionlint:
+
+```
+actionlint
+```
+
+SC2016 warnings are suppressed in
+`.github/actionlint.yaml` — jq and GraphQL use `$`
+for their own variables, not shell expansion.
+
+## Dev Environment
+
+`flake.nix` + `.envrc` provide actionlint via direnv.
+`gale.toml` declares project dependencies for gale.
 
 ## Gotchas
 
@@ -104,3 +116,7 @@ tar.zst to GHCR, updates binary sections, commits back.
 - eza requires Rust edition2024 (newer than rustc 1.82).
 - Autotools clock-skew errors are handled by gale's build
   module (timestamp reset), not the recipe.
+- CI commits use GITHUB_TOKEN so they don't re-trigger
+  workflows. Switching to a PAT or App token would cause
+  an infinite rebuild loop — add commit-message filtering
+  first.
