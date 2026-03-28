@@ -31,5 +31,5 @@ sha256 = "f3f4762e8f15bd074b83a3962dc332d307c2b8173774be97d524f34442ecdec6"
 
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:6bcda1fc533a7c0e41c6cbbcf86e9170276da95802f11c4abb0320f7696a48bf"
-sha256 = "6bcda1fc533a7c0e41c6cbbcf86e9170276da95802f11c4abb0320f7696a48bf"
+url = "https://ghcr.io/v2/kelp/gale-recipes/starship/blobs/sha256:b815ef872a224c8eb6cb53558a7634324ec9fabc3aba25a74eb977e0e5c55958"
+sha256 = "b815ef872a224c8eb6cb53558a7634324ec9fabc3aba25a74eb977e0e5c55958"
