@@ -17,6 +17,7 @@ steps = [
   "make install",
 ]
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/cmake/blobs/sha256:46fdd857b289e40c19cb736b468455dc1910c4d602d54f582fd13ec4dac857dd"
-sha256 = "46fdd857b289e40c19cb736b468455dc1910c4d602d54f582fd13ec4dac857dd"
+url = "https://ghcr.io/v2/kelp/gale-recipes/cmake/blobs/sha256:782f177dd506690ff532d17ac5a9a230481a952b9f1a5843bc00900cd35656aa"
+sha256 = "782f177dd506690ff532d17ac5a9a230481a952b9f1a5843bc00900cd35656aa"

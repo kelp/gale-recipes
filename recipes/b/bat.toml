@@ -29,6 +29,7 @@ sha256 = "e37e9b10087fdf63c238ee6010a356fc027afe1c32ff3bc47002bc41da60c462"
 
 
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:2b8c3f80ad03e09cd3d7d9ab79e04e06939102c4aa977f1285446d15c77336d9"
-sha256 = "2b8c3f80ad03e09cd3d7d9ab79e04e06939102c4aa977f1285446d15c77336d9"
+url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:2bcd5e24c75acf8ef823731124bc79ac3918933d82a565c8e9933e1f16eaf29d"
+sha256 = "2bcd5e24c75acf8ef823731124bc79ac3918933d82a565c8e9933e1f16eaf29d"
