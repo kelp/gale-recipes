@@ -1,0 +1,20 @@
+[package]
+name = "golangci-lint"
+version = "2.11.4"
+description = "Fast Go linters runner"
+license = "GPL-3.0"
+homepage = "https://golangci-lint.run"
+
+[source]
+repo = "golangci/golangci-lint"
+url = "https://github.com/golangci/golangci-lint/archive/refs/tags/v2.11.4.tar.gz"
+sha256 = "388dc80d6bd01417144c2bad2b21f58fc069f66bb91f63c111b5e826e67d240a"
+
+[dependencies]
+build = ["go"]
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/golangci-lint ./cmd/golangci-lint/",
+]

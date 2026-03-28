@@ -1,0 +1,21 @@
+[package]
+name = "gale"
+version = "0.1.0-dev"
+description = "macOS-first package manager for developer CLI tools"
+license = "MIT"
+homepage = "https://github.com/kelp/gale"
+
+[source]
+repo = "kelp/gale"
+url = "https://github.com/kelp/gale/archive/refs/tags/v0.1.0-dev.tar.gz"
+sha256 = "4dc0042e2caeee822eef9985a0b85754d1fd82a8ef7a36bb485b6c168b7f29a6"
+
+[dependencies]
+build = ["go"]
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/man/man1",
+  "go build -ldflags \"-X main.version=$(git rev-parse --short HEAD)\" -o ${PREFIX}/bin/gale ./cmd/gale/",
+  "cp gale.1 ${PREFIX}/man/man1/",
+]

@@ -6,6 +6,7 @@ license = "MIT OR Apache-2.0"
 homepage = "https://www.rust-lang.org"
 
 [source]
+repo = "rust-lang/rust"
 url = "https://static.rust-lang.org/dist/rustc-1.94.1-src.tar.gz"
 sha256 = "4c142a625f12e3cdf716c68ae19f4f60d98ad1482627b08579b15838e95ad514"
 

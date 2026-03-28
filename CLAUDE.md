@@ -98,6 +98,12 @@ workflow_dispatch builds all or a named recipe.
 
 ## Linting
 
+Lint recipes:
+
+```
+gale lint recipes/**/*.toml
+```
+
 Lint workflows with actionlint:
 
 ```
