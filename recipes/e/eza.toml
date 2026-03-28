@@ -23,9 +23,9 @@ build = ["pkgconf", "rust"]
 runtime = ["libgit2"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:9148e453eb1ea20dfe4232160105c3ded241f0bdcf5e2991d50531aa5ece4e6c"
-sha256 = "9148e453eb1ea20dfe4232160105c3ded241f0bdcf5e2991d50531aa5ece4e6c"
+url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:d0a84d71ff078599b17a15bcf2aaa45289b1ba1e7aeec8ab49348c9058bc88b7"
+sha256 = "d0a84d71ff078599b17a15bcf2aaa45289b1ba1e7aeec8ab49348c9058bc88b7"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:fe37a66a109b68ade3c047b69c407e5620a5bd52be4de3d0834f1f91e76bbf3c"
-sha256 = "fe37a66a109b68ade3c047b69c407e5620a5bd52be4de3d0834f1f91e76bbf3c"
+url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:cc52374eaa8853fa4602637d0507fcf53f16b06f02cbafd19a43a0e1b069e09b"
+sha256 = "cc52374eaa8853fa4602637d0507fcf53f16b06f02cbafd19a43a0e1b069e09b"

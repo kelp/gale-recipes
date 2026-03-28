@@ -23,9 +23,9 @@ steps = [
 build = ["cmake"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:a4b838d90d8dcdb0be410a949781de2b119e229a1de9617612a26dae29e289d9"
-sha256 = "a4b838d90d8dcdb0be410a949781de2b119e229a1de9617612a26dae29e289d9"
+url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:d37cea153a9f1a3a8b4ddb73cafd210b97b0c68769693db37181413b6cbf3234"
+sha256 = "d37cea153a9f1a3a8b4ddb73cafd210b97b0c68769693db37181413b6cbf3234"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:6e0df1caba3b7b758e251808a867f772558974974702f7a3ef35bf13799a3030"
-sha256 = "6e0df1caba3b7b758e251808a867f772558974974702f7a3ef35bf13799a3030"
+url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:47a1e1f8992c2c4a81b96d271d73370abaa5942551f1ae73ab14e0876b7cff8c"
+sha256 = "47a1e1f8992c2c4a81b96d271d73370abaa5942551f1ae73ab14e0876b7cff8c"

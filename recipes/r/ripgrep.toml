@@ -23,9 +23,9 @@ build = ["pkgconf", "rust"]
 runtime = ["pcre2"]
 
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:0e71276b13023559c4385e10fb8106959965746bd9eff477c997bdbf6c6784c2"
-sha256 = "0e71276b13023559c4385e10fb8106959965746bd9eff477c997bdbf6c6784c2"
+url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:535a22ef743f5462052499032768d632b021756449c9355ace62d6717f47178e"
+sha256 = "535a22ef743f5462052499032768d632b021756449c9355ace62d6717f47178e"
 
 [binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:806b4e3013b76df69df2ff05dcc6db59eee7037176a11e9d328ad1852beb9525"
-sha256 = "806b4e3013b76df69df2ff05dcc6db59eee7037176a11e9d328ad1852beb9525"
+url = "https://ghcr.io/v2/kelp/gale-recipes/ripgrep/blobs/sha256:66464d96f9d017c35f7e4fbb28e973d215e9f8da8c6d830da004d5a4c01188c6"
+sha256 = "66464d96f9d017c35f7e4fbb28e973d215e9f8da8c6d830da004d5a4c01188c6"
