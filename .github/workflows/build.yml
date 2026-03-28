@@ -106,39 +106,19 @@ jobs:
           - os: ubuntu-latest
             platform: linux-amd64
     runs-on: ${{ matrix.target.os }}
+    env:
+      GALE_VERSION: v0.4.0
     steps:
-      - name: Get gale HEAD SHA
-        id: gale-rev
+      - name: Download gale release binary
+        env:
+          PLATFORM: ${{ matrix.target.platform }}
         run: |
-          SHA=$(git ls-remote \
-            https://github.com/kelp/gale.git HEAD \
-            | awk '{print $1}')
-          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
-
-      - name: Cache gale binary
-        id: cache-gale
-        uses: actions/cache@v5
-        with:
-          path: gale-bin/gale
-          key: gale-${{ matrix.target.platform }}-${{ steps.gale-rev.outputs.sha }}
-
-      - uses: actions/checkout@v6
-        if: steps.cache-gale.outputs.cache-hit != 'true'
-        with:
-          repository: kelp/gale
-          path: _gale
-
-      - uses: actions/setup-go@v6
-        if: steps.cache-gale.outputs.cache-hit != 'true'
-        with:
-          go-version: stable
-
-      - name: Build gale
-        if: steps.cache-gale.outputs.cache-hit != 'true'
-        run: |
-          cd _gale
-          mkdir -p ../gale-bin
-          go build -o ../gale-bin/gale ./cmd/gale/
+          mkdir -p gale-bin
+          ARCHIVE="gale-${GALE_VERSION}-${PLATFORM}.tar.gz"
+          curl -sL -o "/tmp/${ARCHIVE}" \
+            "https://github.com/kelp/gale/releases/download/${GALE_VERSION}/${ARCHIVE}"
+          tar -xzf "/tmp/${ARCHIVE}" -C gale-bin
+          chmod +x gale-bin/gale
 
       - uses: actions/upload-artifact@v7
         with:
@@ -192,7 +172,7 @@ jobs:
             ~/.cache/pip
             ~/Library/Caches/pip
             ~/.npm
-          key: deps-${{ matrix.target.platform }}-${{ github.sha }}
+          key: deps-${{ matrix.target.platform }}-${{ hashFiles('recipes/**/*.toml') }}
           restore-keys: |
             deps-${{ matrix.target.platform }}-
 
