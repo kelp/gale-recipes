@@ -16,11 +16,8 @@ released_at = "2025-10-03"
 [build]
 steps = [
   "cargo install --path . --root ${PREFIX}",
-  "pandoc man/eza.1.md -o eza.1",
-  "pandoc man/eza_colors.5.md -o eza_colors.5",
-  "pandoc man/eza_colors-explanation.5.md -o eza_colors-explanation.5",
 ]
 
 [dependencies]
-build = ["pandoc", "pkgconf", "rust"]
+build = ["pkgconf", "rust"]
 runtime = ["libgit2"]

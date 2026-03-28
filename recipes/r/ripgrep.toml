@@ -19,7 +19,7 @@ steps = [
 ]
 
 [dependencies]
-build = ["asciidoctor", "pkgconf", "rust"]
+build = ["pkgconf", "rust"]
 runtime = ["pcre2"]
 
 [binary.darwin-arm64]

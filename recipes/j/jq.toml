@@ -19,7 +19,7 @@ steps = [
 ]
 
 [dependencies]
-build = ["autoconf", "automake", "libtool"]
+build = []
 
 
 
