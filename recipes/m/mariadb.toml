@@ -1,0 +1,24 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "mariadb"
+version = "12.2.2"
+description = "Drop-in replacement for MySQL"
+license = "GPL-2.0-only"
+homepage = "https://mariadb.org/"
+
+[source]
+repo = "MariaDB/server"
+url = "https://archive.mariadb.org/mariadb-12.2.2/source/mariadb-12.2.2.tar.gz"
+sha256 = "fe82fe2e9af98dfcad8c0266a283ca349b78fd46989fff0d5e1ffca644b514bd"
+
+[build]
+steps = [
+  "cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DWITHOUT_SERVER=ON -DWITH_PCRE=system -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_UNIT_TESTS=OFF -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci",
+  "cmake --build _build -j ${JOBS}",
+  "cmake --install _build",
+]
+
+[dependencies]
+build = ["cmake", "pkgconf"]
+runtime = ["openssl", "pcre2", "zstd"]

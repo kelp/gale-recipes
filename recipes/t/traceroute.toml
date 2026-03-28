@@ -1,0 +1,19 @@
+[package]
+name = "traceroute"
+version = "2.1.6"
+description = "Traces the route taken by packets over an IP network"
+license = "GPL-2.0-only"
+homepage = "https://traceroute.sourceforge.net/"
+
+[source]
+url = "https://downloads.sourceforge.net/traceroute/traceroute-2.1.6.tar.gz"
+sha256 = "9ccef9cdb9d7a98ff7fbf93f79ebd0e48881664b525c4b232a0fcec7dcb9db5e"
+
+[dependencies]
+build = ["gnumake"]
+
+[build.linux-amd64]
+steps = [
+  "make -j${JOBS}",
+  "make prefix=${PREFIX} install",
+]

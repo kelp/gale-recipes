@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "pnpm"
+version = "10.33.0"
+description = "Fast, disk space efficient package manager"
+license = "MIT"
+homepage = "https://pnpm.io/"
+
+[source]
+repo = "pnpm/pnpm"
+url = "https://registry.npmjs.org/pnpm/-/pnpm-10.33.0.tgz"
+sha256 = "bfcc1bcbad279b13a516c446a75b3c58b6904b45d57a1951411015e50b751a80"
+
+[build]
+steps = [
+  "npm install -g --prefix=${PREFIX} .",
+]
+
+[dependencies]
+build = ["nodejs"]
+runtime = ["nodejs"]
