@@ -22,11 +22,10 @@ See README.md for the full format. Required fields:
 
 ## Testing a Recipe
 
-Build from the sibling gale repo:
+Build a recipe (produces a tar.zst archive):
 
 ```
-cd ../gale && go build -o gale ./cmd/gale/
-./gale build ../gale-recipes/recipes/<letter>/<name>.toml
+gale build recipes/<letter>/<name>.toml
 ```
 
 Verify the binary after build:
@@ -36,6 +35,12 @@ tmpdir=$(mktemp -d)
 python3 -c "import tarfile; tarfile.open('<name>-<ver>.tar.zst','r:*').extractall('$tmpdir')"
 $tmpdir/bin/<name> --version
 rm -rf $tmpdir
+```
+
+Install from a local recipe:
+
+```
+gale install <name> --recipe recipes/<letter>/<name>.toml
 ```
 
 ## Adding a Recipe
@@ -105,8 +110,9 @@ for their own variables, not shell expansion.
 
 ## Dev Environment
 
-`flake.nix` + `.envrc` provide actionlint via direnv.
-`gale.toml` declares project dependencies for gale.
+`gale.toml` + `.envrc` provide dev tools via gale and
+direnv. Run `gale sync --local` to install from local
+recipes, or let direnv activate automatically on cd.
 
 ## Gotchas
 

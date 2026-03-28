@@ -39,7 +39,37 @@ steps = [
 build = ["autoconf", "automake", "libtool"]
 ```
 
+## Development
+
+Install dev tools with gale:
+
+```
+gale sync
+```
+
+Or let direnv activate automatically if you have
+`use gale` in your shell (see `gale hook direnv`).
+
+Lint workflows:
+
+```
+actionlint
+```
+
 ## Contributing
 
+See [docs/creating-recipes.md](docs/creating-recipes.md)
+for a full guide.
+
 Add a recipe file under `recipes/<first-letter>/<name>.toml`.
-Test it with `gale build recipes/<letter>/<name>.toml`.
+Build and test it locally:
+
+```
+gale build recipes/<letter>/<name>.toml
+```
+
+Install from a local recipe:
+
+```
+gale install <name> --recipe recipes/<letter>/<name>.toml
+```
