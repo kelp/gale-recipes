@@ -4,6 +4,14 @@ All notable changes to gale-recipes are documented here.
 
 ## Unreleased
 
+### Added
+- actionlint recipe (Go build)
+- docs/creating-recipes.md authoring guide
+- gale.toml project profile with actionlint
+- actionlint.yaml config (suppresses SC2016 for jq/GraphQL)
+- Build provenance attestation via actions/attest (SLSA,
+  Sigstore-signed; verify with `gh attestation verify`)
+
 ### Changed
 - CI builds only changed recipes instead of rebuilding all
   on every push (push/PR use git diff, workflow_dispatch
@@ -11,23 +19,28 @@ All notable changes to gale-recipes are documented here.
 - Gale binary built once per platform and shared via
   artifact instead of rebuilt in every matrix job
 - Added build dependency caching (Cargo, Go, pip, npm)
-- Added concurrency control to cancel superseded PR builds
+- Added concurrency control to cancel superseded builds
 - Hardened update-recipes job with nullglob and
   build-skipped guards
 - Updated all GitHub Actions to latest major versions:
   checkout v6, setup-go v6, cache v5, upload-artifact v7,
   download-artifact v8
-- Added build provenance attestation via actions/attest
-  (SLSA, Sigstore-signed; verify with `gh attestation
-  verify`)
 - Replaced REST API commit chain (blob/tree/commit/ref)
   with single GraphQL createCommitOnBranch mutation
-- Fixed race condition: cancel-in-progress now applies to
-  all events, preventing lost binary-section updates from
+- Switched dev environment from nix flake to gale
+- Rust recipe: production-optimized build (thin LTO,
+  codegen-units=1, jemalloc, profiler runtime), vendored
+  OpenSSL via --enable-cargo-native-static
+
+### Fixed
+- Race condition: cancel-in-progress now applies to all
+  events, preventing lost binary-section updates from
   concurrent pushes
-- Fixed fragile sed-based binary section removal; replaced
-  with awk that handles end-of-file and trims accumulated
-  blank lines
+- Fragile sed-based binary section removal; replaced with
+  awk that handles end-of-file and trims accumulated blank
+  lines
+- Rust recipe: removed broken OPENSSL_NO_VENDOR=0 (the
+  variable disables vendoring when set to any value)
 
 ## 2026-03-27
 
