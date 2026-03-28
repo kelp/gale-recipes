@@ -1,0 +1,21 @@
+[package]
+name = "gh"
+version = "2.89.0"
+description = "GitHub command-line tool"
+license = "MIT"
+homepage = "https://cli.github.com/"
+
+[source]
+repo = "cli/cli"
+url = "https://github.com/cli/cli/archive/refs/tags/v2.89.0.tar.gz"
+sha256 = "bc9c11f75e4aeb7e1f0bd5f543a3edabb8958655025f8cdc3d9bbe14435a7441"
+released_at = "2026-03-26"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -trimpath -ldflags \"-X github.com/cli/cli/v2/internal/build.Version=v2.89.0 -X github.com/cli/cli/v2/internal/build.Date=2026-03-26\" -o ${PREFIX}/bin/gh ./cmd/gh",
+]
+
+[dependencies]
+build = ["go"]
