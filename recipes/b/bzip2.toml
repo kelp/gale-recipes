@@ -16,3 +16,11 @@ steps = [
   "make -j${JOBS} CC=cc",
   "make install PREFIX=${PREFIX}",
 ]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/bzip2/blobs/sha256:5e819555c9f977c8c678707be9a8ed2a8f29963413de30fa80de348fbbafd5ee"
+sha256 = "5e819555c9f977c8c678707be9a8ed2a8f29963413de30fa80de348fbbafd5ee"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/bzip2/blobs/sha256:12d63ebd984b2ffd884a73e9f51adcd1df1909bb1c94e27cfb849a01a1c06b2d"
+sha256 = "12d63ebd984b2ffd884a73e9f51adcd1df1909bb1c94e27cfb849a01a1c06b2d"
