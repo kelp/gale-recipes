@@ -1,0 +1,29 @@
+[package]
+name = "coreutils"
+version = "9.10"
+description = "GNU File, Shell, and Text utilities"
+license = "GPL-3.0-or-later"
+homepage = "https://www.gnu.org/software/coreutils/"
+
+[source]
+repo = "coreutils/coreutils"
+url = "https://ftpmirror.gnu.org/gnu/coreutils/coreutils-9.10.tar.xz"
+sha256 = "16535a9adf0b10037364e2d612aad3d9f4eca3a344949ced74d12faf4bd51d25"
+released_at = "2026-02-04"
+
+[build.darwin-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --program-prefix=g --with-gmp",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[build.linux-amd64]
+steps = [
+  "./configure --prefix=${PREFIX} --with-gmp --without-selinux",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+runtime = ["gmp"]

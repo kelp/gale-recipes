@@ -1,0 +1,24 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "fish"
+version = "4.6.0"
+description = "User-friendly command-line shell for UNIX-like operating systems"
+license = "GPL-2.0-only"
+homepage = "https://fishshell.com"
+
+[source]
+repo = "fish-shell/fish-shell"
+url = "https://github.com/fish-shell/fish-shell/releases/download/4.6.0/fish-4.6.0.tar.xz"
+sha256 = "fc9165f733a0e28a3dba11c9b1a286bc88a853f152a6694cd993512a2f1761aa"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DWITH_DOCS=OFF",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake", "rust"]
+runtime = ["pcre2"]

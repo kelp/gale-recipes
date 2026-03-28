@@ -1,0 +1,25 @@
+[package]
+name = "postgresql"
+version = "17.9"
+description = "PostgreSQL client tools (psql, pg_dump, pg_restore)"
+license = "PostgreSQL"
+homepage = "https://www.postgresql.org/"
+
+[source]
+repo = "postgres/postgres"
+url = "https://ftp.postgresql.org/pub/source/v17.9/postgresql-17.9.tar.bz2"
+sha256 = "3b9a62538a8da151e807a3ddb1198e8605f2032544d78f403ae883d27ecf1ee4"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --with-openssl --without-icu",
+  "make -C src/interfaces -j${JOBS}",
+  "make -C src/bin -j${JOBS}",
+  "make -C src/interfaces install",
+  "make -C src/bin install",
+  "make -C src/include install",
+]
+
+[dependencies]
+build = ["pkgconf"]
+runtime = ["openssl"]
