@@ -1,9 +1,7 @@
 version = "2.70.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/chezmoi/blobs/sha256:7b7e5d471dd8c7287055a66365195f18e96bcf3ff62d43d82c8dd3c9e6ad3ee1"
-sha256 = "7b7e5d471dd8c7287055a66365195f18e96bcf3ff62d43d82c8dd3c9e6ad3ee1"
+sha256 = "8247c99b0ee5c7596e85c858c39418a0fdee8be366198abebc8a84ccd7b7a069"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/chezmoi/blobs/sha256:173d7194ac348bc2837364aabf780338a2aeb7225458955192681b287d871278"
-sha256 = "173d7194ac348bc2837364aabf780338a2aeb7225458955192681b287d871278"
+sha256 = "8520f73730aa3fd0fd9b3b7d8de192fadc63ac585e0c7f274d69799221c4add4"

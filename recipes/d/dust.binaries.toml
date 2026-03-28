@@ -1,9 +1,7 @@
 version = "1.2.4"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/dust/blobs/sha256:d2f3ec6cf9cee49d408812bba834748c44e177a2fb34ad9c83dbb389ecc9f0dc"
-sha256 = "d2f3ec6cf9cee49d408812bba834748c44e177a2fb34ad9c83dbb389ecc9f0dc"
+sha256 = "5b78693e51948e547bbdd730601be432d55520c355c2feb48e00fb514152e4e9"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/dust/blobs/sha256:23bdb7d356a61b1f6219dc8813415280ae2ac1bac2e2d60d22e0c4f9f24a4f58"
-sha256 = "23bdb7d356a61b1f6219dc8813415280ae2ac1bac2e2d60d22e0c4f9f24a4f58"
+sha256 = "94fd9c05b61f9346d50a7ca8631642733c665f1bf522907f403c87b2abba1b81"

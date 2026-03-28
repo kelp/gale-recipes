@@ -1,9 +1,7 @@
 version = "0.44.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zellij/blobs/sha256:1220f3e9a97f5a8fd7f50e976c508969a6f72b92aebbc9fab430f20e3560a60f"
-sha256 = "1220f3e9a97f5a8fd7f50e976c508969a6f72b92aebbc9fab430f20e3560a60f"
+sha256 = "eb78a5b12633823b808be95079f3adb447c650bdf18844871642ef9b042fa9b7"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zellij/blobs/sha256:2b77d975eafec80526e09f95bc0c90b85baaa7a736303fa57cc1113b3ddaf300"
-sha256 = "2b77d975eafec80526e09f95bc0c90b85baaa7a736303fa57cc1113b3ddaf300"
+sha256 = "543fcc665c9a2be32336dd3f123c0cbf66bdd2c7338ddf078ba81aa06a500f6a"

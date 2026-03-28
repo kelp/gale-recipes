@@ -1,9 +1,7 @@
 version = "1.7.11"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/actionlint/blobs/sha256:d2e5f8cf6b2b650a7b7b149a07a04e9851e1fc0bb6ac5acf5a2026ce1c04fedb"
-sha256 = "d2e5f8cf6b2b650a7b7b149a07a04e9851e1fc0bb6ac5acf5a2026ce1c04fedb"
+sha256 = "b444775f129b66393ad825bcfd42c3f4360227e86bdb24bd8ff7397a266c0351"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/actionlint/blobs/sha256:3bcc7fd007d6ff260b1ac4bb08872f9c835069293b88267d0057c66dba9f4252"
-sha256 = "3bcc7fd007d6ff260b1ac4bb08872f9c835069293b88267d0057c66dba9f4252"
+sha256 = "5335a624da7acc6d59c1332e81d12a908c22c2e1d4afd5c9a5303e55d3726bf9"

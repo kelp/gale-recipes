@@ -1,9 +1,7 @@
 version = "2.89.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gh/blobs/sha256:744856091b0b01d419338a6f51b63c4a0512def3e84365622d8d08fd5f1ab1e8"
 sha256 = "744856091b0b01d419338a6f51b63c4a0512def3e84365622d8d08fd5f1ab1e8"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gh/blobs/sha256:0342f5ae02601032f4009c773cc2d76661eb7d129a1a303534904317e3aec2e5"
 sha256 = "0342f5ae02601032f4009c773cc2d76661eb7d129a1a303534904317e3aec2e5"

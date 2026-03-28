@@ -1,9 +1,7 @@
 version = "3.7.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/scc/blobs/sha256:af1de40dd562abe7701d2e9ae8cc019029a11b3afcbcb7fef26b02cb4a409ec5"
-sha256 = "af1de40dd562abe7701d2e9ae8cc019029a11b3afcbcb7fef26b02cb4a409ec5"
+sha256 = "2b5b4b3248425ee53cf81137ff3fbaa84459880a2e57810e788feeb4cdb162fe"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/scc/blobs/sha256:ad894bfcbc8a2f04af563106cbf312de54f5bb06e8905da2a9ad602d5cef28c3"
-sha256 = "ad894bfcbc8a2f04af563106cbf312de54f5bb06e8905da2a9ad602d5cef28c3"
+sha256 = "099bf04aa9a47ce5d18c96ee80e674a1f3bae01600fab5f3b5d7329a5619619f"

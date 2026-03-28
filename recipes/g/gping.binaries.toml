@@ -1,9 +1,7 @@
 version = "1.20.1"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gping/blobs/sha256:0cdc0b71b7ebc7189ef54aafbf92f321b2966a17f68f5bab2c788511af80a1bb"
-sha256 = "0cdc0b71b7ebc7189ef54aafbf92f321b2966a17f68f5bab2c788511af80a1bb"
+sha256 = "55259559a71341850a1a685836718b46031a5c246f5942f8acbf9bb2cf17d5a6"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gping/blobs/sha256:63a92be9038770a742755b1a3a90141bf9337f6f3db750f51dd41da901d65237"
-sha256 = "63a92be9038770a742755b1a3a90141bf9337f6f3db750f51dd41da901d65237"
+sha256 = "bd1140c8e6b8f8cff2162a2dae13c9aa875e986a91d3826b78bb6972737854f8"

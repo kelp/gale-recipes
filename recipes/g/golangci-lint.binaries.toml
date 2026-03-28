@@ -1,9 +1,7 @@
 version = "2.11.4"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/golangci-lint/blobs/sha256:4dbc2479378790f4984332198f1c69aecd25ec2b8d1d755bd26c2a9ddecb1667"
-sha256 = "4dbc2479378790f4984332198f1c69aecd25ec2b8d1d755bd26c2a9ddecb1667"
+sha256 = "94518e0bb0629d54173c89f2f6d4eb782217b1d6f933e20b81b6a1dd60709bf1"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/golangci-lint/blobs/sha256:f4ea037b9c9cfa886adc1755996c6002aeaefeeea9132f272c486a6f08bec635"
-sha256 = "f4ea037b9c9cfa886adc1755996c6002aeaefeeea9132f272c486a6f08bec635"
+sha256 = "2848c6faf66d1b11232c26bb5452a657e4e1d45d7499e5e10f886a1f213f7045"

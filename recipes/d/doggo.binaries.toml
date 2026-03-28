@@ -1,9 +1,7 @@
 version = "1.1.5"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/doggo/blobs/sha256:01e33fe41417ed3237e0635f303fd8b4fce94dba040e9cce3bf880bfbf99db93"
-sha256 = "01e33fe41417ed3237e0635f303fd8b4fce94dba040e9cce3bf880bfbf99db93"
+sha256 = "5fc60ead62af84f12daa0ba7f2f1cb6913b2ebb1cd6dac177157718b2f9c38cf"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/doggo/blobs/sha256:84e0a62720dd6ec5b562cb4214f4f1c71a817853993f8a89bccf2387949a6fec"
-sha256 = "84e0a62720dd6ec5b562cb4214f4f1c71a817853993f8a89bccf2387949a6fec"
+sha256 = "c93adbbd58b32c0c3872f965eab2a728d0f0d38f50c56b563261a89af1cbf5fa"

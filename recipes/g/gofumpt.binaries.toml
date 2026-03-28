@@ -1,9 +1,7 @@
 version = "0.9.2"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gofumpt/blobs/sha256:219e5fa58995f19d4f8f62d64f2fad82807878ffd46065ef6760ab6691998fbf"
-sha256 = "219e5fa58995f19d4f8f62d64f2fad82807878ffd46065ef6760ab6691998fbf"
+sha256 = "f097f73adb3cb6013ed0e5618ef5a95d6133b91e4dc49f21f85a757f46b8c6f9"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gofumpt/blobs/sha256:e78a98fc32935464200430a1cfb71f312ae87c08744fb56d33bd4d1288d44545"
-sha256 = "e78a98fc32935464200430a1cfb71f312ae87c08744fb56d33bd4d1288d44545"
+sha256 = "2f0a4050c65b4e6261b86a22b0d1a17db21855eb2658b6156f86dac9394cf61b"

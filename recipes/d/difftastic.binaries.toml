@@ -1,9 +1,7 @@
 version = "0.68.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/difftastic/blobs/sha256:b2ac565ff137438c954f81fe5274d14ab037171fd1dce00a5d2b8aedd09a4fa1"
-sha256 = "b2ac565ff137438c954f81fe5274d14ab037171fd1dce00a5d2b8aedd09a4fa1"
+sha256 = "e4c88c01252fe0998f3458789bef716d9a408e7cd331faa606de96a75aa59d71"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/difftastic/blobs/sha256:7d47aa85b866e7bb704bb792cd61c4671a498c81c1d610e34efb3be62228a5c9"
-sha256 = "7d47aa85b866e7bb704bb792cd61c4671a498c81c1d610e34efb3be62228a5c9"
+sha256 = "898cabf7dec145789c0eaf2fc632b2a1e8fa139e0fa7c209ad224f13b79b7321"

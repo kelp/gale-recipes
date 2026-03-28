@@ -1,9 +1,7 @@
 version = "1.20.0"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/hyperfine/blobs/sha256:fd7ad9925f39ba9232f57b2774fb1343c16dd09db34ff6b0fc37d08386673efe"
-sha256 = "fd7ad9925f39ba9232f57b2774fb1343c16dd09db34ff6b0fc37d08386673efe"
+sha256 = "153f721aff0c56510699092b5ddbb9f620fcaa702b557bb5e39ca8d2a8c0b5da"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/hyperfine/blobs/sha256:0c3df4ea8ac8baacba1ce464d4e210e24aec2ecd28128e0c648959d3549305e0"
-sha256 = "0c3df4ea8ac8baacba1ce464d4e210e24aec2ecd28128e0c648959d3549305e0"
+sha256 = "b4713c39a5b19f61a4422fcfcafac819f71fe93921da2f33e34ab5cf9c9ddbc8"

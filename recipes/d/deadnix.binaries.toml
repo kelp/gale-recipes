@@ -1,9 +1,7 @@
 version = "1.3.1"
 
 [darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/deadnix/blobs/sha256:31a1cf210045c0976524bdc34ca8959ba0ad99b7535042b3ad85f80235388365"
-sha256 = "31a1cf210045c0976524bdc34ca8959ba0ad99b7535042b3ad85f80235388365"
+sha256 = "fbca9a79bc691fcfdf2cbcd8326ec02dffaa933622ff46198914f61a0a58a4eb"
 
 [linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/deadnix/blobs/sha256:a332585721b58c37483aa1f53a7d5ebb07003d922e2d19a975e8470364b26b26"
-sha256 = "a332585721b58c37483aa1f53a7d5ebb07003d922e2d19a975e8470364b26b26"
+sha256 = "5f0c21a153e7ea98bccb02994166ebaf1046e31117ae1d108af9207c46be6a96"
