@@ -132,3 +132,6 @@ recipes, or let direnv activate automatically on cd.
   workflows. Switching to a PAT or App token would cause
   an infinite rebuild loop — add commit-message filtering
   first.
+- CI's update-recipes job commits binary sections back
+  to main. Always `git pull --rebase` before pushing to
+  avoid rejected pushes.
