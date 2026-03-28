@@ -10,6 +10,9 @@ repo = "jesseduffield/lazygit"
 url = "https://github.com/jesseduffield/lazygit/archive/refs/tags/v0.60.0.tar.gz"
 sha256 = "c0cb64f7861e439ef13fa06845e7ab6b219364b7b083c7ff10d851e764e6b16b"
 
+[dependencies]
+build = ["go"]
+
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
