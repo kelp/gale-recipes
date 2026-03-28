@@ -1,0 +1,20 @@
+[package]
+name = "doggo"
+version = "1.1.5"
+description = "Command-line DNS Client for Humans"
+license = "GPL-3.0-or-later"
+homepage = "https://doggo.mrkaran.dev/"
+
+[source]
+repo = "mr-karan/doggo"
+url = "https://github.com/mr-karan/doggo/archive/refs/tags/v1.1.5.tar.gz"
+sha256 = "0266fe51cd7c6001011c3424380ff0f48809dcaf631fa65f51bfcbe66e59face"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/doggo ./cmd/doggo",
+]
+
+[dependencies]
+build = ["go"]

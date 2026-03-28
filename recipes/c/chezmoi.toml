@@ -1,0 +1,23 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "chezmoi"
+version = "2.70.0"
+description = "Manage your dotfiles across multiple diverse machines, securely"
+license = "MIT"
+homepage = "https://chezmoi.io/"
+
+[source]
+repo = "twpayne/chezmoi"
+url = "https://github.com/twpayne/chezmoi/releases/download/v2.70.0/chezmoi-2.70.0.tar.gz"
+sha256 = "59d6e999c4abcf667eab3edce8965b4ba56097afc04405b0ca4b95145428296c"
+released_at = "2026-03-09"
+
+[dependencies]
+build = ["go"]
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -ldflags \"-s -w -X main.version=v2.70.0 -X main.builtBy=gale\" -o ${PREFIX}/bin/chezmoi .",
+]

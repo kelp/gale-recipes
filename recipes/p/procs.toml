@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "procs"
+version = "0.14.11"
+description = "Modern replacement for ps written in Rust"
+license = "MIT"
+homepage = "https://github.com/dalance/procs"
+
+[source]
+repo = "dalance/procs"
+url = "https://github.com/dalance/procs/archive/refs/tags/v0.14.11.tar.gz"
+sha256 = "3d6b3561ce05362a092ea8488458f552d6636d3a280290e21f841c432cadf91a"
+released_at = "2026-02-27"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

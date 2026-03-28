@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "tealdeer"
+version = "1.8.1"
+description = "Very fast implementation of tldr in Rust"
+license = "Apache-2.0"
+homepage = "https://tealdeer-rs.github.io/tealdeer/"
+
+[source]
+repo = "tealdeer-rs/tealdeer"
+url = "https://github.com/tealdeer-rs/tealdeer/archive/refs/tags/v1.8.1.tar.gz"
+sha256 = "8b9ea7ef8dd594d6fb8b452733b0c883a68153cec266b23564ce185bdf22fcfa"
+released_at = "2025-11-11"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

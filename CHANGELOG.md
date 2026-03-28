@@ -5,8 +5,11 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- New recipes: chezmoi, difftastic, doggo, dust,
+  hyperfine, procs, tealdeer, zoxide
 - actionlint recipe (Go build)
 - docs/creating-recipes.md authoring guide
+- justfile with lint target (gale lint + actionlint)
 - gale.toml project profile with actionlint
 - actionlint.yaml config (suppresses SC2016 for jq/GraphQL)
 - Build provenance attestation via actions/attest (SLSA,

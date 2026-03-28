@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "difftastic"
+version = "0.68.0"
+description = "Diff that understands syntax"
+license = "MIT"
+homepage = "https://github.com/Wilfred/difftastic"
+
+[source]
+repo = "Wilfred/difftastic"
+url = "https://github.com/Wilfred/difftastic/archive/refs/tags/0.68.0.tar.gz"
+sha256 = "86cfd4232f99c5dac56bd1e6fab7b8d96cfaac7a4271738b50c8189031c97a66"
+released_at = "2026-03-16"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]
