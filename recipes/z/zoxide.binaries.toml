@@ -1,0 +1,9 @@
+version = "0.9.9"
+
+[darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/zoxide/blobs/sha256:2ae4dd5433288daf0dd48af44c84e4e10196b59f54109728e148834ea6d96b80"
+sha256 = "2ae4dd5433288daf0dd48af44c84e4e10196b59f54109728e148834ea6d96b80"
+
+[linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/zoxide/blobs/sha256:17754e32450ec8dc1c2aafb87bb0c95ff865a2a82138101bcd50cd761f5efa16"
+sha256 = "17754e32450ec8dc1c2aafb87bb0c95ff865a2a82138101bcd50cd761f5efa16"

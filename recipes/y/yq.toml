@@ -21,11 +21,3 @@ steps = [
 
 [dependencies]
 build = ["go"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/yq/blobs/sha256:0b2a2596476db6951e5a2d497c608daa1a5e17785d1edc3ddf5bb1718f790cdb"
-sha256 = "0b2a2596476db6951e5a2d497c608daa1a5e17785d1edc3ddf5bb1718f790cdb"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/yq/blobs/sha256:2d2d41fc79c5b70709cc0c4e0793d29a6e1a59a8afb65f5ed3b6063d5bcb06b2"
-sha256 = "2d2d41fc79c5b70709cc0c4e0793d29a6e1a59a8afb65f5ed3b6063d5bcb06b2"

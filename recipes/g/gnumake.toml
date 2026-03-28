@@ -16,11 +16,3 @@ steps = [
   "make install",
   "ln -sf make ${PREFIX}/bin/gmake",
 ]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gnumake/blobs/sha256:8d50fed4aa94462787fc4a8d775023c3a208c63b7304759ad688d93e2f00b83d"
-sha256 = "8d50fed4aa94462787fc4a8d775023c3a208c63b7304759ad688d93e2f00b83d"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gnumake/blobs/sha256:53baf966dd18a20762fab949a7970a1ce9e908f3eb4aaac6e4894e8436757c5a"
-sha256 = "53baf966dd18a20762fab949a7970a1ce9e908f3eb4aaac6e4894e8436757c5a"

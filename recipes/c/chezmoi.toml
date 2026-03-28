@@ -21,11 +21,3 @@ steps = [
   "mkdir -p ${PREFIX}/bin",
   "go build -ldflags \"-s -w -X main.version=v2.70.0 -X main.builtBy=gale\" -o ${PREFIX}/bin/chezmoi .",
 ]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/chezmoi/blobs/sha256:7b7e5d471dd8c7287055a66365195f18e96bcf3ff62d43d82c8dd3c9e6ad3ee1"
-sha256 = "7b7e5d471dd8c7287055a66365195f18e96bcf3ff62d43d82c8dd3c9e6ad3ee1"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/chezmoi/blobs/sha256:173d7194ac348bc2837364aabf780338a2aeb7225458955192681b287d871278"
-sha256 = "173d7194ac348bc2837364aabf780338a2aeb7225458955192681b287d871278"

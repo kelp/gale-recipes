@@ -23,11 +23,3 @@ steps = [
   "make -j${JOBS}",
   "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
 ]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/openssl/blobs/sha256:d0cd90d1e9ed6ee6296efdd6da8149a2eb13ee41bfa8974463e4447a61afa55a"
-sha256 = "d0cd90d1e9ed6ee6296efdd6da8149a2eb13ee41bfa8974463e4447a61afa55a"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/openssl/blobs/sha256:32495a6a0098637b04545fe2768f0c740585538e790cc37abddfb9b30836eb09"
-sha256 = "32495a6a0098637b04545fe2768f0c740585538e790cc37abddfb9b30836eb09"

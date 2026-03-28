@@ -1,0 +1,9 @@
+version = "0.26.7"
+
+[darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/tree-sitter/blobs/sha256:110fabc578b171f1adbe78da6f8bdfdf4d579f6e26d10eae57dcfd0b0da426ae"
+sha256 = "110fabc578b171f1adbe78da6f8bdfdf4d579f6e26d10eae57dcfd0b0da426ae"
+
+[linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/tree-sitter/blobs/sha256:1ae26eb5547f53784316480bd711c099475921a7cb42828a2bc95c6d0cedeb67"
+sha256 = "1ae26eb5547f53784316480bd711c099475921a7cb42828a2bc95c6d0cedeb67"

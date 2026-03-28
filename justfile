@@ -1,4 +1,4 @@
 # Lint recipes and workflows
 lint:
-    gale lint recipes/**/*.toml
+    find recipes -name '*.toml' ! -name '*.binaries.toml' | xargs gale lint
     actionlint

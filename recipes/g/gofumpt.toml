@@ -18,11 +18,3 @@ steps = [
   "mkdir -p ${PREFIX}/bin",
   "go build -o ${PREFIX}/bin/gofumpt .",
 ]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gofumpt/blobs/sha256:219e5fa58995f19d4f8f62d64f2fad82807878ffd46065ef6760ab6691998fbf"
-sha256 = "219e5fa58995f19d4f8f62d64f2fad82807878ffd46065ef6760ab6691998fbf"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/gofumpt/blobs/sha256:e78a98fc32935464200430a1cfb71f312ae87c08744fb56d33bd4d1288d44545"
-sha256 = "e78a98fc32935464200430a1cfb71f312ae87c08744fb56d33bd4d1288d44545"
