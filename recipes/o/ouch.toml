@@ -1,0 +1,21 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "ouch"
+version = "0.6.1"
+description = "Painless compression and decompression for your terminal"
+license = "MIT"
+homepage = "https://github.com/ouch-org/ouch"
+
+[source]
+repo = "ouch-org/ouch"
+url = "https://github.com/ouch-org/ouch/archive/refs/tags/0.6.1.tar.gz"
+sha256 = "e6265071affab228ba7d3ca85f2206029445038b3a3d96036e9bf02b795ad651"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]
