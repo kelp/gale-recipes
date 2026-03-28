@@ -363,7 +363,7 @@ jobs:
             ADDITIONS=$(jq -n \
               --argjson arr "$ADDITIONS" \
               --arg path "$FILE" \
-              --arg contents "$(base64 < "$FILE")" \
+              --arg contents "$(base64 -w0 < "$FILE")" \
               '$arr + [{"path":$path,"contents":$contents}]')
           done
 
