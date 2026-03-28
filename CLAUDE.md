@@ -120,6 +120,14 @@ for their own variables, not shell expansion.
 direnv. Run `gale sync --local` to install from local
 recipes, or let direnv activate automatically on cd.
 
+## Recipe Quality
+
+Don't strip features or drop dependencies to make a
+build easier. Recipes should build the package the way
+upstream and Homebrew intend — with full functionality.
+If a dependency is missing, add the recipe for it. The
+goal is to replace Homebrew, not ship lesser versions.
+
 ## Gotchas
 
 - Recipes imported via `gale import homebrew <name>` carry
