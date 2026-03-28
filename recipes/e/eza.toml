@@ -21,11 +21,3 @@ steps = [
 [dependencies]
 build = ["pkgconf", "rust"]
 runtime = ["libgit2"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:d0a84d71ff078599b17a15bcf2aaa45289b1ba1e7aeec8ab49348c9058bc88b7"
-sha256 = "d0a84d71ff078599b17a15bcf2aaa45289b1ba1e7aeec8ab49348c9058bc88b7"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/eza/blobs/sha256:cc52374eaa8853fa4602637d0507fcf53f16b06f02cbafd19a43a0e1b069e09b"
-sha256 = "cc52374eaa8853fa4602637d0507fcf53f16b06f02cbafd19a43a0e1b069e09b"

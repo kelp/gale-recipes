@@ -18,11 +18,3 @@ steps = [
   "mkdir -p ${PREFIX}/bin",
   "go build -o ${PREFIX}/bin/direnv",
 ]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/direnv/blobs/sha256:92ea5a4a995a94e44c473c9a1719d2f928fabb03659d49d83824e2903527877c"
-sha256 = "92ea5a4a995a94e44c473c9a1719d2f928fabb03659d49d83824e2903527877c"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/direnv/blobs/sha256:970323000c7059bd9a84f695bb349f6cbcffa21a58a48f0fd8f8bcf538cb74e9"
-sha256 = "970323000c7059bd9a84f695bb349f6cbcffa21a58a48f0fd8f8bcf538cb74e9"

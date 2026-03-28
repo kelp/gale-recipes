@@ -1,0 +1,4 @@
+version = "6.0"
+
+[darwin-arm64]
+sha256 = "98101b607ef750ec623069609d6009cc1ce8102bdbf11daf17a4885ee285362c"

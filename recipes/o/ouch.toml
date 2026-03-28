@@ -19,11 +19,3 @@ steps = [
 
 [dependencies]
 build = ["rust"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/ouch/blobs/sha256:55484b036e1c18c4c082c52bfc8b001bce0fac1f9c4b840d15efb209d916dd85"
-sha256 = "55484b036e1c18c4c082c52bfc8b001bce0fac1f9c4b840d15efb209d916dd85"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/ouch/blobs/sha256:7aac880cbd0dfda73fd89e4607384e0b277c869d302ec1cbf5df159ed048e142"
-sha256 = "7aac880cbd0dfda73fd89e4607384e0b277c869d302ec1cbf5df159ed048e142"

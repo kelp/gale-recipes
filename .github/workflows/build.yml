@@ -53,6 +53,7 @@ jobs:
 
           elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             RECIPES=$(find recipes -name '*.toml' \
+              ! -name '*.binaries.toml' \
               -exec basename {} .toml \; | sort | \
               jq -R . | jq -sc .)
             echo "recipes=${RECIPES}" >> "$GITHUB_OUTPUT"
@@ -62,17 +63,24 @@ jobs:
             if [ "$EVENT_NAME" = "pull_request" ]; then
               CHANGED=$(git diff --name-only \
                 "origin/${PR_BASE_REF}...HEAD" \
-                -- 'recipes/**/*.toml')
+                -- 'recipes/**/*.toml' \
+                | grep -v '\.binaries\.toml$' || true)
             else
               NULL_SHA="0000000000000000000000000000000000000000"
               if [ "$BEFORE_SHA" = "$NULL_SHA" ] || \
                  [ -z "$BEFORE_SHA" ]; then
-                CHANGED=$(find recipes -name '*.toml')
+                CHANGED=$(find recipes -name '*.toml' \
+                  ! -name '*.binaries.toml')
               else
-                CHANGED=$(git diff --name-only \
+                if ! CHANGED=$(git diff --name-only \
                   "$BEFORE_SHA" "$CURRENT_SHA" \
-                  -- 'recipes/**/*.toml' 2>/dev/null) || \
-                  CHANGED=$(find recipes -name '*.toml')
+                  -- 'recipes/**/*.toml' 2>/dev/null); then
+                  CHANGED=$(find recipes -name '*.toml' \
+                    ! -name '*.binaries.toml')
+                else
+                  CHANGED=$(echo "$CHANGED" \
+                    | grep -v '\.binaries\.toml$' || true)
+                fi
               fi
             fi
 
@@ -303,8 +311,6 @@ jobs:
       && needs.discover.outputs.recipes != '[]'
       && needs.build.result != 'skipped'
     runs-on: ubuntu-latest
-    env:
-      GHCR_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v6
 
@@ -314,69 +320,66 @@ jobs:
           pattern: metadata-*
           merge-multiple: true
 
-      - name: Update recipe binary sections
+      - name: Write .binaries.toml files
         run: |
           shopt -s nullglob
 
-          # Group metadata by recipe file.
+          # Group metadata by recipe name.
           declare -A RECIPE_META
           for META in /tmp/metadata/*.json; do
             RECIPE=$(jq -r '.recipe' "$META")
-            KEY="${RECIPE}"
-            RECIPE_META[$KEY]+=" $META"
+            RECIPE_META[$RECIPE]+=" $META"
           done
 
           for RECIPE in "${!RECIPE_META[@]}"; do
             LETTER="${RECIPE:0:1}"
-            FILE="recipes/${LETTER}/${RECIPE}.toml"
+            RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
+            BINARIES_FILE="recipes/${LETTER}/${RECIPE}.binaries.toml"
 
-            # Strip all [binary.*] sections and trailing
-            # blank lines in one pass.
-            awk '
-              /^\[binary\./ { skip=1; next }
-              skip && /^\[/ { skip=0 }
-              skip { next }
-              { lines[++n] = $0 }
-              END {
-                while (n > 0 && lines[n] == "") n--
-                for (i=1; i<=n; i++) print lines[i]
-              }
-            ' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+            # Get version from recipe.
+            VERSION=$(grep '^version' "$RECIPE_FILE" | \
+              head -1 | sed 's/.*= *"//' | sed 's/".*//')
 
-            # Append new binary sections.
+            # Build .binaries.toml with version + platform sha256 entries.
+            printf 'version = "%s"\n' "$VERSION" > "$BINARIES_FILE"
+
             for META in ${RECIPE_META[$RECIPE]}; do
               PLATFORM=$(jq -r '.platform' "$META")
               SHA256=$(jq -r '.sha256' "$META")
-              URL="https://ghcr.io/v2/${GHCR_REPO}/${RECIPE}/blobs/sha256:${SHA256}"
-              printf '\n[binary.%s]\nurl = "%s"\nsha256 = "%s"\n' \
-                "$PLATFORM" "$URL" "$SHA256" >> "$FILE"
+              printf '\n[%s]\nsha256 = "%s"\n' \
+                "$PLATFORM" "$SHA256" >> "$BINARIES_FILE"
             done
 
-            echo "Updated ${FILE}"
+            echo "Wrote ${BINARIES_FILE}"
           done
 
       # GITHUB_TOKEN commits don't re-trigger workflows.
       # Switching to a PAT or App token would cause a
       # rebuild loop — add commit-message filtering first.
-      - name: Commit updated recipes
+      - name: Commit .binaries.toml files
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          if git diff --quiet recipes/; then
+          # Collect new and modified .binaries.toml files.
+          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' || true)
+          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
+          FILES=$(printf '%s\n%s' "$CHANGED" "$UNTRACKED" | sort -u | grep . || true)
+
+          if [ -z "$FILES" ]; then
             echo "No changes to commit"
             exit 0
           fi
 
           # Build additions array from changed files.
           ADDITIONS="[]"
-          for FILE in $(git diff --name-only recipes/); do
+          while IFS= read -r FILE; do
             ADDITIONS=$(jq -n \
               --argjson arr "$ADDITIONS" \
               --arg path "$FILE" \
               --arg contents "$(base64 -w0 < "$FILE")" \
               '$arr + [{"path":$path,"contents":$contents}]')
-          done
+          done <<< "$FILES"
 
           # Get current HEAD for optimistic lock.
           HEAD_OID=$(gh api graphql -f query='
@@ -410,7 +413,7 @@ jobs:
                     branchName: "main"
                   },
                   message: {
-                    headline: "Update binary sections from build"
+                    headline: "Update .binaries.toml from build"
                   },
                   expectedHeadOid: $oid,
                   fileChanges: { additions: $adds }

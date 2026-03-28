@@ -1,0 +1,7 @@
+version = "0.6.1"
+
+[darwin-arm64]
+sha256 = "95ef8e909ec6b3abc74975318efe950ee6498c3cac4b6a9223091daac5be6221"
+
+[linux-amd64]
+sha256 = "532f30a8fb25511a0a81f1a12cfbb98c385ab2d531e33a60e47e56311bb95541"

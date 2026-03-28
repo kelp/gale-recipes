@@ -21,11 +21,3 @@ steps = [
 
 [dependencies]
 build = ["cmake"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:d37cea153a9f1a3a8b4ddb73cafd210b97b0c68769693db37181413b6cbf3234"
-sha256 = "d37cea153a9f1a3a8b4ddb73cafd210b97b0c68769693db37181413b6cbf3234"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/zstd/blobs/sha256:47a1e1f8992c2c4a81b96d271d73370abaa5942551f1ae73ab14e0876b7cff8c"
-sha256 = "47a1e1f8992c2c4a81b96d271d73370abaa5942551f1ae73ab14e0876b7cff8c"

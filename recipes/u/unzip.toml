@@ -25,7 +25,3 @@ steps = [
 
 [dependencies]
 build = ["bzip2"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/unzip/blobs/sha256:98101b607ef750ec623069609d6009cc1ce8102bdbf11daf17a4885ee285362c"
-sha256 = "98101b607ef750ec623069609d6009cc1ce8102bdbf11daf17a4885ee285362c"

@@ -21,11 +21,3 @@ steps = [
 [dependencies]
 build = ["pkgconf", "rust"]
 runtime = ["libgit2", "oniguruma"]
-
-[binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:47a44f7e21b290bcf79304d84016b4d08c5390d53a06184dfad7c5e39880acba"
-sha256 = "47a44f7e21b290bcf79304d84016b4d08c5390d53a06184dfad7c5e39880acba"
-
-[binary.linux-amd64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/bat/blobs/sha256:9036a17b429423087454f9a93712ccf7e30a553e23c58e84152c98c568b0f3a4"
-sha256 = "9036a17b429423087454f9a93712ccf7e30a553e23c58e84152c98c568b0f3a4"
