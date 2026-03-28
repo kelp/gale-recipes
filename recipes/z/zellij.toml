@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "zellij"
+version = "0.44.0"
+description = "Pluggable terminal workspace, with terminal multiplexer as the base feature"
+license = "MIT"
+homepage = "https://zellij.dev"
+
+[source]
+repo = "zellij-org/zellij"
+url = "https://github.com/zellij-org/zellij/archive/refs/tags/v0.44.0.tar.gz"
+sha256 = "be413dc49d7bff1be6502a1998664b015b77ad55636d72e0497cfc66d4a4cdf6"
+released_at = "2026-03-23"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

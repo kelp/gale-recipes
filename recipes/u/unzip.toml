@@ -1,0 +1,24 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "unzip"
+version = "6.0"
+description = "Extraction utility for .zip compressed archives"
+license = "Info-ZIP"
+homepage = "https://infozip.sourceforge.net/UnZip.html"
+
+[source]
+url = "https://downloads.sourceforge.net/project/infozip/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip60.tar.gz"
+sha256 = "036d96991646d0449ed0aa952e4fbe21b476ce994abc276e49d30e686708bd37"
+
+[build]
+steps = [
+  # Fetch and extract Ubuntu security patchset (28 CVE fixes)
+  "curl -sL -o debian-patches.tar.xz https://archive.ubuntu.com/ubuntu/pool/main/u/unzip/unzip_6.0-28ubuntu4.1.debian.tar.xz",
+  "tar xf debian-patches.tar.xz",
+  # Apply security and correctness patches
+  "for p in 01-manpages-in-section-1-not-in-section-1l 02-this-is-debian-unzip 03-include-unistd-for-kfreebsd 04-handle-pkware-verification-bit 05-fix-uid-gid-handling 06-initialize-the-symlink-flag 07-increase-size-of-cfactorstr 08-allow-greater-hostver-values 09-cve-2014-8139-crc-overflow 10-cve-2014-8140-test-compr-eb 11-cve-2014-8141-getzip64data 12-cve-2014-9636-test-compr-eb 13-remove-build-date 14-cve-2015-7696 15-cve-2015-7697 16-fix-integer-underflow-csiz-decrypted 17-restore-unix-timestamps-accurately 18-cve-2014-9913-unzip-buffer-overflow 19-cve-2016-9844-zipinfo-buffer-overflow 20-cve-2018-1000035-unzip-buffer-overflow 20-unzip60-alt-iconv-utf8 21-fix-warning-messages-on-big-files 22-cve-2019-13232-fix-bug-in-undefer-input 23-cve-2019-13232-zip-bomb-with-overlapped-entries 24-cve-2019-13232-do-not-raise-alert-for-misplaced-central-directory 25-cve-2019-13232-fix-bug-in-uzbunzip2 26-cve-2019-13232-fix-bug-in-uzinflate 27-zipgrep-avoid-test-errors 28-cve-2022-0529-and-cve-2022-0530; do patch -p1 < debian/patches/${p}.patch; done",
+  # Build with large file, Unicode, and bzip2 support
+  "if [ \"$(uname)\" = \"Darwin\" ]; then make -f unix/Makefile -j${JOBS} CC=cc LOC=\"-DLARGE_FILE_SUPPORT -DUNICODE_SUPPORT -DUNICODE_WCHAR -DUTF8_MAYBE_NATIVE -DNO_WORKING_ISPRINT\" D_USE_BZ2=-DUSE_BZIP2 L_BZ2=-lbz2 LFLAGS1=-liconv macosx; else make -f unix/Makefile -j${JOBS} CC=cc CFLAGS=\"-DNO_LCHMOD\" LOC=\"-DLARGE_FILE_SUPPORT -DUNICODE_SUPPORT -DUNICODE_WCHAR -DUTF8_MAYBE_NATIVE -DNO_WORKING_ISPRINT\" D_USE_BZ2=-DUSE_BZIP2 L_BZ2=-lbz2 unzips; fi",
+  "make -f unix/Makefile prefix=${PREFIX} MANDIR=${PREFIX}/share/man/man1 install",
+]
