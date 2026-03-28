@@ -5,13 +5,17 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
-- New recipes: chezmoi, difftastic, doggo, dust,
-  hyperfine, procs, tealdeer, zoxide
-- actionlint recipe (Go build)
+- 24 new recipes: actionlint, atuin, chezmoi, deadnix,
+  difftastic, doctl, doggo, dust, gh, gnumake, gping,
+  hyperfine, lsof, lua, procs, scc, statix, tealdeer,
+  tree-sitter, trippy, unzip, uv, yq, zellij, zoxide
 - docs/creating-recipes.md authoring guide
+- TODO.md with prioritized recipe list from home.nix
 - justfile with lint target (gale lint + actionlint)
 - gale.toml project profile with actionlint
 - actionlint.yaml config (suppresses SC2016 for jq/GraphQL)
+- .gitignore for .direnv/ and .gale/ caches
+- Version tracking files (.versions) for all recipes
 - Build provenance attestation via actions/attest (SLSA,
   Sigstore-signed; verify with `gh attestation verify`)
 
@@ -34,6 +38,13 @@ All notable changes to gale-recipes are documented here.
 - Rust recipe: production-optimized build (thin LTO,
   codegen-units=1, jemalloc, profiler runtime), vendored
   OpenSSL via --enable-cargo-native-static
+- Rust build branded as "(gale)" via --release-description
+- CI uses `gale build --local` for sibling recipe
+  resolution of build dependencies
+- Gale recipe updated to v0.2.0
+- Removed doc-only build deps (pandoc, asciidoctor,
+  autoconf) from eza, ripgrep, jq
+- Added missing go build dep to direnv and lazygit
 
 ### Fixed
 - Race condition: cancel-in-progress now applies to all
@@ -44,6 +55,9 @@ All notable changes to gale-recipes are documented here.
   lines
 - Rust recipe: removed broken OPENSSL_NO_VENDOR=0 (the
   variable disables vendoring when set to any value)
+- Base64 line wrapping in GraphQL commit (Linux base64
+  wraps at 76 chars; GitHub API rejects newlines)
+- gh api graphql --input conflict with -f query flag
 
 ## 2026-03-27
 

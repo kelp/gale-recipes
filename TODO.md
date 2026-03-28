@@ -25,59 +25,45 @@ come first.
 - [ ] libogg — audio codec (autotools). Needed by: flac
 - [ ] gmp — arbitrary precision math (autotools).
   Needed by: gcc, coreutils
-- [ ] pcre2 and gettext above double as runtime deps
 
 ### Tier 1: Core System Tools
 
-No gale recipe deps beyond tier 0. High value —
-many packages need these at build time.
-
-- [ ] gnumake — build automation (autotools, no deps)
+- [x] gnumake — build automation (autotools, no deps)
+- [x] lua — scripting language (make, no deps)
 - [ ] coreutils — GNU core utilities (autotools;
   deps: gmp)
-- [ ] lua — scripting language (make, no deps)
 - [ ] openssl (from tier 0, listed here for ordering)
 
 ### Tier 2: Simple Rust and Go Packages
 
-Depend only on **rust** or **go** (already have both).
-Easy wins, can be batched.
-
 #### Rust (deps: **rust**)
 
-- [ ] difftastic — syntax-aware diffs
-- [ ] dust — better du
-- [ ] hyperfine — CLI benchmarking
-- [ ] procs — better ps
-- [ ] tealdeer — tldr man pages
-- [ ] trippy — network diagnostics
-- [ ] zoxide — smart cd
-- [ ] zellij — terminal multiplexer (deps: **rust**,
-  openssl)
-- [ ] tree-sitter — parser generator (Rust CLI + C lib)
-- [ ] deadnix — find dead Nix code
-- [ ] statix — Nix linter
+- [x] difftastic
+- [x] dust
+- [x] hyperfine
+- [x] procs
+- [x] tealdeer
+- [x] trippy
+- [x] zoxide
+- [x] zellij
+- [x] tree-sitter
+- [x] deadnix
+- [x] statix
 
 #### Go (deps: **go**)
 
-- [ ] chezmoi — dotfile manager
-- [ ] doggo — DNS lookup tool
-- [ ] gh — GitHub CLI
-- [ ] scc — code line counter
-- [ ] yq — YAML/JSON/TOML processor
-- [ ] doctl — DigitalOcean CLI
+- [x] chezmoi
+- [x] doggo
+- [x] gh
+- [x] scc
+- [x] yq
+- [x] doctl
 
 ### Tier 3: Rust/Go with Extra Build Deps
 
-Need **pkgconf**, **cmake**, or other recipes beyond
-the base toolchain.
-
-- [ ] gping — graphical ping (deps: **rust**,
-  **pkgconf**)
-- [ ] uv — Python package manager (deps: **rust**,
-  **pkgconf**, openssl)
-- [ ] atuin — shell history sync (deps: **rust**,
-  protobuf)
+- [x] gping — (deps: **rust**, **pkgconf**)
+- [x] uv — (deps: **rust**, **pkgconf**)
+- [x] atuin — (deps: **rust**)
 - [ ] mise — version manager (deps: **rust**, **cmake**,
   **pkgconf**, openssl)
 - [ ] rustup — Rust toolchain manager (deps: **rust**,
@@ -86,8 +72,8 @@ the base toolchain.
 
 ### Tier 4: C/C++ System Packages
 
-Autotools or cmake builds with multiple deps.
-
+- [x] lsof — list open files
+- [x] unzip — archive extraction
 - [ ] curl — HTTP client (autotools; deps: openssl,
   **pkgconf**, zstd, libidn2, libssh2, libnghttp2)
 - [ ] wget — file downloader (autotools; deps: openssl,
@@ -100,8 +86,6 @@ Autotools or cmake builds with multiple deps.
   pcre2)
 - [ ] mtr — network diagnostics (autotools; deps:
   **pkgconf**)
-- [ ] lsof — list open files (autotools, minimal deps)
-- [ ] unzip — archive extraction (make, no deps)
 - [ ] traceroute — network diagnostics (make)
 
 ### Zig
@@ -112,10 +96,8 @@ Autotools or cmake builds with multiple deps.
 
 ### Tier 5: Languages and Runtimes
 
-Complex builds, many deps.
-
 - [ ] gcc — compiler (autotools; deps: gmp, isl,
-  libmpc, mpfr, zstd, gnumake)
+  libmpc, mpfr, zstd, **gnumake**)
 - [ ] ruby — language (autotools; deps: openssl,
   **rust**, **pkgconf**, libyaml)
 - [ ] nodejs — JavaScript runtime (complex build)
@@ -127,10 +109,8 @@ Complex builds, many deps.
 
 ### Tier 7: Heavy / Complex
 
-Many deps, large builds, or unusual build systems.
-
 - [ ] neovim — text editor (cmake; deps: **cmake**,
-  gettext, tree-sitter, luajit, libuv)
+  gettext, **tree-sitter**, luajit, libuv)
 - [ ] btop — system monitor (cmake; deps: gcc)
 - [ ] fastfetch — system info (cmake; many deps)
 - [ ] mariadb — MySQL client (cmake; deps: openssl,
@@ -149,7 +129,7 @@ Many deps, large builds, or unusual build systems.
 
 ## Infrastructure
 
+- [x] Recipe linter (`gale lint`)
+- [x] `gale build --local` for CI dep resolution
 - [ ] Source download cache in gale (`--cache-dir` flag)
   to avoid re-downloading tarballs in CI
-- [ ] Recipe linter (`gale lint`) — tracked in
-  ../gale/TODO.md
