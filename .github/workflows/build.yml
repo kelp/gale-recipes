@@ -12,9 +12,15 @@ on:
         description: 'Recipe name (blank = all)'
         required: false
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   packages: write
+  id-token: write
+  attestations: write
 
 jobs:
   discover:
@@ -22,12 +28,18 @@ jobs:
     outputs:
       recipes: ${{ steps.list.outputs.recipes }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: List recipes to build
         id: list
         env:
           INPUT_RECIPE: ${{ inputs.recipe }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           if [ -n "$INPUT_RECIPE" ]; then
             LETTER="${INPUT_RECIPE:0:1}"
@@ -38,15 +50,97 @@ jobs:
             fi
             echo "recipes=[\"${INPUT_RECIPE}\"]" \
               >> "$GITHUB_OUTPUT"
-          else
+
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             RECIPES=$(find recipes -name '*.toml' \
               -exec basename {} .toml \; | sort | \
               jq -R . | jq -sc .)
             echo "recipes=${RECIPES}" >> "$GITHUB_OUTPUT"
+
+          else
+            # Detect only changed recipes for push/PR.
+            if [ "$EVENT_NAME" = "pull_request" ]; then
+              CHANGED=$(git diff --name-only \
+                "origin/${PR_BASE_REF}...HEAD" \
+                -- 'recipes/**/*.toml')
+            else
+              NULL_SHA="0000000000000000000000000000000000000000"
+              if [ "$BEFORE_SHA" = "$NULL_SHA" ] || \
+                 [ -z "$BEFORE_SHA" ]; then
+                CHANGED=$(find recipes -name '*.toml')
+              else
+                CHANGED=$(git diff --name-only \
+                  "$BEFORE_SHA" "$CURRENT_SHA" \
+                  -- 'recipes/**/*.toml' 2>/dev/null) || \
+                  CHANGED=$(find recipes -name '*.toml')
+              fi
+            fi
+
+            if [ -z "$CHANGED" ]; then
+              echo "No recipe files changed"
+              echo "recipes=[]" >> "$GITHUB_OUTPUT"
+            else
+              RECIPES=$(echo "$CHANGED" | while read -r f; do
+                [ -f "$f" ] && basename "$f" .toml
+              done | sort -u | jq -R . | jq -sc .)
+              echo "recipes=${RECIPES}" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
-  build:
+  build-gale:
     needs: discover
+    if: needs.discover.outputs.recipes != '[]'
+    strategy:
+      matrix:
+        target:
+          - os: macos-14
+            platform: darwin-arm64
+          - os: ubuntu-latest
+            platform: linux-amd64
+    runs-on: ${{ matrix.target.os }}
+    steps:
+      - name: Get gale HEAD SHA
+        id: gale-rev
+        run: |
+          SHA=$(git ls-remote \
+            https://github.com/kelp/gale.git HEAD \
+            | awk '{print $1}')
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache gale binary
+        id: cache-gale
+        uses: actions/cache@v5
+        with:
+          path: gale-bin/gale
+          key: gale-${{ matrix.target.platform }}-${{ steps.gale-rev.outputs.sha }}
+
+      - uses: actions/checkout@v6
+        if: steps.cache-gale.outputs.cache-hit != 'true'
+        with:
+          repository: kelp/gale
+          path: _gale
+
+      - uses: actions/setup-go@v6
+        if: steps.cache-gale.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+
+      - name: Build gale
+        if: steps.cache-gale.outputs.cache-hit != 'true'
+        run: |
+          cd _gale
+          mkdir -p ../gale-bin
+          go build -o ../gale-bin/gale ./cmd/gale/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: gale-${{ matrix.target.platform }}
+          path: gale-bin/gale
+          retention-days: 1
+
+  build:
+    needs: [discover, build-gale]
+    if: needs.discover.outputs.recipes != '[]'
     strategy:
       fail-fast: false
       matrix:
@@ -62,22 +156,35 @@ jobs:
       PLATFORM: ${{ matrix.target.platform }}
       GHCR_REPO: ghcr.io/${{ github.repository }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v8
         with:
-          repository: kelp/gale
-          path: _gale
+          name: gale-${{ matrix.target.platform }}
+          path: gale-bin
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: stable
-
-      - name: Build gale
+      - name: Install gale
         run: |
-          cd _gale
-          go build -o "${RUNNER_TEMP}/gale" ./cmd/gale/
-          echo "${RUNNER_TEMP}" >> "$GITHUB_PATH"
+          chmod +x gale-bin/gale
+          echo "${GITHUB_WORKSPACE}/gale-bin" \
+            >> "$GITHUB_PATH"
+
+      - name: Cache build dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            ~/.cache/pip
+            ~/Library/Caches/pip
+            ~/.npm
+          key: deps-${{ matrix.target.platform }}-${{ github.sha }}
+          restore-keys: |
+            deps-${{ matrix.target.platform }}-
 
       - name: Find recipe file
         id: recipe
@@ -131,6 +238,11 @@ jobs:
           echo "Verified: $(basename "$BIN") runs"
           rm -rf "$VERIFY_DIR"
 
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: ${{ steps.build.outputs.archive }}
+
       - uses: oras-project/setup-oras@v1
 
       - name: Login to GHCR
@@ -144,12 +256,13 @@ jobs:
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+          REPO_URL: https://github.com/${{ github.repository }}
         run: |
           VERSION=$(grep '^version' "$RECIPE_FILE" | \
             head -1 | sed 's/.*= *"//' | sed 's/".*//')
           TAG="${VERSION}-${PLATFORM}"
           oras push --disable-path-validation \
-            --annotation "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --annotation "org.opencontainers.image.source=${REPO_URL}" \
             "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
             "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"
 
@@ -166,21 +279,25 @@ jobs:
           }
           ENDJSON
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: metadata-${{ matrix.recipe }}-${{ matrix.target.platform }}
           path: /tmp/metadata/
 
   update-recipes:
-    needs: build
-    if: always() && !cancelled() && github.event_name != 'pull_request'
+    needs: [discover, build]
+    if: >-
+      always() && !cancelled()
+      && github.event_name != 'pull_request'
+      && needs.discover.outputs.recipes != '[]'
+      && needs.build.result != 'skipped'
     runs-on: ubuntu-latest
     env:
       GHCR_REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: /tmp/metadata
           pattern: metadata-*
@@ -188,27 +305,48 @@ jobs:
 
       - name: Update recipe binary sections
         run: |
+          shopt -s nullglob
+
+          # Group metadata by recipe file.
+          declare -A RECIPE_META
           for META in /tmp/metadata/*.json; do
             RECIPE=$(jq -r '.recipe' "$META")
-            PLATFORM=$(jq -r '.platform' "$META")
-            SHA256=$(jq -r '.sha256' "$META")
-            LETTER="${RECIPE:0:1}"
-            FILE="recipes/${LETTER}/${RECIPE}.toml"
-            VERSION=$(grep '^version' "$FILE" | \
-              head -1 | sed 's/.*= *"//' | sed 's/".*//')
-
-            URL="https://ghcr.io/v2/${GHCR_REPO}/${RECIPE}/blobs/sha256:${SHA256}"
-
-            # Remove existing section for this platform.
-            sed -i "/^\[binary\.${PLATFORM}\]/,/^$/d" "$FILE"
-
-            # Append new binary section.
-            printf '\n[binary.%s]\nurl = "%s"\nsha256 = "%s"\n' \
-              "$PLATFORM" "$URL" "$SHA256" >> "$FILE"
-
-            echo "Updated ${FILE} [binary.${PLATFORM}]"
+            KEY="${RECIPE}"
+            RECIPE_META[$KEY]+=" $META"
           done
 
+          for RECIPE in "${!RECIPE_META[@]}"; do
+            LETTER="${RECIPE:0:1}"
+            FILE="recipes/${LETTER}/${RECIPE}.toml"
+
+            # Strip all [binary.*] sections and trailing
+            # blank lines in one pass.
+            awk '
+              /^\[binary\./ { skip=1; next }
+              skip && /^\[/ { skip=0 }
+              skip { next }
+              { lines[++n] = $0 }
+              END {
+                while (n > 0 && lines[n] == "") n--
+                for (i=1; i<=n; i++) print lines[i]
+              }
+            ' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+
+            # Append new binary sections.
+            for META in ${RECIPE_META[$RECIPE]}; do
+              PLATFORM=$(jq -r '.platform' "$META")
+              SHA256=$(jq -r '.sha256' "$META")
+              URL="https://ghcr.io/v2/${GHCR_REPO}/${RECIPE}/blobs/sha256:${SHA256}"
+              printf '\n[binary.%s]\nurl = "%s"\nsha256 = "%s"\n' \
+                "$PLATFORM" "$URL" "$SHA256" >> "$FILE"
+            done
+
+            echo "Updated ${FILE}"
+          done
+
+      # GITHUB_TOKEN commits don't re-trigger workflows.
+      # Switching to a PAT or App token would cause a
+      # rebuild loop — add commit-message filtering first.
       - name: Commit updated recipes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -219,45 +357,52 @@ jobs:
             exit 0
           fi
 
-          # Create commit via GitHub API so it's
-          # automatically signed and shows "Verified".
-          BRANCH="main"
-          BASE_SHA=$(gh api "/repos/${REPO}/git/ref/heads/${BRANCH}" \
-            --jq '.object.sha')
-          BASE_TREE=$(gh api "/repos/${REPO}/git/commits/${BASE_SHA}" \
-            --jq '.tree.sha')
-
-          # Create blobs and build tree entries.
-          TREE_JSON="[]"
+          # Build additions array from changed files.
+          ADDITIONS="[]"
           for FILE in $(git diff --name-only recipes/); do
-            BLOB_SHA=$(gh api "/repos/${REPO}/git/blobs" \
-              -f "content=$(base64 < "$FILE")" \
-              -f "encoding=base64" \
-              --jq '.sha')
-            TREE_JSON=$(echo "$TREE_JSON" | jq \
-              --arg p "$FILE" --arg s "$BLOB_SHA" \
-              '. + [{"path":$p,"mode":"100644","type":"blob","sha":$s}]')
+            ADDITIONS=$(jq -n \
+              --argjson arr "$ADDITIONS" \
+              --arg path "$FILE" \
+              --arg contents "$(base64 < "$FILE")" \
+              '$arr + [{"path":$path,"contents":$contents}]')
           done
 
-          # Create tree.
-          NEW_TREE=$(jq -n \
-            --arg bt "$BASE_TREE" \
-            --argjson t "$TREE_JSON" \
-            '{"base_tree":$bt,"tree":$t}' | \
-            gh api "/repos/${REPO}/git/trees" \
-              --input - --jq '.sha')
+          # Get current HEAD for optimistic lock.
+          HEAD_OID=$(gh api graphql -f query='
+            query($owner:String!,$name:String!) {
+              repository(owner:$owner,name:$name) {
+                ref(qualifiedName:"refs/heads/main") {
+                  target { oid }
+                }
+              }
+            }' -f owner="${REPO%/*}" \
+               -f name="${REPO#*/}" \
+               --jq '.data.repository.ref.target.oid')
 
-          # Create commit.
-          COMMIT=$(jq -n \
-            --arg msg "Update binary sections from build" \
-            --arg tree "$NEW_TREE" \
-            --arg parent "$BASE_SHA" \
-            '{"message":$msg,"tree":$tree,"parents":[$parent]}' | \
-            gh api "/repos/${REPO}/git/commits" \
-              --input - --jq '.sha')
-
-          # Update branch.
-          gh api "/repos/${REPO}/git/refs/heads/${BRANCH}" \
-            -X PATCH -f "sha=${COMMIT}"
-
-          echo "Committed ${COMMIT}"
+          # Commit via GraphQL (auto-signed "Verified").
+          gh api graphql \
+            -f query='
+              mutation($input:CreateCommitOnBranchInput!) {
+                createCommitOnBranch(input:$input) {
+                  commit { oid url }
+                }
+              }' \
+            --input <(jq -n \
+              --arg repo "$REPO" \
+              --arg oid "$HEAD_OID" \
+              --argjson adds "$ADDITIONS" \
+              '{
+                variables: {
+                  input: {
+                    branch: {
+                      repositoryNameWithOwner: $repo,
+                      branchName: "main"
+                    },
+                    message: {
+                      headline: "Update binary sections from build"
+                    },
+                    expectedHeadOid: $oid,
+                    fileChanges: { additions: $adds }
+                  }
+                }
+              }')

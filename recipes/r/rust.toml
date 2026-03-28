@@ -20,7 +20,7 @@ steps = [
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
   "./configure --prefix=${PREFIX} --release-channel=stable --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc",
-  "python3 x.py build -j${JOBS}",
+  "OPENSSL_NO_VENDOR=0 python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
 
@@ -31,7 +31,7 @@ steps = [
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
   "./configure --prefix=${PREFIX} --release-channel=stable --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc",
-  "python3 x.py build -j${JOBS}",
+  "OPENSSL_NO_VENDOR=0 python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
 
