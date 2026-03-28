@@ -1,4 +1,8 @@
 # Lint recipes and workflows
 lint:
-    find recipes -name '*.toml' ! -name '*.binaries.toml' | xargs gale lint
+    gale lint recipes/**/*.toml
     actionlint
+
+# Update gale from source (sibling repo)
+update-gale:
+    gale install gale --source ../gale -g
