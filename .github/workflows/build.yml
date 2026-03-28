@@ -198,7 +198,7 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          OUTPUT=$(gale build "$RECIPE_FILE")
+          OUTPUT=$(gale build --local "$RECIPE_FILE")
           ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' \
             | awk '{print $2}')
           SHA=$(echo "$OUTPUT" | grep '^sha256:' \
