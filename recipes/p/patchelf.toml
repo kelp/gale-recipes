@@ -17,6 +17,11 @@ steps = [
   "make install",
 ]
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/patchelf/blobs/sha256:d823c694a45399bb241608a1514acec8b842df4b31421acb0aa9fa45985e0aec"
-sha256 = "d823c694a45399bb241608a1514acec8b842df4b31421acb0aa9fa45985e0aec"
+url = "https://ghcr.io/v2/kelp/gale-recipes/patchelf/blobs/sha256:82db0e27bdd1eeccdbfbdaa0c1a61b9475eedf46e5acb9e8cc29cac2cacc5616"
+sha256 = "82db0e27bdd1eeccdbfbdaa0c1a61b9475eedf46e5acb9e8cc29cac2cacc5616"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/patchelf/blobs/sha256:96353e80930f41db378dbd0f7aaae414a7465bb1c6efdb445c2243a6e4ba64e9"
+sha256 = "96353e80930f41db378dbd0f7aaae414a7465bb1c6efdb445c2243a6e4ba64e9"

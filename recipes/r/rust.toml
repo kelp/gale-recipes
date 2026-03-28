@@ -34,3 +34,11 @@ steps = [
   "python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/rust/blobs/sha256:27b0ba89f3a1a9df2c7f9e020c3deef3c58a3cb9d595a859386f3e449eea72e8"
+sha256 = "27b0ba89f3a1a9df2c7f9e020c3deef3c58a3cb9d595a859386f3e449eea72e8"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/rust/blobs/sha256:334a26fc24ccadc9e22b10624feaf16bf154d73ebe4e739d5a8eda2a59bd74a9"
+sha256 = "334a26fc24ccadc9e22b10624feaf16bf154d73ebe4e739d5a8eda2a59bd74a9"

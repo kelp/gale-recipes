@@ -30,3 +30,11 @@ steps = [
   "cd src && GOROOT_BOOTSTRAP=/tmp/go-bootstrap GOROOT_FINAL=${PREFIX} CGO_ENABLED=0 bash make.bash",
   "cp -R bin pkg src api lib misc doc go.env VERSION ${PREFIX}/",
 ]
+
+[binary.darwin-arm64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/go/blobs/sha256:964aec4c2fba32780461661ebf9121ed7a79b7f0f038cb411b21e949aadc2cc0"
+sha256 = "964aec4c2fba32780461661ebf9121ed7a79b7f0f038cb411b21e949aadc2cc0"
+
+[binary.linux-amd64]
+url = "https://ghcr.io/v2/kelp/gale-recipes/go/blobs/sha256:6055c48b41ea45686d4f07d682f8059843875cbd31e7ec5c4a8e67f54e92d44c"
+sha256 = "6055c48b41ea45686d4f07d682f8059843875cbd31e7ec5c4a8e67f54e92d44c"

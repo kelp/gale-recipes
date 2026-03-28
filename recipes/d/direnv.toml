@@ -19,6 +19,7 @@ steps = [
 
 
 
+
 [binary.darwin-arm64]
-url = "https://ghcr.io/v2/kelp/gale-recipes/direnv/blobs/sha256:ace0470e685867335acdab6d118c003a5e4ee76f62e3258d75920f9f5913aeb5"
-sha256 = "ace0470e685867335acdab6d118c003a5e4ee76f62e3258d75920f9f5913aeb5"
+url = "https://ghcr.io/v2/kelp/gale-recipes/direnv/blobs/sha256:29f3e921a0a02ea18722cbe8f2d7c0ef73239f99764b2b25dd31363eab32e701"
+sha256 = "29f3e921a0a02ea18722cbe8f2d7c0ef73239f99764b2b25dd31363eab32e701"
