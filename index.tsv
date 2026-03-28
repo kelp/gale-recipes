@@ -1,0 +1,48 @@
+actionlint	Static checker for GitHub Actions workflow files
+atuin	Improved shell history for zsh, bash, fish and nushell
+bat	Clone of cat(1) with syntax highlighting and Git integration
+bzip2	Freely available high-quality data compressor
+chezmoi	Manage your dotfiles across multiple diverse machines, securely
+cmake	Cross-platform build system generator
+deadnix	Scan Nix files for dead code
+difftastic	Diff that understands syntax
+direnv	Per-directory environment variables
+doctl	Command-line tool for DigitalOcean
+doggo	Command-line DNS Client for Humans
+dust	More intuitive version of du in rust
+eza	Modern, maintained replacement for ls
+fd	Simple, fast and user-friendly alternative to find
+fzf	Command-line fuzzy finder written in Go
+gale	Package manager that replaces Homebrew, Nix, and home-manager
+gh	GitHub command-line tool
+git-delta	Syntax-highlighting pager for git and diff output
+gnumake	Utility for directing compilation
+go	The Go programming language
+gofumpt	Stricter gofmt
+golangci-lint	Fast Go linters runner
+gping	Ping, but with a graph
+hyperfine	Command-line benchmarking tool
+jq	Lightweight and flexible command-line JSON processor
+just	Handy way to save and run project-specific commands
+lazygit	Simple terminal UI for git commands
+lsof	Utility to list open files
+lua	Powerful, lightweight programming language
+openssl	Cryptography and SSL/TLS Toolkit
+ouch	Painless compression and decompression for your terminal
+patchelf	Modify ELF executables and libraries
+pkgconf	Package compiler and linker metadata toolkit
+procs	Modern replacement for ps written in Rust
+ripgrep	Search tool like grep and The Silver Searcher
+rust	Systems programming language focused on safety and performance
+scc	Fast and accurate code counter with complexity and COCOMO estimates
+starship	Cross-shell prompt for astronauts
+statix	Lints and suggestions for the nix programming language
+tealdeer	Very fast implementation of tldr in Rust
+tree-sitter	Incremental parsing system for programming tools
+trippy	Network diagnostic tool, inspired by mtr
+unzip	Extraction utility for .zip compressed archives
+uv	Extremely fast Python package installer and resolver, written in Rust
+yq	Process YAML, JSON, XML, CSV and properties documents from the CLI
+zellij	Pluggable terminal workspace, with terminal multiplexer as the base feature
+zoxide	Shell extension to navigate your filesystem faster
+zstd	Zstandard is a real-time compression algorithm
