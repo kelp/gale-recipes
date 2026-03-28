@@ -5,10 +5,11 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
-- 24 new recipes: actionlint, atuin, chezmoi, deadnix,
-  difftastic, doctl, doggo, dust, gh, gnumake, gping,
-  hyperfine, lsof, lua, procs, scc, statix, tealdeer,
-  tree-sitter, trippy, unzip, uv, yq, zellij, zoxide
+- 27 new recipes: actionlint, atuin, bzip2, chezmoi,
+  deadnix, difftastic, doctl, doggo, dust, gh, gnumake,
+  gping, hyperfine, lsof, lua, openssl, ouch, procs,
+  scc, statix, tealdeer, tree-sitter, trippy, unzip,
+  uv, yq, zellij, zoxide, zstd
 - docs/creating-recipes.md authoring guide
 - TODO.md with prioritized recipe list from home.nix
 - justfile with lint target (gale lint + actionlint)
@@ -25,7 +26,8 @@ All notable changes to gale-recipes are documented here.
   retains build-all behavior)
 - Gale binary built once per platform and shared via
   artifact instead of rebuilt in every matrix job
-- Added build dependency caching (Cargo, Go, pip, npm)
+- Added build dependency caching (Cargo, Go, pip, npm,
+  gale package store, gale source tarball cache)
 - Added concurrency control to cancel superseded builds
 - Hardened update-recipes job with nullglob and
   build-skipped guards
@@ -45,6 +47,10 @@ All notable changes to gale-recipes are documented here.
 - Removed doc-only build deps (pandoc, asciidoctor,
   autoconf) from eza, ripgrep, jq
 - Added missing go build dep to direnv and lazygit
+- Build logs uploaded as artifacts on failure for
+  easier debugging
+- Binary verify step: added -v flag for lua-style
+  binaries
 
 ### Fixed
 - Race condition: cancel-in-progress now applies to all
@@ -58,6 +64,9 @@ All notable changes to gale-recipes are documented here.
 - Base64 line wrapping in GraphQL commit (Linux base64
   wraps at 76 chars; GitHub API rejects newlines)
 - gh api graphql --input conflict with -f query flag
+- Cargo workspace recipes: statix (--path bin), trippy
+  (--path crates/trippy), tree-sitter (--path crates/cli)
+- Unzip: restored bzip2 support with proper build dep
 
 ## 2026-03-27
 
