@@ -231,7 +231,7 @@ jobs:
             exit 1
           fi
           echo "Testing: $(basename "$BIN")"
-          "$BIN" --version || "$BIN" version || "$BIN" --help || "$BIN" -V || {
+          "$BIN" --version || "$BIN" version || "$BIN" --help || "$BIN" -V || "$BIN" -v || {
             echo "::error::Binary failed to run"
             exit 1
           }

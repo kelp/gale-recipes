@@ -15,7 +15,7 @@ released_at = "2025-05-05"
 
 [build]
 steps = [
-  "cargo install --path . --root ${PREFIX}",
+  "cargo install --path crates/trippy --root ${PREFIX}",
 ]
 
 [dependencies]
