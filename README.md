@@ -85,7 +85,7 @@ curl -sL <url> | shasum -a 256
 Build and test:
 
 ```
-gale build --local recipes/<letter>/<name>.toml
+gale build recipes/<letter>/<name>.toml
 ```
 
 Install locally:

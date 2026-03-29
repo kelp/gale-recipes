@@ -26,7 +26,7 @@ files managed by CI.
 Build a recipe (produces a tar.zst archive):
 
 ```
-gale build --local recipes/<letter>/<name>.toml
+gale build recipes/<letter>/<name>.toml
 ```
 
 Verify the binary after build:

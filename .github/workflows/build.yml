@@ -188,7 +188,7 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          OUTPUT=$(gale build --local "$RECIPE_FILE" \
+          OUTPUT=$(gale build "$RECIPE_FILE" \
             2>&1 | tee /tmp/build.log)
           ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' \
             | awk '{print $2}')
