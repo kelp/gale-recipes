@@ -26,7 +26,7 @@ files managed by CI.
 Build a recipe (produces a tar.zst archive):
 
 ```
-gale build recipes/<letter>/<name>.toml
+gale build --local recipes/<letter>/<name>.toml
 ```
 
 Verify the binary after build:
@@ -84,6 +84,12 @@ crates.io instead of building local source.
 `mkdir -p ${PREFIX}/bin` then
 `go build -o ${PREFIX}/bin/<name>`.
 
+**cmake** (zstd, duckdb, neovim): Use
+`cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX}
+-DCMAKE_BUILD_TYPE=Release`, then
+`cmake --build build -j ${JOBS}`,
+`cmake --install build`.
+
 ## Two-Repo Architecture
 
 This is the content repo. The tool lives at `../gale`.
@@ -92,8 +98,8 @@ This is the content repo. The tool lives at `../gale`.
   all packages: system tools, languages, compilers,
   libraries, CLI utilities. CI builds changed recipes
   on each platform, pushes tar.zst binaries to GHCR
-  via ORAS, attests provenance, and updates
-  `[binary.<platform>]` sections in the recipe TOML.
+  via ORAS, attests provenance, and writes
+  `.binaries.toml` files alongside each recipe.
 - **gale** — the package manager. Pulls prebuilt
   binaries from GHCR when available, falls back to
   source builds.
