@@ -1,0 +1,23 @@
+[package]
+name = "nmap"
+version = "7.99"
+description = "Port scanning utility for large networks"
+license = "NPSL"
+homepage = "https://nmap.org/"
+
+[source]
+repo = "nmap/nmap"
+url = "https://nmap.org/dist/nmap-7.99.tar.bz2"
+sha256 = "df512492ffd108e53a27a06f26d8635bbe89e0e569455dc8ffef058c035d51b2"
+
+[build]
+steps = [
+  "mv libpcap/VERSION.txt libpcap/VERSION",
+  "./configure --prefix=${PREFIX} --with-openssl --with-libpcre --with-liblua --without-nmap-update --without-zenmap --without-ndiff --disable-universal",
+  "make",
+  "make install",
+]
+
+[dependencies]
+build = ["pkgconf"]
+runtime = ["openssl", "pcre2", "lua"]

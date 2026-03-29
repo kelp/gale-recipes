@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "tokei"
+version = "14.0.0"
+description = "Program that allows you to count code, quickly"
+license = "Apache-2.0"
+homepage = "https://github.com/XAMPPRocky/tokei"
+
+[source]
+repo = "XAMPPRocky/tokei"
+url = "https://github.com/XAMPPRocky/tokei/archive/refs/tags/v14.0.0.tar.gz"
+sha256 = "4e561dbb83ef1b46359714fc623fd45eddfb14821ece63a219470500fdd1cd26"
+released_at = "2025-12-30"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

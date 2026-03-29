@@ -1,0 +1,22 @@
+[package]
+name = "less"
+version = "692"
+description = "Pager program similar to more"
+license = "GPL-3.0-or-later"
+homepage = "https://www.greenwoodsoftware.com/less/index.html"
+
+[source]
+repo = "gwsw/less"
+url = "https://www.greenwoodsoftware.com/less/less-692.tar.gz"
+sha256 = "61300f603798ecf1d7786570789f0ff3f5a1acf075a6fb9f756837d166e37d14"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --with-regex=pcre2",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["pkgconf"]
+runtime = ["pcre2"]

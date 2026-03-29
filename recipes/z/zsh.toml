@@ -1,0 +1,17 @@
+[package]
+name = "zsh"
+version = "5.9"
+description = "UNIX shell (command interpreter)"
+license = "MIT-Modern-Variant"
+homepage = "https://www.zsh.org/"
+
+[source]
+url = "https://downloads.sourceforge.net/project/zsh/zsh/5.9/zsh-5.9.tar.xz"
+sha256 = "9b8d1ecedd5b5e81fbf1918e876752a7dd948e05c1a0dba10ab863842d45acd5"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-multibyte --enable-unicode9 --enable-maildir-support --enable-zsh-secure-free --enable-etcdir=/etc --with-tcsetpgrp",
+  "make -j${JOBS}",
+  "make install",
+]

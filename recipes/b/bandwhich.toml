@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "bandwhich"
+version = "0.23.1"
+description = "Terminal bandwidth utilization tool"
+license = "MIT"
+homepage = "https://github.com/imsnif/bandwhich"
+
+[source]
+repo = "imsnif/bandwhich"
+url = "https://github.com/imsnif/bandwhich/archive/refs/tags/v0.23.1.tar.gz"
+sha256 = "aafb96d059cf9734da915dca4f5940c319d2e6b54e2ffb884332e9f5e820e6d7"
+released_at = "2024-10-08"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]
