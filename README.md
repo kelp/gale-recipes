@@ -3,7 +3,7 @@
 Official recipe repository for
 [Gale](https://github.com/kelp/gale). Each recipe
 describes how to build a package from source. CI builds
-every recipe on macOS and Linux, pushes prebuilt
+changed recipes on macOS and Linux, pushes prebuilt
 binaries to GHCR, and attests provenance via Sigstore.
 
 ## Layout
@@ -47,9 +47,6 @@ Build steps run in a clean shell with `${PREFIX}`,
 `${VERSION}`, `${JOBS}`, `${OS}`, `${ARCH}`, and
 `${PLATFORM}` available.
 
-See [docs/creating-recipes.md](docs/creating-recipes.md)
-for the full guide.
-
 ## Development
 
 Install dev tools:
@@ -60,42 +57,36 @@ gale sync --local
 
 Or let direnv activate automatically on cd.
 
-Lint recipes and workflows:
+Common tasks:
 
 ```
-just lint
-```
-
-Update gale from source:
-
-```
-just update-gale
+just lint          # lint recipes + workflows
+just update-gale   # rebuild gale from source
 ```
 
 ## Contributing
 
 Add a recipe at `recipes/<first-letter>/<name>.toml`.
-
-Get source sha256:
-
-```
-curl -sL <url> | shasum -a 256
-```
-
-Build and test:
+Build and verify it works:
 
 ```
 gale build recipes/<letter>/<name>.toml
-```
-
-Install locally:
-
-```
-gale install <name> --recipe recipes/<letter>/<name>.toml
-```
-
-Lint before committing:
-
-```
 just lint
 ```
+
+See [docs/creating-recipes.md](docs/creating-recipes.md)
+for the full recipe authoring guide.
+
+## Automated Recipe Creation
+
+This repository uses Claude Code agents to create
+recipes at scale. The `/batch-recipes` skill dispatches
+parallel agents that each import from Homebrew, adapt
+to gale patterns, and lint the result.
+
+See [docs/dev/agent-workflow.md](docs/dev/agent-workflow.md)
+for the agent skills, methodology, and batch workflow.
+
+See [docs/dev/ci-architecture.md](docs/dev/ci-architecture.md)
+for CI design goals and non-obvious implementation
+details.
