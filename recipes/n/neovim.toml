@@ -1,0 +1,34 @@
+[package]
+name = "neovim"
+version = "0.11.7"
+description = "Ambitious Vim-fork focused on extensibility and agility"
+license = "Apache-2.0"
+homepage = "https://neovim.io/"
+
+[source]
+repo = "neovim/neovim"
+url = "https://github.com/neovim/neovim/archive/refs/tags/v0.11.7.tar.gz"
+sha256 = "b550b0e4cd2a0f9558bc6b278d27e47b528f7684efa2a46def438fcd64ee9822"
+
+# Neovim bundles all its deps (luajit, libuv, luv, lpeg,
+# unibilium, utf8proc, tree-sitter) via USE_BUNDLED=ON.
+# Only cmake and gettext are needed externally.
+#
+# The build has two phases:
+# 1. cmake.deps: downloads and builds bundled deps
+# 2. build: compiles neovim against bundled deps
+#
+# Network access is required during phase 1 to download
+# dependency sources.
+
+[build]
+steps = [
+  "cmake -S cmake.deps -B .deps -DUSE_BUNDLED=ON -DCMAKE_BUILD_TYPE=Release",
+  "cmake --build .deps -j ${JOBS}",
+  "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_LIBINTL=OFF",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]
