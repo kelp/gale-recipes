@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "bottom"
+version = "0.12.3"
+description = "Yet another cross-platform graphical process/system monitor"
+license = "MIT"
+homepage = "https://clementtsang.github.io/bottom/"
+
+[source]
+repo = "ClementTsang/bottom"
+url = "https://github.com/ClementTsang/bottom/archive/refs/tags/0.12.3.tar.gz"
+sha256 = "1c70894f0eceb7034075959ff3080cf4706c11d7c012912c24e777abe4e62b70"
+released_at = "2026-01-01"
+
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

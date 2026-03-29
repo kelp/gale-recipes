@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "stylua"
+version = "2.4.0"
+description = "Opinionated Lua code formatter"
+license = "MPL-2.0"
+homepage = "https://github.com/JohnnyMorganz/StyLua"
+
+[source]
+repo = "JohnnyMorganz/StyLua"
+url = "https://github.com/JohnnyMorganz/StyLua/archive/refs/tags/v2.4.0.tar.gz"
+sha256 = "e63130a0bc26d0825f99afcfb4d969516ab34dd1b397087bf564095766a16c2a"
+released_at = "2026-03-07"
+
+[build]
+steps = [
+  "cargo install --all-features --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust"]

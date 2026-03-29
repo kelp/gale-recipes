@@ -1,0 +1,20 @@
+[package]
+name = "gdu"
+version = "5.34.4"
+description = "Disk usage analyzer with console interface written in Go"
+license = "MIT"
+homepage = "https://github.com/dundee/gdu"
+
+[source]
+repo = "dundee/gdu"
+url = "https://github.com/dundee/gdu/archive/refs/tags/v5.34.4.tar.gz"
+sha256 = "81aef5ae5f0137794ae0385cd9b041a8772016ae9e19f5f071e17f187cbc6832"
+
+[dependencies]
+build = ["go"]
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "CGO_ENABLED=0 go build -ldflags=\"-s -w -X 'github.com/dundee/gdu/v5/build.Version=v${VERSION}'\" -o ${PREFIX}/bin/gdu ./cmd/gdu",
+]
