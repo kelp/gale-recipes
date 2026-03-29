@@ -1,0 +1,23 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "protobuf"
+version = "34.1"
+description = "Protocol buffers (Google's data interchange format)"
+license = "BSD-3-Clause"
+homepage = "https://protobuf.dev/"
+
+[source]
+repo = "protocolbuffers/protobuf"
+url = "https://github.com/protocolbuffers/protobuf/releases/download/v34.1/protobuf-34.1.tar.gz"
+sha256 = "e4e6ff10760cf747a2decd1867741f561b216bd60cc4038c87564713a6da1848"
+
+[build]
+steps = [
+  "cmake -S . -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_CXX_STANDARD=17 -Dprotobuf_BUILD_LIBPROTOC=ON -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_FORCE_FETCH_DEPENDENCIES=ON",
+  "cmake --build builddir -j ${JOBS}",
+  "cmake --install builddir",
+]
+
+[dependencies]
+build = ["cmake"]

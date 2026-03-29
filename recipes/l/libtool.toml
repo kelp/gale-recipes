@@ -1,0 +1,24 @@
+[package]
+name = "libtool"
+version = "2.5.4"
+description = "GNU generic library support script"
+license = "GPL-2.0-or-later"
+homepage = "https://www.gnu.org/software/libtool/"
+
+[source]
+url = "https://ftpmirror.gnu.org/gnu/libtool/libtool-2.5.4.tar.gz"
+sha256 = "0d3e98ca727fc1201b436170af5a63f23348aaf146a3ac6234f6c4da283e8b34"
+
+[build.darwin-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --program-prefix=g --enable-ltdl-install",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[build.linux-amd64]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-ltdl-install",
+  "make -j${JOBS}",
+  "make install",
+]

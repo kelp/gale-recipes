@@ -1,0 +1,17 @@
+[package]
+name = "autoconf"
+version = "2.73"
+description = "Automatic configure script builder"
+license = "GPL-3.0-or-later"
+homepage = "https://www.gnu.org/software/autoconf/"
+
+[source]
+url = "https://ftpmirror.gnu.org/gnu/autoconf/autoconf-2.73.tar.gz"
+sha256 = "259ddfa3bddc799cfb81489cc0f17dfdf1bd6d1505dda53c0f45ff60d6a4f9a7"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX}",
+  "make -j${JOBS}",
+  "make install",
+]
