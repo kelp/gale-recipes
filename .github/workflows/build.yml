@@ -333,6 +333,21 @@ jobs:
             echo "Wrote ${BINARIES_FILE}"
           done
 
+      - name: Set up Go for signing
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Sign recipes
+        env:
+          RECIPE_SIGNING_KEY: ${{ secrets.RECIPE_SIGNING_KEY }}
+        run: |
+          if [ -n "$RECIPE_SIGNING_KEY" ]; then
+            bash scripts/sign-recipes.sh
+          else
+            echo "RECIPE_SIGNING_KEY not set, skipping signing"
+          fi
+
       # GITHUB_TOKEN commits don't re-trigger workflows.
       # Switching to a PAT or App token would cause a
       # rebuild loop — add commit-message filtering first.
@@ -342,8 +357,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           # Collect new and modified .binaries.toml files.
-          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' || true)
-          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
+          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' 'recipes/**/*.sig' || true)
+          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' 'recipes/**/*.sig' || true)
           FILES=$(printf '%s\n%s' "$CHANGED" "$UNTRACKED" | sort -u | grep . || true)
 
           if [ -z "$FILES" ]; then
