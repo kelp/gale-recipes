@@ -2,27 +2,28 @@
 
 ## Recipes to Create
 
-- [ ] awscli (deps: cmake, openssl, python)
-- [ ] google-cloud-sdk (Python bundle)
 - [ ] 1password-cli (binary-only)
 - [ ] neovim gettext fix (macOS iconv linker error)
 
 ## Done
 
-95 recipes:
+113 recipes:
 
-actionlint, autoconf, atuin, automake, bandwhich, bash,
-bat, btop, bun, bzip2, chezmoi, cmake, coreutils, curl,
-deadnix, difftastic, direnv, doctl, doggo, duf, dust,
-eza, fastfetch, fd, fish, flac, fzf, gale, gettext, gh,
-git, git-delta, git-lfs, gmp, gnumake, go, gofumpt,
-golangci-lint, gping, helm, hyperfine, jq, just, kubectl,
-lazygit, less, libevent, libidn2, libogg, libtool,
-libyaml, lsof, lua, mariadb, mise, mtr, neovim, nmap,
+actionlint, age, autoconf, atuin, automake, awscli,
+bandwhich, bash, bat, btop, bun, bzip2, chezmoi, cmake,
+coreutils, curl, deadnix, difftastic, direnv, docker,
+doctl, doggo, duckdb, duf, dust, eza, fastfetch, fd,
+fish, flac, fzf, gale, gettext, gh, git, git-delta,
+git-lfs, glow, gmp, gnumake, go, gofumpt, golangci-lint,
+google-cloud-sdk, gping, grpcurl, helix, helm, httpstat,
+hyperfine, jless, jq, just, k9s, kubectl, lazygit, less,
+libevent, libidn2, libogg, libtool, libyaml, lsof, lua,
+mariadb, micro, mise, mongosh, mosh, mtr, neovim, nmap,
 nodejs, openssl, ouch, patchelf, pcre2, pigz, pkgconf,
-pnpm, postgresql, procs, protobuf, ripgrep, rsync, ruby,
-rust, rustup, scc, shfmt, sqlite, starship, statix,
-tealdeer, terraform, tig, tmux, tokei, traceroute, tree,
+pnpm, podman, postgresql, procs, protobuf, pscale,
+python, redis, ripgrep, rsync, ruby, rust, rustup, scc,
+shfmt, socat, sqlite, starship, statix, tealdeer,
+terraform, tig, tmux, tokei, traceroute, tree,
 tree-sitter, trippy, unzip, uv, vibeutils, wget, xh, xz,
 yq, zellij, zig, zoxide, zsh, zstd
 
@@ -36,6 +37,7 @@ yq, zellij, zig, zoxide, zsh, zstd
 - [x] Source tarball cache (`~/.gale/cache/`)
 - [x] Build logs uploaded as artifacts on failure
 - [x] Recipe signing in CI
+- [x] Post-edit gale lint hook
+- [x] Recipe-creator agent definition
 - [ ] `.tar.xz` extraction support in gale
-- [ ] GNU auto-update support (gitweb/FTP mirror
-  version detection)
+- [ ] GNU auto-update (gitweb/FTP version detection)
