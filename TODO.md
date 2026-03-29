@@ -36,6 +36,22 @@ yq, zellij, zig, zoxide, zsh, zstd
   embedded paths, build IDs, link ordering). Track
   per-recipe status and fixes.
 
+## Auto-Update Agent
+
+- [ ] **Cron workflow** — daily workflow. For each
+  recipe with `[source].repo`, query
+  `gh api /repos/{owner}/{repo}/releases/latest`.
+- [ ] **Cooldown enforcement** — skip versions less
+  than 3 days old (from upstream release date).
+  Security patches can be fast-tracked manually.
+- [ ] **PR per update** — each version bump creates a
+  PR with updated version, SHA256, and source URL.
+  CI builds on both platforms.
+- [ ] **AI build recovery** — when a version bump
+  breaks the build, use Claude Code SDK to read the
+  error and attempt a recipe fix. Falls back to
+  opening a GitHub issue if the fix fails.
+
 ## Infrastructure
 
 - [x] Recipe linter (`gale lint`)
