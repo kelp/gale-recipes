@@ -18,6 +18,10 @@
           {
             "type": "command",
             "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .filePath // empty'); if [[ \"$FILE\" == *.toml ]]; then python3 -c \"import tomllib, sys; tomllib.load(open(sys.argv[1],'rb'))\" \"$FILE\" || { echo 'Invalid TOML syntax' >&2; exit 1; }; fi"
+          },
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .filePath // empty'); if [[ \"$FILE\" == recipes/*.toml ]] && [[ \"$FILE\" != *.binaries.toml ]]; then gale lint \"$FILE\" 2>&1 || exit 1; fi"
           }
         ]
       }

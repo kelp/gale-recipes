@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # New Recipe
 
-Create a new gale recipe TOML file for a CLI tool.
+Create a new gale recipe TOML file for a package.
 
 ## Usage
 
@@ -14,135 +14,38 @@ Create a new gale recipe TOML file for a CLI tool.
 
 ## Steps
 
-1. **Resolve the repo.** If the user gives a short name
-   (e.g. "bat"), search GitHub for it. If they give
-   `org/repo`, use that directly.
+1. Run `gale import homebrew <name>` for a starting point
+2. Check GitHub repo for latest release, build system,
+   and dependencies
+3. Get source sha256:
+   `curl -sL <url> | shasum -a 256`
+4. Write recipe to `recipes/<first-letter>/<name>.toml`
+5. Run `gale lint` on the recipe
 
-2. **Fetch the latest release** via `gh api`:
-   ```bash
-   gh api "/repos/<org>/<repo>/releases/latest"
-   ```
-   Extract the tag name and published date.
+## Build Patterns
 
-3. **Detect the build system.** Check the repo root for:
-   - `Cargo.toml` -> Cargo recipe
-   - `go.mod` -> Go recipe
-   - `configure` or `Makefile.am` -> Autotools recipe
-   - `CMakeLists.txt` -> CMake recipe
-   - `Makefile` -> Make recipe
+See `.claude/agents/recipe-creator.md` for the full
+pattern reference (Cargo, Go, Autotools, cmake).
 
-   Use `gh api` to list repo contents:
-   ```bash
-   gh api "/repos/<org>/<repo>/contents" --jq '.[].name'
-   ```
+## Key Rules
 
-4. **Determine the source URL.** Prefer the tarball from
-   `/archive/refs/tags/<tag>.tar.gz`. If the project
-   ships release tarballs (autotools projects often do),
-   check the release assets.
+- Add `repo = "owner/repo"` for auto-update
+- Add `released_at` from GitHub release date
+- Do NOT include `[binary.*]` sections (CI adds those)
+- Do NOT strip features to avoid dependencies
+- For Cargo workspaces, check for virtual manifests
+  and use `--path <crate-dir>` instead of `--path .`
+- Build variables: `${PREFIX}`, `${VERSION}`, `${JOBS}`,
+  `${OS}`, `${ARCH}`, `${PLATFORM}`
 
-5. **Download and hash the tarball:**
-   ```bash
-   curl -sL "<url>" -o /tmp/recipe-src.tar.gz
-   shasum -a 256 /tmp/recipe-src.tar.gz | awk '{print $1}'
-   ```
+## Batch Mode
 
-6. **Detect dependencies.** For Cargo projects, build deps
-   are `["rust"]`. For Go, `["go"]`. For autotools,
-   typically `["autoconf", "automake", "libtool"]`. Check
-   existing recipes in the repo for patterns.
+To create multiple recipes at once, use the Agent tool
+with subagent_type="programmer" and the recipe-creator
+agent instructions. Launch up to 5 agents in parallel:
 
-7. **Write the recipe file** to
-   `recipes/<first-letter>/<name>.toml` using this
-   template:
-
-### Cargo template
-
-```toml
-[package]
-name = "<name>"
-version = "<version>"
-description = "<description from GitHub>"
-license = "<license>"
-homepage = "<homepage>"
-
-[source]
-repo = "<org/repo>"
-url = "<tarball-url>"
-sha256 = "<sha256>"
-released_at = "<published-date>"
-
-[build]
-steps = [
-  "cargo install --path . --root ${PREFIX}",
-]
-
-[dependencies]
-build = ["rust"]
+```
+/new-recipe batch k9s helix age glow jless
 ```
 
-### Go template
-
-```toml
-[package]
-name = "<name>"
-version = "<version>"
-description = "<description from GitHub>"
-license = "<license>"
-homepage = "<homepage>"
-
-[source]
-repo = "<org/repo>"
-url = "<tarball-url>"
-sha256 = "<sha256>"
-released_at = "<published-date>"
-
-[build]
-steps = [
-  "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/<name>",
-]
-
-[dependencies]
-build = ["go"]
-```
-
-### Autotools template
-
-```toml
-[package]
-name = "<name>"
-version = "<version>"
-description = "<description from GitHub>"
-license = "<license>"
-homepage = "<homepage>"
-
-[source]
-repo = "<org/repo>"
-url = "<tarball-url>"
-sha256 = "<sha256>"
-released_at = "<published-date>"
-
-[build]
-steps = [
-  "./configure --prefix=${PREFIX}",
-  "make -j${JOBS}",
-  "make install",
-]
-
-[dependencies]
-build = ["autoconf", "automake", "libtool"]
-```
-
-## Rules
-
-- The `--path .` flag is REQUIRED for cargo install.
-  Without it, cargo fetches from crates.io.
-- Go has no install-to-prefix convention. Always use
-  `mkdir -p ${PREFIX}/bin` then `go build -o`.
-- For autotools, add `--disable-docs` and
-  `--disable-maintainer-mode` when supported.
-- Bundle dependencies when possible (e.g.
-  `--with-oniguruma=builtin` for jq).
-- Do NOT add `[binary.*]` sections. CI populates those.
-- Check existing recipes in the repo for reference.
+This dispatches one agent per package.

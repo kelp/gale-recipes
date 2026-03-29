@@ -1,0 +1,21 @@
+[package]
+name = "micro"
+version = "2.0.15"
+description = "Modern and intuitive terminal-based text editor"
+license = "MIT"
+homepage = "https://github.com/zyedidia/micro"
+
+[source]
+repo = "zyedidia/micro"
+url = "https://github.com/zyedidia/micro/archive/refs/tags/v2.0.15.tar.gz"
+sha256 = "612c775321c268c8f9e1767505ff378bca9b9ab66f5c41b69ecb2464ecf15084"
+
+[build]
+steps = [
+  "go generate ./runtime",
+  "mkdir -p ${PREFIX}/bin",
+  "CGO_ENABLED=0 go build -trimpath -ldflags \"-s -w -X github.com/micro-editor/micro/v2/internal/util.Version=2.0.15\" -o ${PREFIX}/bin/micro ./cmd/micro",
+]
+
+[dependencies]
+build = ["go"]

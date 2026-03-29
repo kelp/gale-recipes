@@ -1,0 +1,20 @@
+[package]
+name = "podman"
+version = "5.8.1"
+description = "Tool for managing OCI containers and pods"
+license = "Apache-2.0 AND GPL-3.0-or-later"
+homepage = "https://podman.io/"
+
+[source]
+repo = "containers/podman"
+url = "https://github.com/containers/podman/archive/refs/tags/v5.8.1.tar.gz"
+sha256 = "b9540ecb19cfcbcfc40e1b81d39930f688c537d8fd6f11ae56be41f2bf9e97a4"
+
+[build]
+steps = [
+  "make PREFIX=${PREFIX} HELPER_BINARIES_DIR=${PREFIX}/libexec/podman",
+  "make install PREFIX=${PREFIX} HELPER_BINARIES_DIR=${PREFIX}/libexec/podman",
+]
+
+[dependencies]
+build = ["go", "gnumake"]

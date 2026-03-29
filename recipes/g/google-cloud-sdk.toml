@@ -1,0 +1,37 @@
+# Google Cloud SDK is a pre-packaged Python bundle with
+# its own interpreter. Each platform downloads a different
+# tarball — no compilation needed. The darwin-arm64
+# tarball serves as the [source]; the linux-amd64 build
+# step fetches its own archive.
+
+[package]
+name = "google-cloud-sdk"
+version = "562.0.0"
+description = "Google Cloud CLI and SDK tools"
+license = "Apache-2.0"
+homepage = "https://cloud.google.com/sdk"
+
+[source]
+url = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-562.0.0-darwin-arm.tar.gz"
+sha256 = "03cddc5e45722bb854884e98c06e8cc4012bc7abf4b0418f61e43cdd56265a2b"
+
+[build.darwin-arm64]
+steps = [
+  "cp -R . ${PREFIX}/google-cloud-sdk",
+  "mkdir -p ${PREFIX}/bin",
+  "ln -sf ../google-cloud-sdk/bin/gcloud ${PREFIX}/bin/gcloud",
+  "ln -sf ../google-cloud-sdk/bin/gsutil ${PREFIX}/bin/gsutil",
+  "ln -sf ../google-cloud-sdk/bin/bq ${PREFIX}/bin/bq",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-562.0.0-linux-x86_64.tar.gz",
+  "echo '016a4b1702f8c97b585f9ae12c6182762758c17ef5302cb8561c7f6be5cc9af3  /tmp/gcloud.tar.gz' | shasum -a 256 -c",
+  "mkdir -p /tmp/gcloud-extract && tar -xzf /tmp/gcloud.tar.gz -C /tmp/gcloud-extract",
+  "cp -R /tmp/gcloud-extract/google-cloud-sdk ${PREFIX}/google-cloud-sdk",
+  "mkdir -p ${PREFIX}/bin",
+  "ln -sf ../google-cloud-sdk/bin/gcloud ${PREFIX}/bin/gcloud",
+  "ln -sf ../google-cloud-sdk/bin/gsutil ${PREFIX}/bin/gsutil",
+  "ln -sf ../google-cloud-sdk/bin/bq ${PREFIX}/bin/bq",
+]

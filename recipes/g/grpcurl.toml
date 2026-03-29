@@ -1,0 +1,22 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "grpcurl"
+version = "1.9.3"
+description = "Like cURL, but for gRPC"
+license = "MIT"
+homepage = "https://github.com/fullstorydev/grpcurl"
+
+[source]
+repo = "fullstorydev/grpcurl"
+url = "https://github.com/fullstorydev/grpcurl/archive/refs/tags/v1.9.3.tar.gz"
+sha256 = "bb555087f279af156159c86d4d3d5dd3f2991129e4cd6b09114e6851a679340d"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/grpcurl ./cmd/grpcurl",
+]
+
+[dependencies]
+build = ["go"]

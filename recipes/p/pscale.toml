@@ -1,0 +1,20 @@
+[package]
+name = "pscale"
+version = "0.277.0"
+description = "CLI for PlanetScale Database"
+license = "Apache-2.0"
+homepage = "https://www.planetscale.com/"
+
+[source]
+repo = "planetscale/cli"
+url = "https://github.com/planetscale/cli/archive/refs/tags/v0.277.0.tar.gz"
+sha256 = "61d7741c43baa597e8d4fb9820d32c30a28cee5f767305af538ed6ec17961e43"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/pscale ./cmd/pscale",
+]
+
+[dependencies]
+build = ["go"]

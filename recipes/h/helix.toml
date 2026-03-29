@@ -1,0 +1,24 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "helix"
+version = "25.07.1"
+description = "Post-modern modal text editor"
+license = "MPL-2.0"
+homepage = "https://helix-editor.com"
+
+[source]
+repo = "helix-editor/helix"
+url = "https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-source.tar.xz"
+sha256 = "2d0cf264ac77f8c25386a636e2b3a09a23dec555568cc9a5b2927f84322f544e"
+
+[build]
+env = { HELIX_DEFAULT_RUNTIME = "${PREFIX}/lib/helix/runtime" }
+steps = [
+  "cargo install --path helix-term --root ${PREFIX} --locked",
+  "mkdir -p ${PREFIX}/lib/helix",
+  "cp -r runtime ${PREFIX}/lib/helix/runtime",
+]
+
+[dependencies]
+build = ["rust"]

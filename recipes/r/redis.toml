@@ -1,0 +1,22 @@
+[package]
+name = "redis"
+version = "8.6.2"
+description = "Persistent key-value database, with built-in net interface"
+license = "AGPL-3.0-only"
+homepage = "https://redis.io/"
+
+[source]
+repo = "redis/redis"
+url = "https://download.redis.io/releases/redis-8.6.2.tar.gz"
+sha256 = "cea46526594fe05f05b9ff733179eb1263deccf4269059cf081fdef222634c88"
+released_at = "2026-03-24"
+
+[build]
+steps = [
+  "make -j${JOBS} BUILD_TLS=yes",
+  "make install PREFIX=${PREFIX} BUILD_TLS=yes",
+]
+
+[dependencies]
+build = ["gnumake"]
+runtime = ["openssl"]

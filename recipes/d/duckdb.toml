@@ -1,0 +1,23 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "duckdb"
+version = "1.5.1"
+description = "Embeddable SQL OLAP Database Management System"
+license = "MIT"
+homepage = "https://www.duckdb.org"
+
+[source]
+repo = "duckdb/duckdb"
+url = "https://github.com/duckdb/duckdb/archive/refs/tags/v1.5.1.tar.gz"
+sha256 = "2de9901f05d445e6a24b79127fd70f2e4fbd552b44dc1dc668aca07fbf97f716"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_UNITTESTS=OFF -DBUILD_BENCHMARKS=OFF -DENABLE_EXTENSION_AUTOLOADING=ON -DENABLE_EXTENSION_AUTOINSTALL=ON",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]

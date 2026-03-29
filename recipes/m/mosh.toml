@@ -1,0 +1,25 @@
+# Generated from Homebrew formula (BSD-2-Clause)
+
+[package]
+name = "mosh"
+version = "1.4.0"
+description = "Remote terminal application"
+license = "GPL-3.0-or-later"
+homepage = "https://mosh.org"
+
+[source]
+repo = "mobile-shell/mosh"
+url = "https://github.com/mobile-shell/mosh/releases/download/mosh-1.4.0/mosh-1.4.0.tar.gz"
+sha256 = "872e4b134e5df29c8933dff12350785054d2fd2839b5ae6b5587b14db1465ddd"
+released_at = "2022-10-27"
+
+[build]
+steps = [
+  "export CFLAGS=\"${CFLAGS:-} -DNDEBUG\" CXXFLAGS=\"${CXXFLAGS:-} -std=gnu++17\"",
+  "./configure --prefix=${PREFIX} --enable-completion --disable-silent-rules",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["pkgconf", "protobuf"]
