@@ -17,8 +17,9 @@ libraries. See README.md for the format and layout.
 
 See README.md for the full format. Required fields:
 `[package]` name + version, `[source]` url + sha256,
-`[build]` steps. Optional: `[dependencies]`,
-`[binary.<platform>]` (added by CI).
+`[build]` steps. Optional: `[dependencies]`.
+Binary metadata lives in separate `.binaries.toml`
+files managed by CI.
 
 ## Testing a Recipe
 
@@ -43,7 +44,11 @@ Install from a local recipe:
 gale install <name> --recipe recipes/<letter>/<name>.toml
 ```
 
-## Adding a Recipe
+## Creating Recipes
+
+Use `/new-recipe <name>` or dispatch the
+`recipe-creator` agent for batch creation. Start with
+`gale import homebrew <name>` for a baseline.
 
 Recipes live at `recipes/<first-letter>/<name>.toml`.
 Get source sha256:
@@ -54,10 +59,14 @@ curl -sL <url> | shasum -a 256
 
 ## Build Environment
 
-Build steps run in a clean shell with two variables:
+Build steps run in a clean shell with these variables:
 
 - `${PREFIX}` — install destination directory
 - `${JOBS}` — CPU count for parallel make
+- `${VERSION}` — recipe package version
+- `${OS}` — `darwin` or `linux`
+- `${ARCH}` — `arm64` or `amd64`
+- `${PLATFORM}` — `darwin-arm64` or `linux-amd64`
 
 ## Build Patterns
 
@@ -92,21 +101,23 @@ This is the content repo. The tool lives at `../gale`.
 **CI flow**: on push, GitHub Actions detects changed
 recipes via git diff, builds only those on macOS ARM64
 and Linux AMD64 runners, attests provenance via Sigstore,
-pushes tar.zst to GHCR via ORAS, updates binary sections,
-and commits back via GraphQL (auto-signed "Verified").
-workflow_dispatch builds all or a named recipe.
+pushes tar.zst to GHCR via ORAS, writes `.binaries.toml`
+files, signs recipes, and commits back via GraphQL
+(auto-signed "Verified"). workflow_dispatch builds all
+or a named recipe.
 
 ## Linting
 
-Lint recipes:
+Run all lints:
+
+```
+just lint
+```
+
+Or individually:
 
 ```
 gale lint recipes/**/*.toml
-```
-
-Lint workflows with actionlint:
-
-```
 actionlint
 ```
 
@@ -119,6 +130,12 @@ for their own variables, not shell expansion.
 `gale.toml` + `.envrc` provide dev tools via gale and
 direnv. Run `gale sync --local` to install from local
 recipes, or let direnv activate automatically on cd.
+
+Update gale from source:
+
+```
+just update-gale
+```
 
 ## Recipe Quality
 
@@ -136,6 +153,9 @@ goal is to replace Homebrew, not ship lesser versions.
 - eza requires Rust edition2024 (newer than rustc 1.82).
 - Autotools clock-skew errors are handled by gale's build
   module (timestamp reset), not the recipe.
+- Cargo workspaces with virtual manifests need
+  `--path <crate-dir>` not `--path .`. Check for
+  `[workspace]` without `[package]` in root Cargo.toml.
 - CI commits use GITHUB_TOKEN so they don't re-trigger
   workflows. Switching to a PAT or App token would cause
   an infinite rebuild loop — add commit-message filtering
