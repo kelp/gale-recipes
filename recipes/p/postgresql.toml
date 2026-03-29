@@ -1,14 +1,14 @@
 [package]
 name = "postgresql"
-version = "17.9"
+version = "18.3"
 description = "PostgreSQL client tools (psql, pg_dump, pg_restore)"
 license = "PostgreSQL"
 homepage = "https://www.postgresql.org/"
 
 [source]
 repo = "postgres/postgres"
-url = "https://ftp.postgresql.org/pub/source/v17.9/postgresql-17.9.tar.bz2"
-sha256 = "3b9a62538a8da151e807a3ddb1198e8605f2032544d78f403ae883d27ecf1ee4"
+url = "https://ftp.postgresql.org/pub/source/v18.3/postgresql-18.3.tar.bz2"
+sha256 = "d95663fbbf3a80f81a9d98d895266bdcb74ba274bcc04ef6d76630a72dee016f"
 
 [build]
 steps = [
