@@ -1,0 +1,35 @@
+[package]
+name = "zig"
+version = "0.15.2"
+description = "General-purpose programming language and toolchain"
+license = "MIT"
+homepage = "https://ziglang.org"
+
+[source]
+repo = "ziglang/zig"
+url = "https://github.com/ziglang/zig/archive/refs/tags/0.15.2.tar.gz"
+sha256 = "ebe6eb7006f6bbb72e54bd25d0675f2794084909d63a95aa315f2dcf2af5fd99"
+
+# Zig distributes prebuilt, statically-linked binaries.
+# Building from source requires an existing zig + LLVM.
+# These build steps install the official prebuilt binary.
+
+[build.darwin-arm64]
+steps = [
+  "curl -sL -o /tmp/zig.tar.xz https://ziglang.org/download/0.15.2/zig-aarch64-macos-0.15.2.tar.xz",
+  "echo '3cc2bab367e185cdfb27501c4b30b1b0653c28d9f73df8dc91488e66ece5fa6b  /tmp/zig.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig-extract && tar -xJf /tmp/zig.tar.xz -C /tmp/zig-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig-extract/lib/zig ${PREFIX}/lib/",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -sL -o /tmp/zig.tar.xz https://ziglang.org/download/0.15.2/zig-x86_64-linux-0.15.2.tar.xz",
+  "echo '02aa270f183da276e5b5920b1dac44a63f1a49e55050ebde3aecc9eb82f93239  /tmp/zig.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig-extract && tar -xJf /tmp/zig.tar.xz -C /tmp/zig-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig-extract/lib/zig ${PREFIX}/lib/",
+]
