@@ -1,0 +1,17 @@
+[package]
+name = "sqlite"
+version = "3.51.3"
+description = "Command-line interface for SQLite"
+license = "blessing"
+homepage = "https://sqlite.org/index.html"
+
+[source]
+url = "https://sqlite.org/2026/sqlite-autoconf-3510300.tar.gz"
+sha256 = "81f5be397049b0cae1b167f2225af7646fc0f82e4a9b3c48c9ea3a533e21d77a"
+
+[build]
+steps = [
+  "export CPPFLAGS=\"-DSQLITE_ENABLE_API_ARMOR=1 -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1 -DSQLITE_ENABLE_GEOPOLY=1 -DSQLITE_ENABLE_JSON1=1 -DSQLITE_ENABLE_MEMORY_MANAGEMENT=1 -DSQLITE_ENABLE_RTREE=1 -DSQLITE_ENABLE_STAT4=1 -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_MAX_VARIABLE_NUMBER=250000 -DSQLITE_USE_URI=1\" && ./configure --prefix=${PREFIX} --enable-readline --disable-editline --enable-session",
+  "make -j${JOBS}",
+  "make install",
+]

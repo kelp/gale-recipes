@@ -1,0 +1,20 @@
+[package]
+name = "terraform"
+version = "1.14.8"
+description = "Tool to build, change, and version infrastructure"
+license = "MPL-2.0"
+homepage = "https://www.terraform.io/"
+
+[source]
+repo = "hashicorp/terraform"
+url = "https://github.com/hashicorp/terraform/archive/refs/tags/v1.14.8.tar.gz"
+sha256 = "c71a7db593c6dd540a606e712be21705f4a59b49ee722e6611a756dab6974cf3"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/terraform",
+]
+
+[dependencies]
+build = ["go"]
