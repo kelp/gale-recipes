@@ -1,22 +1,23 @@
 # gale-recipes
 
-Official recipe repository for
-[Gale](https://github.com/kelp/gale). Each recipe
-describes how to build a package from source. CI builds
-changed recipes on macOS and Linux, pushes prebuilt
-binaries to GHCR, and attests provenance via Sigstore.
+Recipe repository for [Gale](https://github.com/kelp/gale).
+
+Each recipe is a TOML file that describes how to build
+a package from source. CI builds every recipe on macOS
+ARM64 and Linux AMD64, pushes binaries to GHCR, and
+attests provenance via Sigstore. The binaries are a
+cache. The recipe is the source of truth.
 
 ## Layout
 
-Recipes are TOML files, organized by first letter.
-Binary metadata lives in separate `.binaries.toml`
-files managed by CI.
+Recipes live in letter-bucketed directories. CI manages
+binary indexes and version history alongside each recipe.
 
 ```
 recipes/
   j/
-    jq.toml             # recipe (human-authored)
-    jq.binaries.toml    # binary index (CI-managed)
+    jq.toml             # recipe — human-authored
+    jq.binaries.toml    # binary index — CI-managed
     jq.versions         # version history
 ```
 
@@ -43,50 +44,46 @@ steps = [
 ]
 ```
 
-Build steps run in a clean shell with `${PREFIX}`,
-`${VERSION}`, `${JOBS}`, `${OS}`, `${ARCH}`, and
-`${PLATFORM}` available.
+Build steps run in a clean shell. Available variables:
 
-## Development
-
-Install dev tools:
-
-```
-gale sync --local
-```
-
-Or let direnv activate automatically on cd.
-
-Common tasks:
-
-```
-just lint          # lint recipes + workflows
-just update-gale   # rebuild gale from source
-```
+| Variable | Value |
+|----------|-------|
+| `${PREFIX}` | Install destination |
+| `${VERSION}` | Package version |
+| `${JOBS}` | CPU count |
+| `${OS}` | `darwin` or `linux` |
+| `${ARCH}` | `arm64` or `amd64` |
+| `${PLATFORM}` | `darwin-arm64` or `linux-amd64` |
 
 ## Contributing
 
-Add a recipe at `recipes/<first-letter>/<name>.toml`.
-Build and verify it works:
+Create a recipe:
 
+```sh
+gale import homebrew <name>          # starting point
+curl -sL <url> | shasum -a 256      # verify sha256
 ```
+
+Write it to `recipes/<first-letter>/<name>.toml`.
+Build and lint:
+
+```sh
 gale build recipes/<letter>/<name>.toml
 just lint
 ```
 
 See [docs/creating-recipes.md](docs/creating-recipes.md)
-for the full recipe authoring guide.
+for build patterns (Cargo, Go, autotools, cmake) and
+dependency conventions.
 
-## Automated Recipe Creation
+## Development
 
-This repository uses Claude Code agents to create
-recipes at scale. The `/batch-recipes` skill dispatches
-parallel agents that each import from Homebrew, adapt
-to gale patterns, and lint the result.
+Dev tools are managed by gale itself:
 
-See [docs/dev/agent-workflow.md](docs/dev/agent-workflow.md)
-for the agent skills, methodology, and batch workflow.
+```sh
+gale sync --local    # install from local recipes
+just lint            # gale lint + actionlint
+just update-gale     # rebuild gale from source
+```
 
-See [docs/dev/ci-architecture.md](docs/dev/ci-architecture.md)
-for CI design goals and non-obvious implementation
-details.
+Direnv activates the environment automatically on cd.
