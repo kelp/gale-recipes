@@ -1,0 +1,24 @@
+[package]
+name = "python"
+version = "3.13.12"
+description = "Interpreted, interactive, object-oriented programming language"
+license = "Python-2.0"
+homepage = "https://www.python.org/"
+
+[source]
+repo = "python/cpython"
+url = "https://www.python.org/ftp/python/3.13.12/Python-3.13.12.tgz"
+sha256 = "12e7cb170ad2d1a69aee96a1cc7fc8de5b1e97a2bdac51683a3db016ec9a2996"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-optimizations --with-lto --with-ensurepip=install --with-openssl=$(pkg-config --variable=prefix openssl) --with-system-ffi --disable-test-modules",
+  "make -j${JOBS}",
+  "make install",
+  "ln -sf python3 ${PREFIX}/bin/python",
+  "ln -sf pip3 ${PREFIX}/bin/pip",
+]
+
+[dependencies]
+build = ["pkgconf"]
+runtime = ["openssl", "sqlite", "xz"]
