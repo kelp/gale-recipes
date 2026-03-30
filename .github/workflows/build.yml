@@ -132,6 +132,7 @@ jobs:
     if: needs.discover.outputs.recipes != '[]'
     strategy:
       fail-fast: false
+      max-parallel: 8
       matrix:
         recipe: ${{ fromJson(needs.discover.outputs.recipes) }}
         target:
