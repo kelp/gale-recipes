@@ -9,9 +9,16 @@ homepage = "https://www.gnu.org/software/gettext/"
 url = "https://ftpmirror.gnu.org/gnu/gettext/gettext-1.0.tar.gz"
 sha256 = "85d99b79c981a404874c02e0342176cf75c7698e2b51fe41031cf6526d974f1a"
 
+# Only build gettext-runtime (provides libintl).
+# The full build fails on macOS because libtextstyle
+# (in gettext-tools) has a broken iconv detection that
+# leaves iconv_ostream_create undefined. Since we only
+# need libintl, building the runtime subdirectory avoids
+# the issue entirely.
+
 [build]
 steps = [
-  "./configure --prefix=${PREFIX} --with-included-glib --with-included-libcroco --with-included-libunistring --with-included-gettext --disable-java --disable-csharp --without-emacs --without-git --without-cvs --without-xz",
-  "make -j${JOBS}",
-  "make install",
+  "cd gettext-runtime && ./configure --prefix=${PREFIX} --with-libiconv-prefix=/usr",
+  "cd gettext-runtime && make -j${JOBS}",
+  "cd gettext-runtime && make install",
 ]

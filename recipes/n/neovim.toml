@@ -12,7 +12,8 @@ sha256 = "b550b0e4cd2a0f9558bc6b278d27e47b528f7684efa2a46def438fcd64ee9822"
 
 # Neovim bundles all its deps (luajit, libuv, luv, lpeg,
 # unibilium, utf8proc, tree-sitter) via USE_BUNDLED=ON.
-# Only cmake and gettext are needed externally.
+# Only cmake (build) and gettext (runtime, for libintl
+# on macOS) are needed externally.
 #
 # The build has two phases:
 # 1. cmake.deps: downloads and builds bundled deps
@@ -25,10 +26,11 @@ sha256 = "b550b0e4cd2a0f9558bc6b278d27e47b528f7684efa2a46def438fcd64ee9822"
 steps = [
   "cmake -S cmake.deps -B .deps -DUSE_BUNDLED=ON -DCMAKE_BUILD_TYPE=Release",
   "cmake --build .deps -j ${JOBS}",
-  "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_LIBINTL=OFF",
+  "DEP_RPATH=$(echo $LIBRARY_PATH | tr ':' ';') && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} \"-DCMAKE_BUILD_RPATH=${DEP_RPATH}\" \"-DCMAKE_INSTALL_RPATH=${DEP_RPATH}\"",
   "cmake --build build -j ${JOBS}",
   "cmake --install build",
 ]
 
 [dependencies]
 build = ["cmake"]
+runtime = ["gettext"]
