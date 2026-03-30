@@ -118,6 +118,7 @@ jobs:
           curl -sL -o "/tmp/${ARCHIVE}" \
             "https://github.com/kelp/gale/releases/download/${GALE_VERSION}/${ARCHIVE}"
           tar -xzf "/tmp/${ARCHIVE}" -C gale-bin
+          mv gale-bin/gale-* gale-bin/gale
           chmod +x gale-bin/gale
 
       - uses: actions/upload-artifact@v7
