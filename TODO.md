@@ -3,7 +3,6 @@
 ## Recipes to Create
 
 - [ ] 1password-cli (binary-only)
-- [ ] neovim gettext fix (macOS iconv linker error)
 
 ## Done
 
@@ -64,5 +63,4 @@ yq, zellij, zig, zoxide, zsh, zstd
 - [x] Recipe signing in CI
 - [x] Post-edit gale lint hook
 - [x] Recipe-creator agent definition
-- [ ] `.tar.xz` extraction support in gale
 - [ ] GNU auto-update (gitweb/FTP version detection)
