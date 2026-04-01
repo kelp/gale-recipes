@@ -1,0 +1,22 @@
+[package]
+name = "croc"
+version = "10.4.2"
+description = "Easily and securely send things from one computer to another :crocodile: :package:"
+license = "MIT"
+homepage = "https://schollz.com/software/croc6"
+
+[source]
+repo = "schollz/croc"
+url = "https://github.com/schollz/croc/archive/refs/tags/v10.4.2.tar.gz"
+sha256 = "9ad752a5e87152c15698bac0f4157bcfa56918d49bc3947f3318e39e08be4f21"
+released_at = "2025-01-15"
+
+[build]
+system = "go"
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/croc .",
+]
+
+[dependencies]
+build = ["go"]

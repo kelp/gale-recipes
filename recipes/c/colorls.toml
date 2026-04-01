@@ -1,0 +1,22 @@
+[package]
+name = "colorls"
+version = "1.5.0"
+description = "A Ruby CLI gem that beautifies the terminal's ls command, with color and font-awesome icons."
+license = "MIT"
+homepage = "https://github.com/athityakumar/colorls"
+
+[source]
+repo = "athityakumar/colorls"
+url = "https://github.com/athityakumar/colorls/archive/refs/tags/v1.5.0.tar.gz"
+sha256 = "f5adecdf75d01d843317db10229063a99b089804b8eb85dbddbc4beee888db0f"
+released_at = "2025-01-15"
+
+[build]
+system = "ruby"
+steps = [
+  "gem build *.gemspec",
+  "gem install --install-dir ${PREFIX}/lib/ruby/gems --bindir ${PREFIX}/bin *.gem",
+]
+
+[dependencies]
+build = ["ruby"]

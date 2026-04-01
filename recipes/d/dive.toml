@@ -1,0 +1,22 @@
+[package]
+name = "dive"
+version = "0.13.1"
+description = "A tool for exploring each layer in a docker image"
+license = "MIT"
+homepage = "https://github.com/wagoodman/dive"
+
+[source]
+repo = "wagoodman/dive"
+url = "https://github.com/wagoodman/dive/archive/refs/tags/v0.13.1.tar.gz"
+sha256 = "2a9666e9c3fddd5e2e5bad81dccda520b8102e7cea34e2888f264b4eb0506852"
+released_at = "2025-01-15"
+
+[build]
+system = "go"
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -o ${PREFIX}/bin/dive .",
+]
+
+[dependencies]
+build = ["go"]

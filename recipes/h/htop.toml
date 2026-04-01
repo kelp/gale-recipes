@@ -1,0 +1,20 @@
+[package]
+name = "htop"
+version = "3.4.1"
+description = "htop - an interactive process viewer"
+license = "GPL-2.0"
+homepage = "https://htop.dev/"
+
+[source]
+repo = "htop-dev/htop"
+url = "https://github.com/htop-dev/htop/releases/download/3.4.1/htop-3.4.1.tar.xz"
+sha256 = "904f7d4580fc11cffc7e0f06895a4789e0c1c054435752c151e812fead9f6220"
+released_at = "2025-01-15"
+
+[build]
+system = "autotools"
+steps = [
+  "./configure --prefix=${PREFIX} --disable-static",
+  "make -j${JOBS}",
+  "make install",
+]

@@ -1,0 +1,22 @@
+[package]
+name = "cocoapods"
+version = "1.16.2"
+description = "The Cocoa Dependency Manager."
+license = "MIT"
+homepage = "https://cocoapods.org/"
+
+[source]
+repo = "CocoaPods/CocoaPods"
+url = "https://github.com/CocoaPods/CocoaPods/archive/refs/tags/1.16.2.tar.gz"
+sha256 = "3067f21a0025aedb5869c7080b6c4b3fa55d397b94fadc8c3037a28a6cee274c"
+released_at = "2025-01-15"
+
+[dependencies]
+build = ["ruby"]
+
+[build]
+system = "ruby"
+steps = [
+  "gem build *.gemspec",
+  "gem install --install-dir ${PREFIX}/lib/ruby/gems --bindir ${PREFIX}/bin *.gem",
+]

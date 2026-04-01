@@ -1,0 +1,21 @@
+[package]
+name = "gitui"
+version = "0.28.1"
+description = "Blazing 💥 fast terminal-ui for git written in rust 🦀"
+license = "MIT"
+homepage = "https://github.com/gitui-org/gitui"
+
+[source]
+repo = "extrawurst/gitui"
+url = "https://github.com/extrawurst/gitui/archive/refs/tags/v0.28.1.tar.gz"
+sha256 = "0400cbf59605490b5fb8779f9af41fa4d7a1bb748093ca0e13156a5dff31c7aa"
+released_at = "2025-01-15"
+
+[dependencies]
+build = ["rust"]
+
+[build]
+system = "cargo"
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]

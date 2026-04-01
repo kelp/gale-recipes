@@ -1,0 +1,23 @@
+[package]
+name = "flyctl"
+version = "0.4.27"
+description = "Command line tools for fly.io services"
+license = "Apache-2.0"
+homepage = "https://fly.io"
+
+[source]
+repo = "superfly/flyctl"
+url = "https://github.com/superfly/flyctl/archive/refs/tags/v0.4.27.tar.gz"
+sha256 = "805c4f0114f6e53a00366ed8c4cc5583408fef784643046f080d95081a4ac7b8"
+released_at = "2025-01-27"
+
+[build]
+system = "go"
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go generate ./...",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/flyctl -ldflags=\"-X 'github.com/superfly/flyctl/internal/buildinfo.buildDate=$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")' -X 'github.com/superfly/flyctl/internal/buildinfo.branchName=main'\" .",
+]
+
+[dependencies]
+build = ["go"]
