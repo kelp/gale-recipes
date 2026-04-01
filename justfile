@@ -3,6 +3,15 @@ lint:
     gale lint recipes/**/*.toml
     actionlint
 
-# Update gale from source (sibling repo)
+# Update gale from source (sibling repo).
+# Falls back to building from source if gale isn't
+# installed or is too old to have the update command.
 update-gale:
-    gale install gale --source ../gale -g
+    #!/usr/bin/env sh
+    if command -v gale >/dev/null 2>&1 && gale update gale --source ../gale; then
+        exit 0
+    fi
+    echo "Bootstrapping gale from source..."
+    cd ../gale && go build -o /tmp/gale-bootstrap ./cmd/gale/
+    /tmp/gale-bootstrap install gale --source ../gale
+    rm -f /tmp/gale-bootstrap

@@ -137,11 +137,19 @@ for their own variables, not shell expansion.
 direnv. Run `gale sync --local` to install from local
 recipes, or let direnv activate automatically on cd.
 
-Update gale from source:
+Update gale from source (use this when gale has been
+updated in the sibling repo):
 
 ```
 just update-gale
 ```
+
+Do NOT use `gale remove gale` — it removes the binary
+from PATH and you can't run gale to reinstall.
+
+Note: this project has a local `.gale/` with an old
+binary. Use `$HOME/.gale/current/bin/gale` if the
+local one is stale.
 
 ## Recipe Quality
 

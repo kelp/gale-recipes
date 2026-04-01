@@ -28,12 +28,14 @@ yq, zellij, zig, zoxide, zsh, zstd
 
 ## Reproducible Builds
 
-- [ ] **Deterministic build investigation** — run
-  `gale audit` against each recipe. Document which
-  produce identical hashes when rebuilt from source.
-  For those that don't, identify causes (timestamps,
-  embedded paths, build IDs, link ordering). Track
-  per-recipe status and fixes.
+Investigated 2026-03-30. Not worth pursuing. Archive
+packaging is now deterministic (symlink fixup, zstd
+concurrency=1, ZERO_AR_DATE) but compiled binaries
+differ due to Mach-O LC_UUID, embedded paths in .la/.pc
+files, and ar timestamps. Achieving full determinism
+would require Nix-level isolation (fixed build paths,
+sandboxed toolchain). The `gale audit` command exists
+but isn't useful until this is solved.
 
 ## Auto-Update Agent
 
