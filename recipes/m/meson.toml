@@ -1,0 +1,21 @@
+[package]
+name = "meson"
+version = "1.6.1"
+description = "The Meson build system"
+license = "Apache-2.0"
+homepage = "https://mesonbuild.com/"
+
+[source]
+repo = "mesonbuild/meson"
+url = "https://github.com/mesonbuild/meson/releases/download/1.6.1/meson-1.6.1.tar.gz"
+sha256 = "1eca49eb6c26d58bbee67fd3337d8ef557c0804e30a6d16bfdf269db997464de"
+released_at = "2025-01-15"
+
+[build]
+system = "python"
+steps = [
+  "pip3 install --prefix=${PREFIX} --no-deps .",
+]
+
+[dependencies]
+build = ["python"]

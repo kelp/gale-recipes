@@ -1,0 +1,20 @@
+[package]
+name = "gopls"
+version = "0.21.1"
+description = "The official Go language server"
+license = "BSD-3-Clause"
+homepage = "https://pkg.go.dev/golang.org/x/tools/gopls"
+
+[source]
+repo = "golang/tools"
+url = "https://github.com/golang/tools/archive/refs/tags/gopls/v0.21.1.tar.gz"
+sha256 = "af211e00c3ffe44fdf2dd3efd557e580791e09f8dbb4284c917bd120bc3c8f9c"
+
+[dependencies]
+build = ["go"]
+
+[build]
+steps = [
+  "cd gopls && mkdir -p ${PREFIX}/bin",
+  "cd gopls && go build -o ${PREFIX}/bin/gopls .",
+]

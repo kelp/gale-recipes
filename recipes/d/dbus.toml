@@ -1,0 +1,21 @@
+[package]
+name = "dbus"
+version = "1.16.2"
+description = "Message bus system, providing inter-application communication"
+license = "AFL-2.1"
+homepage = "https://wiki.freedesktop.org/www/Software/dbus"
+
+[source]
+url = "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz"
+sha256 = "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2"
+
+[build]
+system = "meson"
+steps = [
+  "meson setup build --prefix=${PREFIX} --buildtype=release -Dxml_docs=disabled -Ddoxygen_docs=disabled -Dsystemd=disabled -Dlaunchd=disabled",
+  "meson compile -C build",
+  "meson install -C build",
+]
+
+[dependencies]
+build = ["meson", "ninja", "pkgconf"]

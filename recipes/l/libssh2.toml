@@ -1,0 +1,23 @@
+[package]
+name = "libssh2"
+version = "1.11.1"
+description = "the SSH library"
+license = "BSD-3-Clause"
+homepage = "https://libssh2.org/"
+
+[source]
+repo = "libssh2/libssh2"
+url = "https://github.com/libssh2/libssh2/releases/download/libssh2-1.11.1/libssh2-1.11.1.tar.bz2"
+sha256 = "8ddbd698403a2c3a9987df48f2940c6f6a9bddce28d37eb201938dd7755646f0"
+released_at = "2025-01-15"
+
+[build]
+system = "cmake"
+steps = [
+  "cmake -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCRYPTO_BACKEND=OpenSSL -DENABLE_ZLIB_COMPRESSION=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF",
+  "cmake --build build -j${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake", "openssl"]
