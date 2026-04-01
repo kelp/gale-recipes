@@ -1,23 +1,21 @@
-# Generated from Homebrew formula (BSD-2-Clause)
-
 [package]
 name = "mise"
-version = "2026.3.17"
-description = "Polyglot runtime manager (asdf rust clone)"
+version = "2026.4.0"
+description = "dev tools, env vars, task runner"
 license = "MIT"
-homepage = "https://mise.jdx.dev/"
+homepage = "https://mise.jdx.dev"
 
 [source]
 repo = "jdx/mise"
-url = "https://github.com/jdx/mise/archive/refs/tags/v2026.3.17.tar.gz"
-sha256 = "d671f0b58a289b19ae6b48e8a416e2b9946ea863bf1b8192dabcac20122a2d9e"
-released_at = "2026-03-27"
+url = "https://github.com/jdx/mise/archive/refs/tags/v2026.4.0.tar.gz"
+sha256 = "e171d6f00a6241fce51478d0dbbc4effd968419728e6ce08a331c44bb121cedd"
+released_at = "2025-01-15"
+
+[dependencies]
+build = ["rust"]
 
 [build]
+system = "cargo"
 steps = [
   "cargo install --path . --root ${PREFIX}",
 ]
-
-[dependencies]
-build = ["cmake", "pkgconf", "rust"]
-runtime = ["openssl"]

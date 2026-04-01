@@ -1,25 +1,24 @@
 [package]
 name = "postgresql"
-version = "18.3"
-description = "PostgreSQL client tools (psql, pg_dump, pg_restore)"
+version = "17.2"
+description = "Advanced open source relational database"
 license = "PostgreSQL"
 homepage = "https://www.postgresql.org/"
 
 [source]
 repo = "postgres/postgres"
-url = "https://ftp.postgresql.org/pub/source/v18.3/postgresql-18.3.tar.bz2"
-sha256 = "d95663fbbf3a80f81a9d98d895266bdcb74ba274bcc04ef6d76630a72dee016f"
+url = "https://github.com/postgres/postgres/archive/refs/tags/REL_17_2.tar.gz"
+sha256 = "dea967b2c9fd112c27478354e3fcf8d5a5f00acc7cc6d8d185c3fae70b6eb67a"
+released_at = "2025-01-15"
 
 [build]
+system = "meson"
 steps = [
-  "./configure --prefix=${PREFIX} --with-openssl --without-icu",
-  "make -C src/interfaces -j${JOBS}",
-  "make -C src/bin -j${JOBS}",
-  "make -C src/interfaces install",
-  "make -C src/bin install",
-  "make -C src/include install",
+  "meson setup build --prefix=${PREFIX} --buildtype=release -Dssl=openssl -Dzlib=enabled -Dreadline=enabled",
+  "meson compile -C build",
+  "meson install -C build",
 ]
 
 [dependencies]
-build = ["pkgconf"]
-runtime = ["openssl"]
+build = ["meson", "ninja", "openssl", "zlib", "readline"]
+runtime = ["openssl", "zlib", "readline"]

@@ -1,19 +1,18 @@
-# Generated from Homebrew formula (BSD-2-Clause)
-
 [package]
 name = "statix"
 version = "0.5.8"
-description = "Lints and suggestions for the nix programming language"
+description = "Lints and suggestions for the Nix programming language"
 license = "MIT"
-homepage = "https://github.com/oppiliappan/statix"
+homepage = "https://github.com/nerdypepper/statix"
 
 [source]
-repo = "oppiliappan/statix"
-url = "https://github.com/oppiliappan/statix/archive/refs/tags/v0.5.8.tar.gz"
+repo = "nerdypepper/statix"
+url = "https://github.com/nerdypepper/statix/archive/refs/tags/v0.5.8.tar.gz"
 sha256 = "547ee83df5814c18f8577b5ca25a1f12a416900b6eaa95821386a28090e8a89d"
-released_at = "2024-09-09"
+released_at = "2025-01-15"
 
 [build]
+system = "cargo"
 steps = [
   "cargo install --path bin --root ${PREFIX}",
 ]

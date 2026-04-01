@@ -1,21 +1,20 @@
 [package]
 name = "libyaml"
 version = "0.2.5"
-description = "YAML 1.1 parser and emitter library"
+description = "Canonical source repository for LibYAML"
 license = "MIT"
-homepage = "https://github.com/yaml/libyaml"
+homepage = "http://pyyaml.org/wiki/LibYAML"
 
 [source]
 repo = "yaml/libyaml"
-url = "https://github.com/yaml/libyaml/archive/refs/tags/0.2.5.tar.gz"
-sha256 = "fa240dbf262be053f3898006d502d514936c818e422afdcf33921c63bed9bf2e"
+url = "https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz"
+sha256 = "c642ae9b75fee120b2d96c712538bd2cf283228d2337df2cf2988e3c02678ef4"
+released_at = "2025-01-15"
 
 [build]
+system = "autotools"
 steps = [
-  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF",
-  "cmake --build build -j ${JOBS}",
-  "cmake --install build",
+  "./configure --prefix=${PREFIX} --disable-shared --enable-static",
+  "make -j${JOBS}",
+  "make install",
 ]
-
-[dependencies]
-build = ["cmake"]
