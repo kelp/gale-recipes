@@ -1,15 +1,15 @@
 [package]
 name = "libyaml"
 version = "0.2.5"
-description = "Canonical source repository for LibYAML"
+description = "YAML 1.1 parser and emitter C library"
 license = "MIT"
-homepage = "http://pyyaml.org/wiki/LibYAML"
+homepage = "https://pyyaml.org/wiki/LibYAML"
 
 [source]
 repo = "yaml/libyaml"
 url = "https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz"
 sha256 = "c642ae9b75fee120b2d96c712538bd2cf283228d2337df2cf2988e3c02678ef4"
-released_at = "2025-01-15"
+released_at = "2021-03-28"
 
 [build]
 system = "autotools"

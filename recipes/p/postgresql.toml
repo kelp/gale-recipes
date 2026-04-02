@@ -20,5 +20,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["meson", "ninja", "openssl", "zlib", "readline"]
+build = ["meson", "ninja", "pkgconf", "openssl", "zlib", "readline"]
 runtime = ["openssl", "zlib", "readline"]

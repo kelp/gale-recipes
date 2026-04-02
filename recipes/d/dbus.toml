@@ -18,4 +18,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["meson", "ninja", "pkgconf"]
+build = ["expat", "meson", "ninja", "pkgconf"]
+runtime = ["expat"]

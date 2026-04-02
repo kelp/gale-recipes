@@ -14,7 +14,7 @@ sha256 = "71cfb131fb65ada23fb1f3708162366aa40f5737b447f25732e7e0ef0a961de9"
 
 [build.darwin-arm64]
 steps = [
-  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-563.0.0-darwin-arm.tar.gz",
+  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-${VERSION}-darwin-arm.tar.gz",
   "echo '71cfb131fb65ada23fb1f3708162366aa40f5737b447f25732e7e0ef0a961de9  /tmp/gcloud.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/gcloud-extract && tar -xzf /tmp/gcloud.tar.gz -C /tmp/gcloud-extract",
   "mkdir -p ${PREFIX}/bin ${PREFIX}/share",
@@ -26,7 +26,7 @@ steps = [
 
 [build.linux-amd64]
 steps = [
-  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-563.0.0-linux-x86_64.tar.gz",
+  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-${VERSION}-linux-x86_64.tar.gz",
   "echo '0207b2cfac3668033544ddbe08d78b99caab9727ca657fa9720d2fe9a868c834  /tmp/gcloud.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/gcloud-extract && tar -xzf /tmp/gcloud.tar.gz -C /tmp/gcloud-extract",
   "mkdir -p ${PREFIX}/bin ${PREFIX}/share",

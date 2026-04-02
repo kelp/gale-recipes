@@ -12,10 +12,10 @@ sha256 = "e171d6f00a6241fce51478d0dbbc4effd968419728e6ce08a331c44bb121cedd"
 released_at = "2025-01-15"
 
 [dependencies]
-build = ["rust"]
+build = ["cmake", "pkgconf", "rust"]
 
 [build]
 system = "cargo"
 steps = [
-  "cargo install --path . --root ${PREFIX}",
+  "cargo install --locked --path . --root ${PREFIX}",
 ]

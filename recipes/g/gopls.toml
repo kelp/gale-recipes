@@ -15,6 +15,5 @@ build = ["go"]
 
 [build]
 steps = [
-  "cd gopls && mkdir -p ${PREFIX}/bin",
-  "cd gopls && go build -o ${PREFIX}/bin/gopls .",
+  "cd gopls && mkdir -p ${PREFIX}/bin && go build -ldflags \"-s -w -X main.version=v${VERSION}\" -o ${PREFIX}/bin/gopls .",
 ]

@@ -17,7 +17,7 @@ released_at = "2025-01-17"
 
 [build.darwin-arm64]
 steps = [
-  "curl -sL -o /tmp/pnpm https://github.com/pnpm/pnpm/releases/download/v10.33.0/pnpm-macos-arm64",
+  "curl -sL -o /tmp/pnpm https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-macos-arm64",
   "echo 'ed8a1f140f4de457b01ebe0be3ae28e9a7e28863315dcd53d22ff1e5a32d63ae  /tmp/pnpm' | shasum -a 256 -c",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/pnpm ${PREFIX}/bin/pnpm",
@@ -26,7 +26,7 @@ steps = [
 
 [build.linux-amd64]
 steps = [
-  "curl -sL -o /tmp/pnpm https://github.com/pnpm/pnpm/releases/download/v10.33.0/pnpm-linux-x64",
+  "curl -sL -o /tmp/pnpm https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-x64",
   "echo '8d4e8f7d778e8ac482022e2577011706a872542f6f6f233e795a4d9f978ea8b5  /tmp/pnpm' | shasum -a 256 -c",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/pnpm ${PREFIX}/bin/pnpm",
