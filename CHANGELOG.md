@@ -10,6 +10,36 @@ All notable changes to gale-recipes are documented here.
   gping, hyperfine, lsof, lua, openssl, ouch, procs,
   scc, statix, tealdeer, tree-sitter, trippy, unzip,
   uv, yq, zellij, zoxide, zstd
+
+## 2026-04-01
+
+### Fixed
+- statix: added --locked to cargo install (dependency
+  resolution broke clap derive macro without lockfile)
+- mise: added --locked to cargo install and cmake/pkgconf
+  build deps (lzma-rust2 crate failed without lockfile)
+- sqlite: fixed description, enabled FTS3/FTS5/RTREE/
+  JSON1/COLUMN_METADATA features, added readline support
+- libyaml: fixed description, corrected released_at date,
+  fixed homepage to HTTPS
+- postgresql: added pkgconf build dep for meson to find
+  openssl/zlib/readline
+- mariadb: added bison build dep
+- libgit2: enabled SSH support (USE_SSH=ON), added
+  libssh2 and pkgconf deps
+- dbus: added expat build and runtime dep
+- gopls: combined build steps, added version ldflags
+  for smaller binary with embedded version
+- statix: updated repo/homepage/url from nerdypepper to
+  oppiliappan (author renamed)
+
+### Changed
+- Prebuilt binary recipes (1password-cli, pnpm,
+  google-cloud-sdk) use ${VERSION} in build step URLs
+  for easier version bumps
+- git recipe: added RUNTIME_PREFIX, explicit LIBPCREDIR,
+  CC, CFLAGS, and LDFLAGS passthrough
+- Added gale as dev dependency with lockfile
 - docs/creating-recipes.md authoring guide
 - TODO.md with prioritized recipe list from home.nix
 - justfile with lint target (gale lint + actionlint)
