@@ -1,0 +1,7 @@
+[packages]
+  [packages.gale]
+    version = "0.6.0-dev.56+2c81dd8"
+    sha256 = "a8ec8799e2a3189613fc1603ae95243fab4df5f36df6c7cb7740f9fb4829f972"
+  [packages.git]
+    version = "2.53.0"
+    sha256 = "fb39cb9512ee3ee4785841101dc2dd29e177beeadd46953d08a4b1747061e9ae"
