@@ -1,0 +1,4 @@
+version = "2.7.5"
+
+[linux-amd64]
+sha256 = "970a74d88f582bb3b28e09a2689aaf5c700a255e5504634b8f9faccecdb0aa37"
