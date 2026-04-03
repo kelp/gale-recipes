@@ -1,0 +1,47 @@
+name: Build All Recipes
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Dispatch batches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RECIPES=$(find recipes -name '*.toml' \
+            ! -name '*.binaries.toml' \
+            -exec basename {} .toml \; | sort)
+          TOTAL=$(echo "$RECIPES" | wc -l)
+          echo "Found ${TOTAL} recipes"
+
+          BATCH=""
+          COUNT=0
+          BATCH_NUM=0
+          while IFS= read -r recipe; do
+            BATCH="${BATCH:+${BATCH},}${recipe}"
+            COUNT=$((COUNT + 1))
+            if [ "$COUNT" -ge 32 ]; then
+              BATCH_NUM=$((BATCH_NUM + 1))
+              echo "Dispatching batch ${BATCH_NUM} (${COUNT} recipes)"
+              gh workflow run build.yml -f recipe="${BATCH}"
+              BATCH=""
+              COUNT=0
+              sleep 2
+            fi
+          done <<< "$RECIPES"
+
+          if [ -n "$BATCH" ]; then
+            BATCH_NUM=$((BATCH_NUM + 1))
+            echo "Dispatching batch ${BATCH_NUM} (${COUNT} recipes)"
+            gh workflow run build.yml -f recipe="${BATCH}"
+          fi
+
+          echo "Dispatched ${BATCH_NUM} batches"

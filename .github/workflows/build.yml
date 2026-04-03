@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       recipe:
-        description: 'Recipe name (blank = all)'
+        description: 'Recipe names, comma-separated (blank = changed only)'
         required: false
 
 concurrency:
@@ -42,20 +42,18 @@ jobs:
           PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           if [ -n "$INPUT_RECIPE" ]; then
-            LETTER="${INPUT_RECIPE:0:1}"
-            FILE="recipes/${LETTER}/${INPUT_RECIPE}.toml"
-            if [ ! -f "$FILE" ]; then
-              echo "::error::Recipe not found: $FILE"
-              exit 1
-            fi
-            echo "recipes=[\"${INPUT_RECIPE}\"]" \
-              >> "$GITHUB_OUTPUT"
-
-          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            RECIPES=$(find recipes -name '*.toml' \
-              ! -name '*.binaries.toml' \
-              -exec basename {} .toml \; | sort | \
-              jq -R . | jq -sc .)
+            # Support comma-separated recipe names.
+            IFS=',' read -ra NAMES <<< "$INPUT_RECIPE"
+            RECIPES=$(for name in "${NAMES[@]}"; do
+              name="${name## }"; name="${name%% }"
+              LETTER="${name:0:1}"
+              FILE="recipes/${LETTER}/${name}.toml"
+              if [ ! -f "$FILE" ]; then
+                echo "::error::Recipe not found: $FILE" >&2
+                exit 1
+              fi
+              echo "$name"
+            done | jq -R . | jq -sc .)
             echo "recipes=${RECIPES}" >> "$GITHUB_OUTPUT"
 
           else
