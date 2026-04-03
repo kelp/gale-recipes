@@ -107,7 +107,7 @@ jobs:
             platform: linux-amd64
     runs-on: ${{ matrix.target.os }}
     env:
-      GALE_VERSION: v0.7.0
+      GALE_VERSION: v0.8.0
     steps:
       - name: Download gale release binary
         env:
