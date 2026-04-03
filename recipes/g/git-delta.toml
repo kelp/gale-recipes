@@ -20,4 +20,4 @@ steps = [
 
 [dependencies]
 build = ["pkgconf", "rust"]
-runtime = ["libgit2", "oniguruma", "zlib-ng-compat"]
+runtime = ["libgit2", "oniguruma", "zlib"]

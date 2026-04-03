@@ -14,7 +14,7 @@ released_at = "2025-01-15"
 [build]
 system = "autotools"
 steps = [
-  "./configure --prefix=${PREFIX} --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --enable-shared --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
+  "./configure --prefix=${PREFIX} --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
   "make -j${JOBS}",
   "make install",
 ]

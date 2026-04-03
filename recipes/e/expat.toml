@@ -1,0 +1,22 @@
+[package]
+name = "expat"
+version = "2.7.5"
+description = "XML parser library written in C"
+license = "MIT"
+homepage = "https://libexpat.github.io/"
+
+[source]
+repo = "libexpat/libexpat"
+url = "https://github.com/libexpat/libexpat/releases/download/R_2_7_5/expat-2.7.5.tar.gz"
+sha256 = "9931f9860d18e6cf72d183eb8f309bfb96196c00e1d40caa978e95bc9aa978b6"
+
+[build]
+system = "cmake"
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF -DEXPAT_BUILD_DOCS=OFF",
+  "cmake --build build -j${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]

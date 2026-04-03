@@ -20,4 +20,4 @@ steps = [
 
 [dependencies]
 build = ["cmake", "pkgconf", "rust"]
-runtime = ["dbus", "zlib-ng-compat"]
+runtime = ["dbus", "zlib"]

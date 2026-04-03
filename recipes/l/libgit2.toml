@@ -14,7 +14,7 @@ released_at = "2025-01-15"
 [build]
 system = "cmake"
 steps = [
-  "cmake -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_CLI=OFF -DUSE_SSH=ON",
+  "cmake -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_CLI=OFF -DUSE_SSH=ON",
   "cmake --build build -j${JOBS}",
   "cmake --install build",
 ]
