@@ -105,14 +105,29 @@ jobs:
             platform: linux-amd64
     runs-on: ${{ matrix.target.os }}
     steps:
-      - name: Download gale release binary
+      - name: Resolve latest gale version
+        id: gale-version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(gh release view --repo kelp/gale \
+            --json tagName --jq '.tagName')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Using gale ${VERSION}"
+
+      - name: Cache gale binary
+        id: cache-gale
+        uses: actions/cache@v4
+        with:
+          path: gale-bin
+          key: gale-${{ steps.gale-version.outputs.version }}-${{ matrix.target.platform }}
+
+      - name: Download gale release binary
+        if: steps.cache-gale.outputs.cache-hit != 'true'
+        env:
+          GALE_VERSION: ${{ steps.gale-version.outputs.version }}
           PLATFORM: ${{ matrix.target.platform }}
         run: |
-          GALE_VERSION=$(gh release view --repo kelp/gale \
-            --json tagName --jq '.tagName')
-          echo "Using gale ${GALE_VERSION}"
           mkdir -p gale-bin
           ARCHIVE="gale-${GALE_VERSION}-${PLATFORM}.tar.gz"
           curl -sL -o "/tmp/${ARCHIVE}" \
