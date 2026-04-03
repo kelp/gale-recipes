@@ -17,3 +17,4 @@ steps = [
 
 [dependencies]
 build = ["zig"]
+runtime = ["mandoc"]

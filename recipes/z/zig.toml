@@ -21,7 +21,7 @@ steps = [
   "mkdir -p /tmp/zig-extract && tar -xJf /tmp/zig.tar.xz -C /tmp/zig-extract --strip-components=1",
   "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
   "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
-  "cp -r /tmp/zig-extract/lib/zig ${PREFIX}/lib/",
+  "cp -r /tmp/zig-extract/lib ${PREFIX}/lib/zig",
 ]
 
 [build.linux-amd64]
@@ -31,5 +31,5 @@ steps = [
   "mkdir -p /tmp/zig-extract && tar -xJf /tmp/zig.tar.xz -C /tmp/zig-extract --strip-components=1",
   "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
   "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
-  "cp -r /tmp/zig-extract/lib/zig ${PREFIX}/lib/",
+  "cp -r /tmp/zig-extract/lib ${PREFIX}/lib/zig",
 ]
