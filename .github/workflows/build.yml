@@ -104,13 +104,15 @@ jobs:
           - os: ubuntu-latest
             platform: linux-amd64
     runs-on: ${{ matrix.target.os }}
-    env:
-      GALE_VERSION: v0.8.0
     steps:
       - name: Download gale release binary
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PLATFORM: ${{ matrix.target.platform }}
         run: |
+          GALE_VERSION=$(gh release view --repo kelp/gale \
+            --json tagName --jq '.tagName')
+          echo "Using gale ${GALE_VERSION}"
           mkdir -p gale-bin
           ARCHIVE="gale-${GALE_VERSION}-${PLATFORM}.tar.gz"
           curl -sL -o "/tmp/${ARCHIVE}" \
