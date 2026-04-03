@@ -1,7 +1,7 @@
 version = "4.52.5"
 
 [darwin-arm64]
-sha256 = "dfd0d7a955f50c595935db5f35baeac1341f74e28cd57dcfebdd997517602aaf"
+sha256 = "beb130c606b0d6ddabd3cfa99dfdd924e0271aaaac42612fbac6a9f82fe57105"
 
 [linux-amd64]
-sha256 = "c1e4df6fd91a0cf5c2a93bf092cd528d5bc493107b4dc524931f29e3404a5c60"
+sha256 = "9d36e3997849b919c030af4fa9deda5c5b89a1fa822d8001a6ef893eccd441b3"
