@@ -1,0 +1,4 @@
+version = "0.96"
+
+[linux-amd64]
+sha256 = "3b39c84c59911245273c154b70b2c2e0ca7da42ae92e98203311bbe5910ebc56"
