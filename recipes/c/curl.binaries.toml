@@ -1,0 +1,4 @@
+version = "8.19.0"
+
+[darwin-arm64]
+sha256 = "fd0acb69e017fe2fd79076cea750e0d754c396ae137db62ebfc388491baf9ada"
