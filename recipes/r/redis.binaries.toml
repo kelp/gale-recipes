@@ -1,0 +1,4 @@
+version = "8.6.2"
+
+[linux-amd64]
+sha256 = "d69696df1bc0fe7d80206b545bd63f20827db5aeb91c0768b25fc9d75cefb9c1"
