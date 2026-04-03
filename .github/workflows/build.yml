@@ -200,13 +200,12 @@ jobs:
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-log-${{ matrix.recipe }}-${{ matrix.target.platform }}
-          path: /tmp/build.log
-          retention-days: 7
+          if [ -z "$ARCHIVE" ]; then
+            echo "::error::Build produced no archive"
+            echo "--- build log ---"
+            cat /tmp/build.log || true
+            exit 1
+          fi
 
       - name: Verify binary runs
         env:
@@ -214,31 +213,73 @@ jobs:
         run: |
           VERIFY_DIR=$(mktemp -d)
           tar --zstd -xf "${ARCHIVE}" -C "${VERIFY_DIR}"
-          # Look for the package binary by name first,
-          # fall back to any executable in bin/.
-          BIN="${VERIFY_DIR}/bin/${RECIPE_NAME}"
-          if [ ! -x "$BIN" ]; then
-            # Try first executable file in bin/.
-            for f in "${VERIFY_DIR}/bin/"*; do
-              if [ -f "$f" ] && [ -x "$f" ]; then
-                BIN="$f"
-                break
-              fi
+
+          # Find an executable to test.
+          BIN=""
+
+          # 1. Try bin/<recipe-name> or sbin/<recipe-name>.
+          for dir in bin sbin; do
+            if [ -x "${VERIFY_DIR}/${dir}/${RECIPE_NAME}" ]; then
+              BIN="${VERIFY_DIR}/${dir}/${RECIPE_NAME}"
+              break
+            fi
+          done
+
+          # 2. Fall back to first executable in bin/ or sbin/.
+          if [ -z "$BIN" ]; then
+            for dir in bin sbin; do
+              for f in "${VERIFY_DIR}/${dir}/"*; do
+                if [ -x "$f" ] && [ ! -d "$f" ]; then
+                  BIN="$f"
+                  break 2
+                fi
+              done
             done
           fi
-          if [ -z "$BIN" ] || [ ! -x "$BIN" ]; then
-            echo "::error::No executable found in archive"
-            ls -la "$VERIFY_DIR/bin/" 2>/dev/null || \
-              echo "No bin/ directory"
+
+          # 3. Library recipes: no binaries, but lib/ or
+          #    include/ contain installed files.
+          if [ -z "$BIN" ]; then
+            LIB_COUNT=0
+            for dir in lib include; do
+              if [ -d "${VERIFY_DIR}/${dir}" ]; then
+                COUNT=$(find "${VERIFY_DIR}/${dir}" \
+                  -type f 2>/dev/null | wc -l)
+                LIB_COUNT=$((LIB_COUNT + COUNT))
+              fi
+            done
+            if [ "$LIB_COUNT" -gt 0 ]; then
+              echo "Library recipe: ${LIB_COUNT} files" \
+                "in lib/ and/or include/"
+              echo "Verified: library install produced output"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::No executables or library files"
+            ls -laR "$VERIFY_DIR" 2>/dev/null | head -40
             exit 1
           fi
+
           echo "Testing: $(basename "$BIN")"
-          "$BIN" --version || "$BIN" version || "$BIN" --help || "$BIN" -V || "$BIN" -v || {
-            echo "::error::Binary failed to run"
-            exit 1
-          }
+          "$BIN" --version \
+            || "$BIN" version \
+            || "$BIN" --help \
+            || "$BIN" -V \
+            || "$BIN" -v \
+            || {
+              echo "::error::Binary failed to run"
+              exit 1
+            }
           echo "Verified: $(basename "$BIN") runs"
           rm -rf "$VERIFY_DIR"
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-log-${{ matrix.recipe }}-${{ matrix.target.platform }}
+          path: /tmp/build.log
+          retention-days: 7
 
       - name: Attest build provenance
         uses: actions/attest@v4
