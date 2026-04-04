@@ -10,6 +10,34 @@ All notable changes to gale-recipes are documented here.
   gping, hyperfine, lsof, lua, openssl, ouch, procs,
   scc, statix, tealdeer, tree-sitter, trippy, unzip,
   uv, yq, zellij, zoxide, zstd
+- zmx recipe (v0.4.2, Zig terminal session persistence)
+- mandoc recipe (v1.14.6, UNIX manpage compiler toolset)
+- vibeutils: added mandoc runtime dependency for man
+  page support
+- bison, expat, oniguruma recipes
+- Build All Recipes workflow (build-all.yml) that
+  dispatches build.yml in batches of 32
+
+### Changed
+- CI fetches latest gale release dynamically instead
+  of hardcoded version
+- CI caches gale binary, only downloads on new release
+- build.yml accepts comma-separated recipe names
+- Verify step handles script binaries (Perl, Python)
+  that can't run outside their install prefix
+
+### Fixed
+- zig: fixed lib path for 0.15.2 prebuilt tarball
+  (layout changed from lib/zig/ to lib/)
+- autoconf: added m4 build and runtime dependency
+- automake: added autoconf build dependency
+- sqlite: added readline/ncurses dep flags and ncurses
+  link flags for linux
+- google-cloud-sdk: fixed symlinks to use relative paths
+- libgit2: changed to shared libs (BUILD_SHARED_LIBS=ON)
+- python: removed --enable-shared flag
+- git-delta, starship: renamed zlib-ng-compat dep to zlib
+- justfile: updated --source flag to --path for gale 0.8.0
 
 ## 2026-04-01
 

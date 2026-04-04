@@ -1,4 +1,5 @@
 [packages]
   actionlint = "1.7.11"
-  gale = "0.8.0"
+  gale = "0.8.2-dev.26+cf41a64"
+  readline = "8.2"
   vibeutils = "0.8.2"
