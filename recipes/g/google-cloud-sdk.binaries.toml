@@ -2,6 +2,3 @@ version = "563.0.0"
 
 [darwin-arm64]
 sha256 = "24c7358737932aba6f08fa1810a92c5d86a2c1effa41d6a2df8bd7cc614ff355"
-
-[linux-amd64]
-sha256 = "3d607cb7029f92a89ba69e6a6b0bab4669783ce6dd8ad52649b9c4d45f5a36c2"
