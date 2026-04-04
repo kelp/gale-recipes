@@ -1,0 +1,21 @@
+[package]
+name = "hcloud"
+version = "1.62.0"
+description = "Hetzner Cloud command-line interface"
+license = "MIT"
+homepage = "https://github.com/hetznercloud/cli"
+
+[source]
+repo = "hetznercloud/cli"
+url = "https://github.com/hetznercloud/cli/archive/refs/tags/v1.62.0.tar.gz"
+sha256 = "942bd763ddce01c69efaef033a9207b3d543e068b69cb6910981ec26eb0cc434"
+released_at = "2026-03-20"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "CGO_ENABLED=0 go build -trimpath -ldflags \"-s -w -X github.com/hetznercloud/cli/internal/version.version=${VERSION} -X github.com/hetznercloud/cli/internal/version.versionPrerelease=\" -o ${PREFIX}/bin/hcloud ./cmd/hcloud",
+]
+
+[dependencies]
+build = ["go"]

@@ -1,0 +1,21 @@
+[package]
+name = "cloudflared"
+version = "2026.3.0"
+description = "Cloudflare Tunnel client"
+license = "Apache-2.0"
+homepage = "https://github.com/cloudflare/cloudflared"
+
+[source]
+repo = "cloudflare/cloudflared"
+url = "https://github.com/cloudflare/cloudflared/archive/refs/tags/2026.3.0.tar.gz"
+sha256 = "1c9e88653f091d3085975e50c2cf7308923c88ed5c82afe7fb98938d3f9c93ad"
+released_at = "2026-03-09"
+
+[build]
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "go build -mod=vendor -ldflags \"-X main.Version=${VERSION}\" -o ${PREFIX}/bin/cloudflared ./cmd/cloudflared",
+]
+
+[dependencies]
+build = ["go"]
