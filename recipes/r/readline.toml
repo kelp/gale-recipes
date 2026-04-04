@@ -21,3 +21,4 @@ steps = [
 
 [dependencies]
 build = ["ncurses"]
+runtime = ["ncurses"]
