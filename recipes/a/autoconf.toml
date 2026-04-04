@@ -15,3 +15,7 @@ steps = [
   "make -j${JOBS}",
   "make install",
 ]
+
+[dependencies]
+build = ["m4"]
+runtime = ["m4"]

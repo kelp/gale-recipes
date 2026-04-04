@@ -17,4 +17,5 @@ steps = [
 ]
 
 [dependencies]
+build = ["autoconf"]
 runtime = ["autoconf"]
