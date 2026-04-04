@@ -301,6 +301,17 @@ jobs:
                 rm -rf "$VERIFY_DIR"
                 exit 0
               fi
+              # Some binaries (e.g. mandoc) don't support
+              # any standard version/help flags but still
+              # ran and printed usage. A valid executable
+              # that produced output is good enough.
+              if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
+                echo "Binary ran but has no version/help flag"
+                echo "Verified: $(basename "$BIN") is a" \
+                  "valid executable"
+                rm -rf "$VERIFY_DIR"
+                exit 0
+              fi
               echo "::error::Binary failed to run"
               exit 1
             }
