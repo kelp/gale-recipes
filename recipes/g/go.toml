@@ -30,3 +30,11 @@ steps = [
   "cd src && GOROOT_BOOTSTRAP=/tmp/go-bootstrap GOROOT_FINAL=${PREFIX} CGO_ENABLED=0 bash make.bash",
   "cp -R bin pkg src api lib misc doc go.env VERSION ${PREFIX}/",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/go-bootstrap.tar.gz https://go.dev/dl/go1.25.8.linux-arm64.tar.gz",
+  "mkdir -p /tmp/go-bootstrap && tar -xzf /tmp/go-bootstrap.tar.gz -C /tmp/go-bootstrap --strip-components=1",
+  "cd src && GOROOT_BOOTSTRAP=/tmp/go-bootstrap GOROOT_FINAL=${PREFIX} CGO_ENABLED=0 bash make.bash",
+  "cp -R bin pkg src api lib misc doc go.env VERSION ${PREFIX}/",
+]

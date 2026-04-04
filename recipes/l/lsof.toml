@@ -30,3 +30,13 @@ steps = [
   "cp lsof ${PREFIX}/bin/lsof",
   "cp Lsof.8 ${PREFIX}/share/man/man8/lsof.8",
 ]
+
+[build.linux-arm64]
+steps = [
+  "mv 00README README",
+  "LSOF_CC=cc LSOF_CCV=cc ./Configure -n linux",
+  "make -j${JOBS}",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/share/man/man8",
+  "cp lsof ${PREFIX}/bin/lsof",
+  "cp Lsof.8 ${PREFIX}/share/man/man8/lsof.8",
+]

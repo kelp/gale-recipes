@@ -35,3 +35,14 @@ steps = [
   "python3 x.py build -j${JOBS}",
   "python3 x.py install",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.93.0-aarch64-unknown-linux-gnu.tar.gz",
+  "echo '091f981b95cbc6713ce6d6c23817286d4c10fd35fc76a990a3af430421751cfc  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
+  "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
+  "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
+  "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --release-description=gale --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
+  "python3 x.py build -j${JOBS}",
+  "python3 x.py install",
+]

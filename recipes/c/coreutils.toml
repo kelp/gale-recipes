@@ -25,5 +25,12 @@ steps = [
   "make install",
 ]
 
+[build.linux-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --with-gmp --without-selinux",
+  "make -j${JOBS}",
+  "make install",
+]
+
 [dependencies]
 runtime = ["gmp"]

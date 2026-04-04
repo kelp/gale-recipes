@@ -5,6 +5,14 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- linux-arm64 build support for 15 recipes:
+  1password-cli, bun, coreutils, gmp, go,
+  google-cloud-sdk, libtool, lsof, lua, openssl,
+  pnpm, rust, shellcheck, traceroute, zig
+- docs/linux-recipe-fixes.md documenting pre-existing
+  Linux build failures and fix plan
+
+### Previously added
 - 27 new recipes: actionlint, atuin, bzip2, chezmoi,
   deadnix, difftastic, doctl, doggo, dust, gh, gnumake,
   gping, hyperfine, lsof, lua, openssl, ouch, procs,

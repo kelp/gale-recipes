@@ -33,3 +33,13 @@ steps = [
   "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
   "cp -r /tmp/zig-extract/lib ${PREFIX}/lib/zig",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/zig.tar.xz https://ziglang.org/download/0.15.2/zig-aarch64-linux-0.15.2.tar.xz",
+  "echo '958ed7d1e00d0ea76590d27666efbf7a932281b3d7ba0c6b01b0ff26498f667f  /tmp/zig.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig-extract && tar -xJf /tmp/zig.tar.xz -C /tmp/zig-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig-extract/lib ${PREFIX}/lib/zig",
+]

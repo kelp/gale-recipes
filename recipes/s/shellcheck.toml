@@ -32,3 +32,12 @@ steps = [
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/shellcheck-extract/shellcheck ${PREFIX}/bin/",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/shellcheck.tar.xz https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.aarch64.tar.xz",
+  "echo '12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588  /tmp/shellcheck.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/shellcheck-extract && tar -xJf /tmp/shellcheck.tar.xz -C /tmp/shellcheck-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin",
+  "cp /tmp/shellcheck-extract/shellcheck ${PREFIX}/bin/",
+]

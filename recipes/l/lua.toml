@@ -20,3 +20,9 @@ steps = [
   "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
 ]
+
+[build.linux-arm64]
+steps = [
+  "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
+  "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
+]

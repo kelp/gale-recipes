@@ -36,5 +36,17 @@ steps = [
   "ln -sf ../share/google-cloud-sdk/bin/bq ${PREFIX}/bin/bq",
 ]
 
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-${VERSION}-linux-arm.tar.gz",
+  "echo '69befcaa2640c2303018d0ed752b2b7323727b121d5db45f978e45d3050a4ae0  /tmp/gcloud.tar.gz' | shasum -a 256 -c",
+  "mkdir -p /tmp/gcloud-extract && tar -xzf /tmp/gcloud.tar.gz -C /tmp/gcloud-extract",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/share",
+  "cp -r /tmp/gcloud-extract/google-cloud-sdk ${PREFIX}/share/google-cloud-sdk",
+  "ln -sf ../share/google-cloud-sdk/bin/gcloud ${PREFIX}/bin/gcloud",
+  "ln -sf ../share/google-cloud-sdk/bin/gsutil ${PREFIX}/bin/gsutil",
+  "ln -sf ../share/google-cloud-sdk/bin/bq ${PREFIX}/bin/bq",
+]
+
 [dependencies]
 runtime = ["python"]

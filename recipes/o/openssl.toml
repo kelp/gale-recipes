@@ -23,3 +23,10 @@ steps = [
   "make -j${JOBS}",
   "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
 ]
+
+[build.linux-arm64]
+steps = [
+  "perl ./Configure --prefix=${PREFIX} --openssldir=${PREFIX}/etc/openssl --libdir=lib no-ssl3 no-ssl3-method no-zlib linux-aarch64",
+  "make -j${JOBS}",
+  "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
+]

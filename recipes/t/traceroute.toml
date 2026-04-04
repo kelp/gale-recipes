@@ -17,3 +17,9 @@ steps = [
   "make -j${JOBS}",
   "make prefix=${PREFIX} install",
 ]
+
+[build.linux-arm64]
+steps = [
+  "make -j${JOBS}",
+  "make prefix=${PREFIX} install",
+]

@@ -30,3 +30,12 @@ steps = [
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/bun-extract/bun-linux-x64/bun ${PREFIX}/bin/",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.11/bun-linux-aarch64.zip",
+  "echo 'd13944da12a53ecc74bf6a720bd1d04c4555c038dfe422365356a7be47691fdf  /tmp/bun.zip' | shasum -a 256 -c",
+  "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
+  "mkdir -p ${PREFIX}/bin",
+  "cp /tmp/bun-extract/bun-linux-aarch64/bun ${PREFIX}/bin/",
+]

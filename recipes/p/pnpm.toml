@@ -32,3 +32,12 @@ steps = [
   "cp /tmp/pnpm ${PREFIX}/bin/pnpm",
   "chmod +x ${PREFIX}/bin/pnpm",
 ]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/pnpm https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-arm64",
+  "echo '06755ad2817548b84317d857d5c8003dc6e9e28416a3ea7467256c49ab400d48  /tmp/pnpm' | shasum -a 256 -c",
+  "mkdir -p ${PREFIX}/bin",
+  "cp /tmp/pnpm ${PREFIX}/bin/pnpm",
+  "chmod +x ${PREFIX}/bin/pnpm",
+]
