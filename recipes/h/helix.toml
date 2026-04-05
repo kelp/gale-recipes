@@ -17,7 +17,7 @@ env = { HELIX_DEFAULT_RUNTIME = "${PREFIX}/lib/helix/runtime" }
 steps = [
   "cargo install --path helix-term --root ${PREFIX} --locked",
   "mkdir -p ${PREFIX}/lib/helix",
-  "cp -r runtime ${PREFIX}/lib/helix/runtime",
+  "find runtime -type l -delete && cp -r runtime ${PREFIX}/lib/helix/runtime",
 ]
 
 [dependencies]

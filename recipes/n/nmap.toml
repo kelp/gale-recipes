@@ -17,6 +17,7 @@ steps = [
   "printf '// placeholder\\n' > libpcap/VERSION",
   "make",
   "make install",
+  "find ${PREFIX} -name '*.class' -delete",
 ]
 
 [dependencies]

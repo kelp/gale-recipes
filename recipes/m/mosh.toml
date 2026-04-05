@@ -15,7 +15,7 @@ released_at = "2022-10-27"
 
 [build]
 steps = [
-  "CFLAGS=\"${CFLAGS:-} -DNDEBUG\" CXXFLAGS=\"${CXXFLAGS:-} -std=gnu++17\" ./configure --prefix=${PREFIX} --enable-completion --disable-silent-rules",
+  "CFLAGS=\"${CFLAGS:-} -DNDEBUG\" CXXFLAGS=\"${CXXFLAGS:-} -std=gnu++17\" LDFLAGS=\"${LDFLAGS:-} -framework CoreFoundation\" ./configure --prefix=${PREFIX} --enable-completion --disable-silent-rules",
   "make -j${JOBS}",
   "make install",
 ]
