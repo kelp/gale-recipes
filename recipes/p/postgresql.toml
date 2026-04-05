@@ -1,3 +1,5 @@
+# NOTE: postgresql requires flex. There is no flex recipe in gale-recipes yet.
+# Once a flex recipe is added, this will build.
 [package]
 name = "postgresql"
 version = "17.2"

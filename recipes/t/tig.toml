@@ -11,7 +11,7 @@ url = "https://github.com/jonas/tig/releases/download/tig-2.6.0/tig-2.6.0.tar.gz
 sha256 = "99d4a0fdd3d93547ebacfe511195cb92e4f75b91644c06293c067f401addeb3e"
 
 [dependencies]
-build = ["ncurses"]
+build = ["ncurses", "pkgconf"]
 
 [build]
 steps = [

@@ -13,11 +13,12 @@ sha256 = "df512492ffd108e53a27a06f26d8635bbe89e0e569455dc8ffef058c035d51b2"
 [build]
 steps = [
   "mv libpcap/VERSION.txt libpcap/VERSION",
-  "./configure --prefix=${PREFIX} --with-openssl --with-libpcre --with-liblua --without-nmap-update --without-zenmap --without-ndiff --disable-universal",
+  "./configure --prefix=${PREFIX} --with-openssl --with-libpcre --with-liblua=included --without-nmap-update --without-zenmap --without-ndiff --disable-universal",
+  "printf '// placeholder\\n' > libpcap/VERSION",
   "make",
   "make install",
 ]
 
 [dependencies]
-build = ["lua", "openssl", "pkgconf"]
+build = ["lua", "openssl", "pkgconf", "zlib"]
 runtime = ["openssl", "pcre2", "lua"]

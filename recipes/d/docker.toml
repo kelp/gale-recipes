@@ -13,7 +13,9 @@ sha256 = "76a1b916e21c3ade3031fb416025fcdf360c4ab006c5b435585322da36e94dac"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "GO111MODULE=on go build -trimpath -o ${PREFIX}/bin/docker ./cmd/docker",
+  "cp vendor.mod go.mod",
+  "cp vendor.sum go.sum",
+  "go build -mod=vendor -trimpath -o ${PREFIX}/bin/docker ./cmd/docker",
 ]
 
 [dependencies]
