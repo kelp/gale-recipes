@@ -15,11 +15,10 @@ released_at = "2022-10-27"
 
 [build]
 steps = [
-  "export CFLAGS=\"${CFLAGS:-} -DNDEBUG\" CXXFLAGS=\"${CXXFLAGS:-} -std=gnu++17\"",
-  "./configure --prefix=${PREFIX} --enable-completion --disable-silent-rules",
+  "CFLAGS=\"${CFLAGS:-} -DNDEBUG\" CXXFLAGS=\"${CXXFLAGS:-} -std=gnu++17\" ./configure --prefix=${PREFIX} --enable-completion --disable-silent-rules",
   "make -j${JOBS}",
   "make install",
 ]
 
 [dependencies]
-build = ["ncurses", "pkgconf", "protobuf"]
+build = ["ncurses", "openssl", "pkgconf", "protobuf", "zlib"]

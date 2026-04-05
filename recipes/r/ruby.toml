@@ -1,22 +1,22 @@
 [package]
 name = "ruby"
-version = "4.0.2"
+version = "3.4.2"
 description = "Powerful, clean, object-oriented scripting language"
 license = "Ruby"
 homepage = "https://www.ruby-lang.org/"
 
 [source]
 repo = "ruby/ruby"
-url = "https://cache.ruby-lang.org/pub/ruby/4.0/ruby-4.0.2.tar.gz"
-sha256 = "51502b26b50b68df4963336ca41e368cde92c928faf91654de4c4c1791f82aac"
+url = "https://cache.ruby-lang.org/pub/ruby/3.4/ruby-3.4.2.tar.gz"
+sha256 = "41328ac21f2bfdd7de6b3565ef4f0dd7543354d37e96f157a1552a6bd0eb364b"
 
 [build]
 steps = [
-  "./configure --prefix=${PREFIX} --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --enable-yjit",
+  "./configure --prefix=${PREFIX} --enable-shared --enable-load-relative --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc",
   "make -j${JOBS}",
   "make install",
 ]
 
 [dependencies]
-build = ["pkgconf", "rust"]
+build = ["pkgconf", "openssl", "libyaml", "zlib", "readline", "ncurses"]
 runtime = ["openssl", "libyaml"]

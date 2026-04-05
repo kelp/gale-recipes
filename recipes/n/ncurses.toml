@@ -19,4 +19,5 @@ steps = [
   "make install",
   "ln -sf ncursesw ${PREFIX}/include/ncurses",
   "for lib in ncurses form panel menu; do for f in ${PREFIX}/lib/lib${lib}w*; do ln -sf $(basename $f) ${PREFIX}/lib/$(basename $f | sed s/w//); done; done",
+  "cd ${PREFIX}/include && for f in ncursesw/*.h; do ln -sf \"$f\" \"$(basename $f)\"; done",
 ]

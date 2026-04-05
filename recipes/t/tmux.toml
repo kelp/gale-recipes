@@ -18,5 +18,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["ncurses", "pkgconf"]
+build = ["bison", "libevent", "ncurses", "pkgconf"]
 runtime = ["libevent"]
