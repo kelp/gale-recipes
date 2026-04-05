@@ -3,6 +3,7 @@
 [package]
 name = "jless"
 version = "0.9.0"
+platforms = ["darwin-amd64", "darwin-arm64"]
 description = "Command-line pager for JSON data"
 license = "MIT"
 homepage = "https://jless.io/"

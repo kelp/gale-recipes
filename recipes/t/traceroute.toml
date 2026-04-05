@@ -6,7 +6,7 @@ license = "GPL-2.0-only"
 homepage = "https://traceroute.sourceforge.net/"
 
 [source]
-url = "https://downloads.sourceforge.net/traceroute/traceroute-2.1.6.tar.gz"
+url = "https://sourceforge.net/projects/traceroute/files/traceroute/traceroute-2.1.6/traceroute-2.1.6.tar.gz/download"
 sha256 = "9ccef9cdb9d7a98ff7fbf93f79ebd0e48881664b525c4b232a0fcec7dcb9db5e"
 
 [dependencies]

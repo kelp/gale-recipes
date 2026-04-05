@@ -19,5 +19,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["pkgconf"]
+build = ["lua", "openssl", "pkgconf"]
 runtime = ["openssl", "pcre2", "lua"]

@@ -19,4 +19,4 @@ steps = [
 ]
 
 [dependencies]
-build = ["pkgconf", "rust"]
+build = ["pkgconf", "rust", "zlib"]

@@ -7,7 +7,7 @@ homepage = "https://www.gnu.org/software/libtool/"
 
 [source]
 url = "https://ftpmirror.gnu.org/gnu/libtool/libtool-2.5.4.tar.gz"
-sha256 = "0d3e98ca727fc1201b436170af5a63f23348aaf146a3ac6234f6c4da283e8b34"
+sha256 = "da8ebb2ce4dcf46b90098daf962cffa68f4b4f62ea60f798d0ef12929ede6adf"
 
 [build.darwin-arm64]
 steps = [

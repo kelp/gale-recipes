@@ -18,5 +18,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["pkgconf"]
+build = ["ncurses", "pkgconf"]
 runtime = ["pcre2"]

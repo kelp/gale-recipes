@@ -1,6 +1,7 @@
 [package]
 name = "podman"
 version = "5.8.1"
+platforms = ["linux-amd64", "linux-arm64"]
 description = "Tool for managing OCI containers and pods"
 license = "Apache-2.0 AND GPL-3.0-or-later"
 homepage = "https://podman.io/"
@@ -12,7 +13,7 @@ sha256 = "b9540ecb19cfcbcfc40e1b81d39930f688c537d8fd6f11ae56be41f2bf9e97a4"
 
 [build]
 steps = [
-  "make PREFIX=${PREFIX} HELPER_BINARIES_DIR=${PREFIX}/libexec/podman",
+  "make PREFIX=${PREFIX} HELPER_BINARIES_DIR=${PREFIX}/libexec/podman BUILDTAGS=\"exclude_graphdriver_btrfs btrfs_noversion containers_image_openpgp\"",
   "make install PREFIX=${PREFIX} HELPER_BINARIES_DIR=${PREFIX}/libexec/podman",
 ]
 

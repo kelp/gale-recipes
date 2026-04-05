@@ -20,5 +20,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["cmake"]
+build = ["cmake", "python"]
 runtime = ["python"]

@@ -19,4 +19,4 @@ steps = [
 ]
 
 [dependencies]
-build = ["rust"]
+build = ["rust", "zlib"]

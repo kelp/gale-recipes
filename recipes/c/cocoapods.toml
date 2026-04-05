@@ -17,6 +17,6 @@ build = ["ruby"]
 [build]
 system = "ruby"
 steps = [
-  "gem build *.gemspec",
-  "gem install --install-dir ${PREFIX}/lib/ruby/gems --bindir ${PREFIX}/bin *.gem",
+  "gem build *.gemspec --force",
+  "gem install --install-dir ${PREFIX}/lib/ruby/gems --bindir ${PREFIX}/bin --ignore-dependencies --force *.gem",
 ]
