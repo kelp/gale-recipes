@@ -1,0 +1,7 @@
+version = "5.8.1"
+
+[linux-amd64]
+sha256 = "389ee7e15760af7031172e40be9d3dd9c97b6162d7c8369f6d2fd4abb9cb3d27"
+
+[linux-arm64]
+sha256 = "10db620590fcbe1dd00b0d71e05c90675fc02a28385e771b9b315ac361d8a67c"
