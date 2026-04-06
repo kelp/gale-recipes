@@ -1,0 +1,10 @@
+version = "29.3.1"
+
+[darwin-arm64]
+sha256 = "5f7eeb36e413d0d4a2f1c7f44eccd98e775127a3457a60df13d8598c655f0296"
+
+[linux-amd64]
+sha256 = "3524a7c7cbf89525df4473d5c6a54504ae25aaad64fa4a335c75b0275446d3bc"
+
+[linux-arm64]
+sha256 = "3da2d145db6848d2a2fff3dcc4bbc09a332199ac9de5e21d7a436e2f351a18ff"
