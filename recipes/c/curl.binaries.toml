@@ -1,4 +1,10 @@
 version = "8.19.0"
 
 [darwin-arm64]
-sha256 = "fd0acb69e017fe2fd79076cea750e0d754c396ae137db62ebfc388491baf9ada"
+sha256 = "bf6348d6d2f6af2e4cb82e90558f13521b28fe5a10889e0f01620928bdd62b54"
+
+[linux-amd64]
+sha256 = "95fe2a5a52b753a508bfad110f8a078709e2d12f2ca43365e7b28e59bcc31560"
+
+[linux-arm64]
+sha256 = "b98e183890cdd3ea3d51dc53e7d1ad2b0bd56ba397da545b3af6fcdaf36e71d4"

@@ -1,0 +1,7 @@
+version = "12.2.2"
+
+[linux-amd64]
+sha256 = "5a945112ae55ccf7d4e318a255714eedf1e62c66fb65440dd5ed1bb167ec4f77"
+
+[linux-arm64]
+sha256 = "25021c8d93598a2a3eb5efa1614d3d848824ec59d363aefe619f69191916328b"
