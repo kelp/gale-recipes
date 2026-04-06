@@ -3,7 +3,6 @@
 [package]
 name = "btop"
 version = "1.4.6"
-platforms = ["darwin-amd64", "darwin-arm64"]
 description = "Resource monitor. C++ version and continuation of bashtop and bpytop"
 license = "Apache-2.0"
 homepage = "https://github.com/aristocratos/btop"
