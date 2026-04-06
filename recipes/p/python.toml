@@ -19,5 +19,23 @@ steps = [
   "make install",
 ]
 
+# On Linux, --enable-shared is needed so that consumers
+# linking against libpython3.12 (e.g. postgresql's plpython3)
+# can do so from a shared object. Without it, libpython is
+# a static archive without -fPIC and fails shared linking.
+[build.linux-amd64]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-shared --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[build.linux-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --enable-shared --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
+  "make -j${JOBS}",
+  "make install",
+]
+
 [dependencies]
-build = ["openssl", "zlib", "readline", "sqlite", "xz", "ncurses", "bzip2"]
+build = ["bzip2", "libffi", "ncurses", "openssl", "readline", "sqlite", "xz", "zlib"]

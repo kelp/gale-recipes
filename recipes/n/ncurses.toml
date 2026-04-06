@@ -14,7 +14,7 @@ released_at = "2025-01-15"
 [build]
 system = "autotools"
 steps = [
-  "./configure --prefix=${PREFIX} --enable-shared --enable-static --with-normal --without-debug --without-ada --enable-widec --enable-pc-files --with-pkg-config-libdir=${PREFIX}/lib/pkgconfig",
+  "./configure --prefix=${PREFIX} --enable-shared --enable-static --with-normal --without-debug --without-ada --enable-widec --enable-pc-files --with-pkg-config-libdir=${PREFIX}/lib/pkgconfig CFLAGS=-fPIC CXXFLAGS=-fPIC",
   "make -j${JOBS}",
   "make install",
   "ln -sf ncursesw ${PREFIX}/include/ncurses",

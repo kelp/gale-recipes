@@ -12,7 +12,11 @@ sha256 = "0798f4be7a1a406a419ac32db90c2956936fecbf50db3057d7af47d69a2d7edb"
 
 [build]
 steps = [
-  "./bootstrap --prefix=${PREFIX} --parallel=${JOBS} -- -DCMAKE_USE_OPENSSL=OFF",
+  "./bootstrap --prefix=${PREFIX} --parallel=${JOBS} -- -DCMAKE_USE_OPENSSL=ON",
   "make -j${JOBS}",
   "make install",
 ]
+
+[dependencies]
+build = ["openssl"]
+runtime = ["openssl"]
