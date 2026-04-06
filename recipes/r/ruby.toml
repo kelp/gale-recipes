@@ -12,7 +12,7 @@ sha256 = "41328ac21f2bfdd7de6b3565ef4f0dd7543354d37e96f157a1552a6bd0eb364b"
 
 [build]
 steps = [
-  "./configure --prefix=${PREFIX} --enable-shared --enable-load-relative --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc",
+  "./configure --prefix=${PREFIX} --enable-shared --enable-load-relative --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --with-baseruby=no",
   "make -j${JOBS}",
   "make install",
 ]
