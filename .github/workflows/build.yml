@@ -297,6 +297,9 @@ jobs:
           # Set up library paths so scripts can find
           # their modules when run outside the prefix.
           export PERL5LIB="${VERIFY_DIR}/share:${PERL5LIB}"
+          for sp in "${VERIFY_DIR}"/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
           export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
           export PATH="${VERIFY_DIR}/bin:${PATH}"
 
