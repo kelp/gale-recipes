@@ -99,7 +99,7 @@ jobs:
     strategy:
       matrix:
         target:
-          - os: macos-latest
+          - os: macos-26
             platform: darwin-arm64
           - os: ubuntu-latest
             platform: linux-amd64
@@ -154,7 +154,7 @@ jobs:
       matrix:
         recipe: ${{ fromJson(needs.discover.outputs.recipes) }}
         target:
-          - os: macos-latest
+          - os: macos-26
             platform: darwin-arm64
           - os: ubuntu-latest
             platform: linux-amd64
