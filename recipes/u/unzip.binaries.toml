@@ -1,4 +1,7 @@
 version = "6.0"
 
 [linux-amd64]
-sha256 = "4be8732a690b88b620d5ded24a97388f69fed83b401015f4720cd548ac9f0454"
+sha256 = "015fcc12726d5fb44a0097e9a6dbead5b1f237bb389e4dcbcf7aaa12af00eb72"
+
+[linux-arm64]
+sha256 = "f15f54257c7a790ef67fcdaa0c66c053352e1ced3ad0515da5f509db0a779df7"
