@@ -179,6 +179,10 @@ jobs:
           echo "${GITHUB_WORKSPACE}/gale-bin" \
             >> "$GITHUB_PATH"
 
+      - name: Install patchelf (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y patchelf
+
       - name: Cache build dependencies
         uses: actions/cache@v5
         with:
