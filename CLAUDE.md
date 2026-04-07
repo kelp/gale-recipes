@@ -159,6 +159,18 @@ upstream and Homebrew intend — with full functionality.
 If a dependency is missing, add the recipe for it. The
 goal is to replace Homebrew, not ship lesser versions.
 
+## Linking Policy
+
+Prefer static linking for CLI tools where practical.
+On Linux, prefer static linking of non-system deps and
+C++ runtime where feasible, but keep glibc dynamic.
+On macOS, full static linking is usually not viable,
+so use dynamic linking with correct rpaths/fixups.
+Do not force static linking for libraries, language
+runtimes, or packages that are intended to be linked
+against by other packages. See
+`docs/dev/linking-policy.md`.
+
 ## Gotchas
 
 - Recipes imported via `gale import homebrew <name>` carry
