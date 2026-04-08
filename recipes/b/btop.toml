@@ -21,15 +21,19 @@ steps = [
 
 [build.linux-amd64]
 toolchain = "llvm"
-
-[build.linux-amd64.env]
-LD_LIBRARY_PATH = "${DEP_LLVM}/lib"
+steps = [
+  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_RPATH=${DEP_LLVM}/lib -DCMAKE_INSTALL_RPATH=${DEP_LLVM}/lib",
+  "cmake --build builddir -j ${JOBS}",
+  "cmake --install builddir",
+]
 
 [build.linux-arm64]
 toolchain = "llvm"
-
-[build.linux-arm64.env]
-LD_LIBRARY_PATH = "${DEP_LLVM}/lib"
+steps = [
+  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_RPATH=${DEP_LLVM}/lib -DCMAKE_INSTALL_RPATH=${DEP_LLVM}/lib",
+  "cmake --build builddir -j ${JOBS}",
+  "cmake --install builddir",
+]
 
 [dependencies]
 build = ["cmake"]

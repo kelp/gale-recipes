@@ -214,6 +214,8 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
+          SKIPPED=false
+
           for attempt in 1 2 3; do
             OUTPUT=$(gale build "$RECIPE_FILE" \
               2>&1 | tee /tmp/build.log)
@@ -225,12 +227,24 @@ jobs:
             if [ -n "$ARCHIVE" ]; then
               break
             fi
+
+            if grep -q 'unsupported platform' /tmp/build.log; then
+              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
+              SKIPPED=true
+              break
+            fi
+
             echo "::warning::Build attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
 
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
+
+          if [ "$SKIPPED" = true ]; then
+            exit 0
+          fi
 
           if [ -z "$ARCHIVE" ]; then
             echo "::error::Build failed after 3 attempts"
@@ -240,6 +254,7 @@ jobs:
           fi
 
       - name: Verify binary runs
+        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
@@ -339,7 +354,7 @@ jobs:
           rm -rf "$VERIFY_DIR"
 
       - name: Upload build log on failure
-        if: failure()
+        if: failure() && steps.build.outputs.skipped != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: build-log-${{ matrix.recipe }}-${{ matrix.target.platform }}
@@ -347,13 +362,16 @@ jobs:
           retention-days: 7
 
       - name: Attest build provenance
+        if: steps.build.outputs.skipped != 'true'
         uses: actions/attest@v4
         with:
           subject-path: ${{ steps.build.outputs.archive }}
 
       - uses: oras-project/setup-oras@v1
+        if: steps.build.outputs.skipped != 'true'
 
       - name: Login to GHCR
+        if: steps.build.outputs.skipped != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -361,6 +379,7 @@ jobs:
             oras login ghcr.io --password-stdin -u github
 
       - name: Push to GHCR
+        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -375,6 +394,7 @@ jobs:
             "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"
 
       - name: Save build metadata
+        if: steps.build.outputs.skipped != 'true'
         env:
           SHA256: ${{ steps.build.outputs.sha256 }}
         run: |
@@ -388,6 +408,7 @@ jobs:
           ENDJSON
 
       - uses: actions/upload-artifact@v7
+        if: steps.build.outputs.skipped != 'true'
         with:
           name: metadata-${{ matrix.recipe }}-${{ matrix.target.platform }}
           path: /tmp/metadata/
