@@ -19,5 +19,17 @@ steps = [
   "cmake --install builddir",
 ]
 
+[build.linux-amd64]
+toolchain = "llvm"
+
+[build.linux-arm64]
+toolchain = "llvm"
+
 [dependencies]
 build = ["cmake"]
+
+[dependencies.linux-amd64]
+build = ["cmake", "llvm"]
+
+[dependencies.linux-arm64]
+build = ["cmake", "llvm"]
