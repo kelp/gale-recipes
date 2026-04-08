@@ -1,10 +1,16 @@
 [packages]
+  [packages.cmake]
+    version = "4.3.1"
   [packages.gale]
     version = "0.9.0"
     sha256 = "fefaaf892a685f4fc5c9c85821d2c6f3346436415392df0f436a2bf80d96cb36"
   [packages.git]
     version = "2.53.0"
     sha256 = "fb39cb9512ee3ee4785841101dc2dd29e177beeadd46953d08a4b1747061e9ae"
+  [packages.ncurses]
+    version = "6.4"
+  [packages.python]
+    version = "3.12.8"
   [packages.vibeutils]
     version = "0.8.2"
     sha256 = "286270472f03c866fe56875e3aabfe0beed558c2fb9c9ade16bcbc809e80661a"
