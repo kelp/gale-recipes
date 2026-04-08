@@ -22,8 +22,14 @@ steps = [
 [build.linux-amd64]
 toolchain = "llvm"
 
+[build.linux-amd64.env]
+LD_LIBRARY_PATH = "${DEP_LLVM}/lib"
+
 [build.linux-arm64]
 toolchain = "llvm"
+
+[build.linux-arm64.env]
+LD_LIBRARY_PATH = "${DEP_LLVM}/lib"
 
 [dependencies]
 build = ["cmake"]

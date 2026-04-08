@@ -8,7 +8,7 @@ homepage = "https://github.com/kelp/gale"
 [source]
 repo = "kelp/gale"
 url = "https://github.com/kelp/gale/archive/refs/tags/v0.11.1.tar.gz"
-sha256 = "3410d85681018fdcd71ccd5ceec41f022e2752eb0c05736f37f71c1be4aa383e"
+sha256 = "008a019a4b36710d814726f3414ae61324421695d64e30477def3a86d85634f4"
 
 [dependencies]
 build = ["go"]
