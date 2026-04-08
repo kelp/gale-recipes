@@ -1,14 +1,14 @@
 [package]
 name = "gale"
-version = "0.10.4"
+version = "0.11.0"
 description = "Package manager that replaces Homebrew, Nix, and home-manager"
 license = "MIT"
 homepage = "https://github.com/kelp/gale"
 
 [source]
 repo = "kelp/gale"
-url = "https://github.com/kelp/gale/archive/refs/tags/v0.10.4.tar.gz"
-sha256 = "91e5e17a24acd92f20287742183b66e5dab5bc3f93ccedd4a8ccea20505c096e"
+url = "https://github.com/kelp/gale/archive/refs/tags/v0.11.0.tar.gz"
+sha256 = "01d81a5b891002cb1611b84ae4aed414d252bbcf74fbf0f583caa9d503b8b937"
 
 [dependencies]
 build = ["go"]
