@@ -38,6 +38,8 @@ All notable changes to gale-recipes are documented here.
 - build.yml now uses `actions/cache@v5`
 
 ### Fixed
+- gale: bumped recipe to v0.11.2 for generation
+  reliability fixes and `doctor --repair`
 - zig: fixed lib path for 0.15.2 prebuilt tarball
   (layout changed from lib/zig/ to lib/)
 - autoconf: added m4 build and runtime dependency

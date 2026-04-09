@@ -19,5 +19,12 @@ steps = [
   "make install",
 ]
 
+[build.darwin-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --disable-docs --disable-man --disable-runtime",
+  "make -j${JOBS}",
+  "make install",
+]
+
 [dependencies]
 build = []

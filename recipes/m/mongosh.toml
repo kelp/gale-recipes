@@ -15,7 +15,7 @@ released_at = "2026-03-26"
 
 [build]
 steps = [
-  "npm install -g --prefix=${PREFIX} .",
+  "TARBALL=$(npm pack) && npm install -g --prefix=${PREFIX} \"$TARBALL\"",
 ]
 
 [dependencies]

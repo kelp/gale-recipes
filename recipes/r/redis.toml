@@ -13,8 +13,14 @@ released_at = "2026-03-24"
 
 [build]
 steps = [
-  "make -j${JOBS} BUILD_TLS=yes",
-  "make install PREFIX=${PREFIX} BUILD_TLS=yes",
+  "make -C src -j${JOBS} BUILD_TLS=yes redis-server redis-cli redis-benchmark redis-check-rdb redis-check-aof",
+  "install -d ${PREFIX}/bin",
+  "install src/redis-server ${PREFIX}/bin/redis-server",
+  "install src/redis-cli ${PREFIX}/bin/redis-cli",
+  "install src/redis-benchmark ${PREFIX}/bin/redis-benchmark",
+  "ln -sf redis-server ${PREFIX}/bin/redis-check-rdb",
+  "ln -sf redis-server ${PREFIX}/bin/redis-check-aof",
+  "ln -sf redis-server ${PREFIX}/bin/redis-sentinel",
 ]
 
 [dependencies]

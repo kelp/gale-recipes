@@ -14,7 +14,7 @@ released_at = "2025-01-15"
 [build]
 system = "python"
 steps = [
-  "pip install --prefix=${PREFIX} --no-deps .",
+  "${DEP_PYTHON}/bin/python3 -m pip install --prefix=${PREFIX} --no-deps .",
 ]
 
 [dependencies]

@@ -4,6 +4,7 @@ version = "2.1.6"
 description = "Traces the route taken by packets over an IP network"
 license = "GPL-2.0-only"
 homepage = "https://traceroute.sourceforge.net/"
+platforms = ["linux-amd64", "linux-arm64"]
 
 [source]
 url = "https://sourceforge.net/projects/traceroute/files/traceroute/traceroute-2.1.6/traceroute-2.1.6.tar.gz/download"
