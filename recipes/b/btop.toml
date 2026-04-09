@@ -14,7 +14,7 @@ sha256 = "4beb90172c6acaac08c1b4a5112fb616772e214a7ef992bcbd461453295a58be"
 
 [build]
 steps = [
-  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release",
+  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF",
   "cmake --build builddir -j ${JOBS}",
   "cmake --install builddir",
 ]
@@ -22,7 +22,7 @@ steps = [
 [build.linux-amd64]
 toolchain = "llvm"
 steps = [
-  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_RPATH=${DEP_LLVM}/lib -DCMAKE_INSTALL_RPATH=${DEP_LLVM}/lib",
+  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF",
   "cmake --build builddir -j ${JOBS}",
   "cmake --install builddir",
 ]
@@ -30,7 +30,7 @@ steps = [
 [build.linux-arm64]
 toolchain = "llvm"
 steps = [
-  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_RPATH=${DEP_LLVM}/lib -DCMAKE_INSTALL_RPATH=${DEP_LLVM}/lib",
+  "cmake -B builddir -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF",
   "cmake --build builddir -j ${JOBS}",
   "cmake --install builddir",
 ]
