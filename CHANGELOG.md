@@ -33,6 +33,9 @@ All notable changes to gale-recipes are documented here.
 - build.yml accepts comma-separated recipe names
 - Verify step handles script binaries (Perl, Python)
   that can't run outside their install prefix
+- CI now treats Gale's `unsupported platform` build
+  result as a skip instead of failing the whole matrix
+- build.yml now uses `actions/cache@v5`
 
 ### Fixed
 - zig: fixed lib path for 0.15.2 prebuilt tarball
@@ -46,6 +49,12 @@ All notable changes to gale-recipes are documented here.
 - python: removed --enable-shared flag
 - git-delta, starship: renamed zlib-ng-compat dep to zlib
 - justfile: updated --source flag to --path for gale 0.8.0
+- llvm: restricted prebuilt bootstrap recipe to Linux
+  platforms where it is currently supported in CI
+- gale: corrected v0.11.1 source tarball sha256
+- btop: disabled upstream CMake tests during package
+  builds so Linux LLVM builds do not fail in GoogleTest
+  discovery before install
 
 ## 2026-04-01
 
