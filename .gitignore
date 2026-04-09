@@ -1,3 +1,7 @@
 .direnv/
 .gale/
 *.tar.zst
+.pi/
+.pi-lens/
+docs/superpowers/
+*.lock
