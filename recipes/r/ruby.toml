@@ -1,14 +1,14 @@
 [package]
 name = "ruby"
-version = "3.4.2"
+version = "4.0.2"
 description = "Powerful, clean, object-oriented scripting language"
 license = "Ruby"
 homepage = "https://www.ruby-lang.org/"
 
 [source]
 repo = "ruby/ruby"
-url = "https://cache.ruby-lang.org/pub/ruby/3.4/ruby-3.4.2.tar.gz"
-sha256 = "41328ac21f2bfdd7de6b3565ef4f0dd7543354d37e96f157a1552a6bd0eb364b"
+url = "https://cache.ruby-lang.org/pub/ruby/4.0/ruby-4.0.2.tar.gz"
+sha256 = "51502b26b50b68df4963336ca41e368cde92c928faf91654de4c4c1791f82aac"
 
 [build]
 steps = [
@@ -17,6 +17,20 @@ steps = [
   "make install",
 ]
 
+[build.linux-amd64]
+steps = [
+  "./configure --prefix=${PREFIX} --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --with-baseruby=no",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[build.linux-arm64]
+steps = [
+  "./configure --prefix=${PREFIX} --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --with-baseruby=no",
+  "make -j${JOBS}",
+  "make install",
+]
+
 [dependencies]
-build = ["pkgconf", "openssl", "libyaml", "zlib", "readline", "ncurses"]
-runtime = ["openssl", "libyaml"]
+build = ["pkgconf", "libffi", "openssl", "libyaml", "zlib", "readline", "ncurses"]
+runtime = ["libffi", "openssl", "libyaml"]
