@@ -4,6 +4,12 @@ All notable changes to gale-recipes are documented here.
 
 ## Unreleased
 
+### Changed
+- gale: bumped recipe to v0.11.3 for the no-op update
+  generation rebuild fix
+- CI now pins the Gale build bootstrap version to v0.11.3
+  instead of resolving the latest release dynamically
+
 ### Added
 - linux-arm64 build support for 15 recipes:
   1password-cli, bun, coreutils, gmp, go,

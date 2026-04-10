@@ -106,28 +106,22 @@ jobs:
           - os: ubuntu-24.04-arm
             platform: linux-arm64
     runs-on: ${{ matrix.target.os }}
+    env:
+      GALE_VERSION: v0.11.3
     steps:
-      - name: Resolve latest gale version
-        id: gale-version
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(gh release view --repo kelp/gale \
-            --json tagName --jq '.tagName')
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Using gale ${VERSION}"
+      - name: Use pinned gale version
+        run: echo "Using gale ${GALE_VERSION}"
 
       - name: Cache gale binary
         id: cache-gale
         uses: actions/cache@v5
         with:
           path: gale-bin
-          key: gale-${{ steps.gale-version.outputs.version }}-${{ matrix.target.platform }}
+          key: gale-${{ env.GALE_VERSION }}-${{ matrix.target.platform }}
 
       - name: Download gale release binary
         if: steps.cache-gale.outputs.cache-hit != 'true'
         env:
-          GALE_VERSION: ${{ steps.gale-version.outputs.version }}
           PLATFORM: ${{ matrix.target.platform }}
         run: |
           mkdir -p gale-bin

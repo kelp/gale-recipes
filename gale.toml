@@ -1,7 +1,7 @@
 [packages]
   actionlint = "1.7.11"
   cmake = "4.3.1"
-  gale = "0.9.0"
+  gale = "0.11.3"
   ncurses = "6.4"
   python = "3.12.8"
   readline = "8.2"
