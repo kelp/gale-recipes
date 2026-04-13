@@ -1,0 +1,22 @@
+[package]
+name = "flarectl"
+version = "0.116.0"
+description = "Cloudflare CLI from cloudflare-go"
+license = "BSD-3-Clause"
+homepage = "https://github.com/cloudflare/cloudflare-go"
+
+[source]
+repo = "cloudflare/cloudflare-go"
+url = "https://github.com/cloudflare/cloudflare-go/archive/refs/tags/v0.116.0.tar.gz"
+sha256 = "d594cdf6730046eae27240324d32a8f43a2affa7f61706459ae912fa9f4d085b"
+released_at = "2025-10-14"
+
+[build]
+system = "go"
+steps = [
+  "mkdir -p ${PREFIX}/bin",
+  "CGO_ENABLED=0 go build -trimpath -ldflags \"-s -w\" -o ${PREFIX}/bin/flarectl ./cmd/flarectl",
+]
+
+[dependencies]
+build = ["go"]
