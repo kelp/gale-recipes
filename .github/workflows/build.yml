@@ -12,10 +12,6 @@ on:
         description: 'Recipe names, comma-separated (blank = changed only)'
         required: false
 
-concurrency:
-  group: build-${{ github.ref }}-${{ inputs.recipe }}
-  cancel-in-progress: true
-
 permissions:
   contents: write
   packages: write
@@ -142,6 +138,9 @@ jobs:
     needs: [discover, build-gale]
     if: needs.discover.outputs.recipes != '[]'
     timeout-minutes: 180
+    concurrency:
+      group: build-${{ matrix.recipe }}-${{ matrix.target.platform }}-${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       max-parallel: 6
