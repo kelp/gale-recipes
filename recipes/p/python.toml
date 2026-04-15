@@ -17,6 +17,9 @@ steps = [
   "./configure --prefix=${PREFIX} --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
   "make -j${JOBS}",
   "make install",
+  # tkinter is intentionally disabled (no tcl/tk in gale);
+  # idle depends on it, so the idle bins can't run.
+  "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
 ]
 
 # On Linux, --enable-shared is needed so that consumers
@@ -28,6 +31,9 @@ steps = [
   "./configure --prefix=${PREFIX} --enable-shared --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
   "make -j${JOBS}",
   "make install",
+  # tkinter is intentionally disabled (no tcl/tk in gale);
+  # idle depends on it, so the idle bins can't run.
+  "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
 ]
 
 [build.linux-arm64]
@@ -35,7 +41,14 @@ steps = [
   "./configure --prefix=${PREFIX} --enable-shared --enable-ipv6 --enable-optimizations --with-lto --with-ensurepip=upgrade --with-openssl=${DEP_OPENSSL} --enable-loadable-sqlite-extensions py_cv_module__tkinter=n/a LDFLAGS_NODIST=\"$LDFLAGS\" CPPFLAGS=\"$CPPFLAGS\"",
   "make -j${JOBS}",
   "make install",
+  # tkinter is intentionally disabled (no tcl/tk in gale);
+  # idle depends on it, so the idle bins can't run.
+  "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
 ]
 
 [dependencies]
 build = ["bzip2", "libffi", "ncurses", "openssl", "readline", "sqlite", "xz", "zlib"]
+# python's extension modules (_ssl, _hashlib, _sqlite3,
+# _lzma, _ctypes, _bz2, readline, zlib, _curses) dlopen
+# these libs at runtime via rpath into the gale store.
+runtime = ["bzip2", "libffi", "ncurses", "openssl", "readline", "sqlite", "xz", "zlib"]
