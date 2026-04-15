@@ -4,6 +4,6 @@
   flarectl = "0.116.0"
   gale = "0.11.3"
   ncurses = "6.4"
-  python = "3.12.8"
+  python = "3.14.4"
   readline = "8.2"
   vibeutils = "0.8.2"

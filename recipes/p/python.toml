@@ -1,15 +1,15 @@
 [package]
 name = "python"
-version = "3.12.8"
+version = "3.14.4"
 description = "The Python programming language"
 license = "Python-2.0"
 homepage = "https://www.python.org/"
 
 [source]
 repo = "python/cpython"
-url = "https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz"
-sha256 = "5978435c479a376648cb02854df3b892ace9ed7d32b1fead652712bee9d03a45"
-released_at = "2025-01-15"
+url = "https://www.python.org/ftp/python/3.14.4/Python-3.14.4.tgz"
+sha256 = "b4c059d5895f030e7df9663894ce3732bfa1b32cd3ab2883980266a45ce3cb3b"
+released_at = "2026-04-07"
 
 [build]
 system = "autotools"
@@ -20,7 +20,7 @@ steps = [
 ]
 
 # On Linux, --enable-shared is needed so that consumers
-# linking against libpython3.12 (e.g. postgresql's plpython3)
+# linking against libpython3.14 (e.g. postgresql's plpython3)
 # can do so from a shared object. Without it, libpython is
 # a static archive without -fPIC and fails shared linking.
 [build.linux-amd64]
