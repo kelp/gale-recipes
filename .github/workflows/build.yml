@@ -378,6 +378,13 @@ jobs:
             exit 0
           fi
 
+          # Smoke runs against the regular install to catch
+          # functional regressions (e.g. a remote helper that
+          # crashes on real HTTPS). The missing-runtime-dep
+          # class is caught separately by check_install.py;
+          # a fresh-HOME test here would require a local
+          # --archive install mode in gale that doesn't
+          # exist yet.
           gale install "${RECIPE_NAME}" \
             --recipe "${RECIPE_FILE}"
           python3 scripts/run_smoke.py \

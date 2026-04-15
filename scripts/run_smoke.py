@@ -49,10 +49,13 @@ def platform_triple() -> tuple[str, str, str]:
 
 
 def resolve_prefix(name: str, version: str) -> Path:
-    """Default install path under the gale store."""
-    home = Path(os.environ.get("GALE_HOME",
-                               Path.home() / ".gale"))
-    return home / "pkg" / name / version
+    """Default install path under the gale store.
+
+    Gale resolves its store as $HOME/.gale/pkg/<name>/<ver>.
+    Override $HOME to target a different store (e.g. a fresh
+    temp dir for clean-install smoke testing).
+    """
+    return Path.home() / ".gale" / "pkg" / name / version
 
 
 def substitute(cmd: str, env: dict[str, str]) -> str:
