@@ -19,3 +19,10 @@ steps = [
 [dependencies]
 build = ["gnumake", "pkgconf"]
 runtime = ["curl", "expat", "openssl", "pcre2", "zlib"]
+
+[smoke]
+commands = [
+  "${PREFIX}/bin/git --version",
+  "${PREFIX}/bin/git clone --depth 1 https://github.com/kelp/gale-recipes.git ${TMPDIR}/clone",
+  "${PREFIX}/bin/git -C ${TMPDIR}/clone log -1 --format=%H",
+]

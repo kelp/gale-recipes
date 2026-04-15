@@ -347,6 +347,43 @@ jobs:
           echo "Verified: $(basename "$BIN") runs"
           rm -rf "$VERIFY_DIR"
 
+      - name: Check install (rpath vs runtime deps)
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          CHECK_DIR=$(mktemp -d)
+          tar --zstd -xf "${ARCHIVE}" -C "${CHECK_DIR}"
+          python3 scripts/check_install.py \
+            --recipe "${RECIPE_FILE}" \
+            --prefix "${CHECK_DIR}"
+          rm -rf "${CHECK_DIR}"
+
+      - name: Install and smoke test
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          # Only install + smoke if the recipe defines a
+          # [smoke] section. python -c is the cheapest probe.
+          HAS_SMOKE=$(python3 -c "
+          import sys, tomllib
+          with open('${RECIPE_FILE}', 'rb') as f:
+              r = tomllib.load(f)
+          sys.exit(0 if r.get('smoke', {}).get('commands') else 1)
+          " && echo yes || echo no)
+
+          if [ "$HAS_SMOKE" != "yes" ]; then
+            echo "No [smoke] section; skipping"
+            exit 0
+          fi
+
+          gale install "${RECIPE_NAME}" \
+            --recipe "${RECIPE_FILE}"
+          python3 scripts/run_smoke.py \
+            --recipe "${RECIPE_FILE}"
+
       - name: Upload build log on failure
         if: failure() && steps.build.outputs.skipped != 'true'
         uses: actions/upload-artifact@v7
