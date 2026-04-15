@@ -17,5 +17,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["curl", "expat", "gnumake", "pkgconf", "zlib"]
-runtime = ["openssl", "pcre2"]
+build = ["gnumake", "pkgconf"]
+runtime = ["curl", "expat", "openssl", "pcre2", "zlib"]
