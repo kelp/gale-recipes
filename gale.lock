@@ -9,7 +9,7 @@
     sha256 = "59b098b695f5436e781a57804d70fb975100e1f4b3defefb1efee3799e8642e3"
   [packages.git]
     version = "2.53.0"
-    sha256 = "fb39cb9512ee3ee4785841101dc2dd29e177beeadd46953d08a4b1747061e9ae"
+    sha256 = "0a4885f0b1b994e1d7d278329a2279a2ca1d2adb991cd10bb17704337c20c421"
   [packages.ncurses]
     version = "6.4"
   [packages.python]
