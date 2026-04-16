@@ -15,7 +15,7 @@ sha256 = "fe82fe2e9af98dfcad8c0266a283ca349b78fd46989fff0d5e1ffca644b514bd"
 [build]
 system = "cmake"
 steps = [
-  "sdk=$([ \"${OS}\" = darwin ] && xcrun --show-sdk-path 2>/dev/null || true); [ -n \"$sdk\" ] && export CFLAGS=\"-O2 -isysroot $sdk\" CXXFLAGS=\"-O2 -isysroot $sdk\" SDKROOT=\"$sdk\"; cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DINSTALL_INCLUDEDIR=include/mysql -DINSTALL_MANDIR=share/man -DINSTALL_DOCDIR=share/doc/mariadb -DINSTALL_INFODIR=share/info -DINSTALL_MYSQLSHAREDIR=share/mysql -DWITH_PCRE=system -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_UNIT_TESTS=OFF -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_LIBFMT=bundled -DPLUGIN_MROONGA=NO -DPLUGIN_CONNECT=NO -DCONNECT_WITH_JDBC=OFF ${sdk:+-DCMAKE_OSX_SYSROOT=$sdk}",
+  "sdk=$([ \"${OS}\" = darwin ] && xcrun --show-sdk-path 2>/dev/null || true); [ -n \"$sdk\" ] && export CFLAGS=\"-O2 -isystem $sdk/usr/include\" CXXFLAGS=\"-O2 -isystem $sdk/usr/include/c++/v1 -isystem $sdk/usr/include\" SDKROOT=\"$sdk\"; cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DINSTALL_INCLUDEDIR=include/mysql -DINSTALL_MANDIR=share/man -DINSTALL_DOCDIR=share/doc/mariadb -DINSTALL_INFODIR=share/info -DINSTALL_MYSQLSHAREDIR=share/mysql -DWITH_PCRE=system -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_UNIT_TESTS=OFF -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_LIBFMT=bundled -DPLUGIN_MROONGA=NO -DPLUGIN_CONNECT=NO -DCONNECT_WITH_JDBC=OFF ${sdk:+-DCMAKE_OSX_SYSROOT=$sdk}",
   "cmake --build build -j${JOBS}",
   "cmake --install build",
 ]
