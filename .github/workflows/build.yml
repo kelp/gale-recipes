@@ -308,6 +308,9 @@ jobs:
           for sp in "${VERIFY_DIR}"/lib/python*/site-packages; do
             [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
           done
+          for sp in "${VERIFY_DIR}"/lib/*/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
           export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
           export PATH="${VERIFY_DIR}/bin:${PATH}"
 
