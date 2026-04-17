@@ -82,9 +82,17 @@ jobs:
               echo "No recipe files changed"
               echo "recipes=[]" >> "$GITHUB_OUTPUT"
             else
-              RECIPES=$(echo "$CHANGED" | while read -r f; do
+              # Names from changed files.
+              NAMES=$(echo "$CHANGED" | while read -r f; do
                 [ -f "$f" ] && basename "$f" .toml
-              done | sort -u | jq -R . | jq -sc .)
+              done | sort -u)
+              # Expand to include transitive dependents.
+              # A revision bump on X must also rebuild
+              # anything that depends on X, so CI publishes
+              # fresh prebuilts for the whole cascade.
+              EXPANDED=$(echo "$NAMES" | \
+                python3 scripts/expand_changed.py)
+              RECIPES=$(echo "$EXPANDED" | jq -R . | jq -sc .)
               echo "recipes=${RECIPES}" >> "$GITHUB_OUTPUT"
             fi
           fi

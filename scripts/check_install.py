@@ -234,8 +234,14 @@ def main() -> int:
         recipe = tomllib.load(f)
 
     name = recipe["package"]["name"]
-    runtime_deps = set(
-        recipe.get("dependencies", {}).get("runtime", []))
+    # Deps can be bare strings or {name, version} tables.
+    # Extract just the name for the allowed-deps set.
+    runtime_deps = set()
+    for entry in recipe.get("dependencies", {}).get("runtime", []):
+        if isinstance(entry, str):
+            runtime_deps.add(entry)
+        elif isinstance(entry, dict) and "name" in entry:
+            runtime_deps.add(entry["name"])
 
     cleanup = None
     if args.archive:
