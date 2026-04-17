@@ -5,6 +5,17 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Changed
+- git: statically links curl, expat, pcre2, zstd, and
+  libidn2 so git-remote-http no longer depends on those
+  dylibs at runtime. Fixes a dyld failure class where a
+  curl (or other dep) upgrade broke `git pull` until git
+  was rebuilt. openssl stays dynamic for security update
+  flexibility.
+- expat: switched from cmake to autotools so the build
+  produces `libexpat.a` alongside the shared library.
+  cmake for this version ignores `EXPAT_BUILD_STATIC` and
+  ships shared-only; dependents (e.g. git) need the static
+  archive to link statically.
 - gale: bumped recipe to v0.11.3 for the no-op update
   generation rebuild fix
 - CI now pins the Gale build bootstrap version to v0.11.3
