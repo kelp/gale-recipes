@@ -10,15 +10,40 @@ repo = "git/git"
 url = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.53.0.tar.xz"
 sha256 = "5818bd7d80b061bbbdfec8a433d609dc8818a05991f731ffc4a561e2ca18c653"
 
-[build]
+# Statically link curl, expat, pcre2, zstd, and libidn2 so
+# git-remote-http does not depend on @rpath dylibs for these
+# libs at runtime. If curl or any dep is updated, git keeps
+# working. openssl stays dynamic for security update
+# flexibility.
+#
+# CURL_LDFLAGS overrides curl-config --libs with the static
+# archive plus curl's transitive deps.
+#
+# SLIB is a temp dir containing only .a symlinks prepended
+# to the linker search path, so -lexpat, -lpcre2-8, -lzstd,
+# and -lidn2 all resolve to static archives.
+
+[build.darwin-arm64]
 steps = [
-  "make -j${JOBS} prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"$LDFLAGS\"",
-  "make prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"$LDFLAGS\" install",
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make -j${JOBS} prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lldap -framework CoreFoundation -framework CoreServices -framework SystemConfiguration\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\"",
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lldap -framework CoreFoundation -framework CoreServices -framework SystemConfiguration\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\" install",
+]
+
+[build.linux-amd64]
+steps = [
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make -j${JOBS} prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lpthread\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\"",
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lpthread\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\" install",
+]
+
+[build.linux-arm64]
+steps = [
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make -j${JOBS} prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lpthread\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\"",
+  "SLIB=$(mktemp -d) && ln -s ${DEP_EXPAT}/lib/libexpat.a ${DEP_PCRE2}/lib/libpcre2-8.a ${DEP_ZSTD}/lib/libzstd.a ${DEP_LIBIDN2}/lib/libidn2.a \"$SLIB/\" && make prefix=${PREFIX} RUNTIME_PREFIX=1 NO_GETTEXT=1 NO_TCLTK=1 USE_LIBPCRE2=1 INSTALL_SYMLINKS=1 LIBPCREDIR=${DEP_PCRE2} CURLDIR=${DEP_CURL} CURL_LDFLAGS=\"${DEP_CURL}/lib/libcurl.a -lssl -lcrypto -lzstd -lidn2 -lz -lpthread\" CC=cc CFLAGS=\"$CFLAGS $CPPFLAGS\" LDFLAGS=\"-L$SLIB $LDFLAGS\" install",
 ]
 
 [dependencies]
-build = ["gnumake", "pkgconf"]
-runtime = ["curl", "expat", "openssl", "pcre2", "zlib"]
+build = ["curl", "expat", "gnumake", "pcre2", "pkgconf"]
+runtime = ["openssl", "zlib"]
 
 [smoke]
 commands = [

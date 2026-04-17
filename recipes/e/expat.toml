@@ -10,13 +10,15 @@ repo = "libexpat/libexpat"
 url = "https://github.com/libexpat/libexpat/releases/download/R_2_7_5/expat-2.7.5.tar.gz"
 sha256 = "9931f9860d18e6cf72d183eb8f309bfb96196c00e1d40caa978e95bc9aa978b6"
 
+# Use autotools rather than cmake so we get both shared and
+# static libraries. cmake builds shared only by default for
+# this version and ignores EXPAT_BUILD_STATIC.
 [build]
-system = "cmake"
 steps = [
-  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF -DEXPAT_BUILD_DOCS=OFF",
-  "cmake --build build -j${JOBS}",
-  "cmake --install build",
+  "./configure --prefix=${PREFIX} --disable-silent-rules",
+  "make -j${JOBS}",
+  "make install",
 ]
 
 [dependencies]
-build = ["cmake"]
+build = []
