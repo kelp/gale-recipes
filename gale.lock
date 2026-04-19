@@ -1,4 +1,7 @@
 [packages]
+  [packages.actionlint]
+    version = "1.7.11"
+    sha256 = "de52466fcc2755468e8c4c61d37822b5f79749840fada4a94167e4e3d51611b9"
   [packages.cmake]
     version = "4.3.1"
     sha256 = "7428bf6ecf7d2bc8794fa5f5ede3d62acb91a0d317349942cd9b3d84b2b08789"
