@@ -111,7 +111,7 @@ jobs:
             platform: linux-arm64
     runs-on: ${{ matrix.target.os }}
     env:
-      GALE_VERSION: v0.11.3
+      GALE_VERSION: v0.12.2
     steps:
       - name: Use pinned gale version
         run: echo "Using gale ${GALE_VERSION}"
@@ -511,6 +511,50 @@ jobs:
             echo "Wrote ${BINARIES_FILE}"
           done
 
+      # Revision-qualified .versions entries. A recipe at
+      # revision > 1 gets a `<version>-<revision> <commit-sha>`
+      # line appended to its .versions file so gale's registry
+      # resolver can find the prebuilt via an explicit revision
+      # request (gale install foo@1.2.3-2). Revision 1 entries
+      # stay in bare form for back-compat with older clients.
+      - name: Update .versions with revision entries
+        run: |
+          shopt -s nullglob
+          RECIPES=$(for META in /tmp/metadata/*.json; do
+            jq -r '.recipe' "$META"
+          done | sort -u)
+
+          for RECIPE in $RECIPES; do
+            LETTER="${RECIPE:0:1}"
+            RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
+            VERSIONS_FILE="recipes/${LETTER}/${RECIPE}.versions"
+
+            VERSION=$(grep '^version' "$RECIPE_FILE" | \
+              head -1 | sed 's/.*= *"//; s/".*//')
+            REVISION=$(grep '^revision' "$RECIPE_FILE" | \
+              head -1 | sed 's/.*= *//; s/[^0-9].*//')
+
+            if [ -z "$REVISION" ] || \
+               [ "$REVISION" -lt 1 ] 2>/dev/null; then
+              REVISION=1
+            fi
+
+            if [ "$REVISION" -le 1 ]; then
+              echo "${RECIPE} rev=1, no .versions update needed"
+              continue
+            fi
+
+            ENTRY_KEY="${VERSION}-${REVISION}"
+            if [ -f "$VERSIONS_FILE" ] && \
+               grep -q "^${ENTRY_KEY} " "$VERSIONS_FILE"; then
+              echo "${ENTRY_KEY} already in ${VERSIONS_FILE}"
+            else
+              printf '%s %s\n' "$ENTRY_KEY" "$GITHUB_SHA" \
+                >> "$VERSIONS_FILE"
+              echo "Appended ${ENTRY_KEY} to ${VERSIONS_FILE}"
+            fi
+          done
+
       - name: Set up Go for signing
         uses: actions/setup-go@v6
         with:
@@ -534,9 +578,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          # Collect new and modified .binaries.toml files.
-          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' 'recipes/**/*.sig' || true)
-          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' 'recipes/**/*.sig' || true)
+          # Collect new and modified .binaries.toml, .versions,
+          # and .sig files. .versions is updated in the step
+          # above when a recipe ships at revision > 1.
+          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' 'recipes/**/*.versions' 'recipes/**/*.sig' || true)
+          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' 'recipes/**/*.versions' 'recipes/**/*.sig' || true)
           FILES=$(printf '%s\n%s' "$CHANGED" "$UNTRACKED" | sort -u | grep . || true)
 
           if [ -z "$FILES" ]; then
@@ -586,7 +632,7 @@ jobs:
                     branchName: "main"
                   },
                   message: {
-                    headline: "Update .binaries.toml from build"
+                    headline: "Update .binaries.toml and .versions from build"
                   },
                   expectedHeadOid: $oid,
                   fileChanges: { additions: $adds }
