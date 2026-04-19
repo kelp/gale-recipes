@@ -1,6 +1,10 @@
 [packages]
   [packages.cmake]
     version = "4.3.1"
+    sha256 = "7428bf6ecf7d2bc8794fa5f5ede3d62acb91a0d317349942cd9b3d84b2b08789"
+  [packages.expat]
+    version = "2.7.5"
+    sha256 = "a632bc11e16985863a66a4b08ccf8b43582d6badc7ce3bfe885e42481af16140"
   [packages.flarectl]
     version = "0.116.0"
     sha256 = "de3f1447d84af581874844244fdcde9f05a92c29e96a310d292c4091b2e8a070"
@@ -12,9 +16,13 @@
     sha256 = "0a4885f0b1b994e1d7d278329a2279a2ca1d2adb991cd10bb17704337c20c421"
   [packages.ncurses]
     version = "6.4"
+    sha256 = "96849d32819812496b1e2ae46231e3a1bd2f51614afecf8bee848fe84cdb3e2d"
   [packages.python]
     version = "3.12.8"
     sha256 = "a354713767bb05f47839c0d4f851c2efa1119a538457eddbf2772e5ca7b15d34"
+  [packages.readline]
+    version = "8.2"
+    sha256 = "2bb642a6f2112bcd95fe7bbe202245b463fee6a97a1c2deae69ccd65e5d2cbb2"
   [packages.vibeutils]
     version = "0.8.2"
     sha256 = "286270472f03c866fe56875e3aabfe0beed558c2fb9c9ade16bcbc809e80661a"

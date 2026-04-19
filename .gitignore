@@ -5,3 +5,4 @@
 .pi-lens/
 docs/superpowers/
 *.lock
+.claude/

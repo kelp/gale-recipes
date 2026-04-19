@@ -1,6 +1,7 @@
 [packages]
   actionlint = "1.7.11"
   cmake = "4.3.1"
+  expat = "2.7.5"
   flarectl = "0.116.0"
   gale = "0.11.3"
   git = "2.53.0"

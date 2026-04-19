@@ -65,4 +65,12 @@ but isn't useful until this is solved.
 - [x] Recipe signing in CI
 - [x] Post-edit gale lint hook
 - [x] Recipe-creator agent definition
+- [x] Static rpath check (`check_install.py`)
+- [x] Smoke test runner (`run_smoke.py`)
+- [ ] Add `[smoke]` sections to more recipes
+      (curl, python, fish, etc.)
+- [ ] Nightly fresh-env smoke workflow (pull from GHCR
+      into empty store after `update-recipes` lands)
+- [ ] Audit recipes for build-vs-runtime dep
+      misclassification (shared libs in `build` only)
 - [ ] GNU auto-update (gitweb/FTP version detection)
