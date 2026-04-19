@@ -419,7 +419,7 @@ jobs:
         with:
           subject-path: ${{ steps.build.outputs.archive }}
 
-      - uses: oras-project/setup-oras@v1
+      - uses: oras-project/setup-oras@v2
         if: steps.build.outputs.skipped != 'true'
 
       - name: Login to GHCR
