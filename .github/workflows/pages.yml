@@ -1,0 +1,58 @@
+name: Publish Pages
+
+on:
+  # Refresh the dashboard whenever Build Recipes finishes,
+  # so .binaries.toml updates are reflected promptly.
+  workflow_run:
+    workflows: ["Build Recipes"]
+    types: [completed]
+    branches: [main]
+  # Manual regen (also used for the first run to create
+  # the gh-pages branch).
+  workflow_dispatch:
+  # Ship generator/template tweaks immediately without
+  # waiting for a build.
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/gen_status_page.py'
+      - 'scripts/templates/**'
+      - '.github/workflows/pages.yml'
+
+# Only one publish in flight at a time.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # For workflow_run, github.sha points at the
+          # triggering run's commit — but build.yml commits
+          # .binaries.toml updates afterward, so we
+          # explicitly pull latest main.
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Generate site
+        run: python3 scripts/gen_status_page.py --repo-root . --out-dir _site
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          # Single-commit history keeps the branch small.
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Publish build status dashboard'

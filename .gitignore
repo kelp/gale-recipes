@@ -6,3 +6,4 @@
 docs/superpowers/
 *.lock
 .claude/
+_site/

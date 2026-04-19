@@ -18,6 +18,15 @@ check-install recipe *ARGS:
 smoke recipe *ARGS:
     python3 scripts/run_smoke.py --recipe {{recipe}} {{ARGS}}
 
+# Generate the static build-status dashboard into _site/.
+gen-pages:
+    python3 scripts/gen_status_page.py --repo-root . --out-dir _site
+
+# Serve the generated dashboard at http://localhost:8000/.
+# Run `just gen-pages` first.
+serve-pages:
+    python3 -m http.server -d _site 8000
+
 # Update gale from source (sibling repo).
 # Falls back to building from source if gale isn't
 # installed or is too old to have the update command.
