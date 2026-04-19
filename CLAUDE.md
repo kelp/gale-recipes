@@ -21,6 +21,17 @@ See README.md for the full format. Required fields:
 Binary metadata lives in separate `.binaries.toml`
 files managed by CI.
 
+Recipes may also declare `[package] revision = N`
+(integer, defaults to 1). Bump the revision when the
+binary should change but upstream didn't — build-flag
+change, post-install cleanup, dep soname bump that
+requires re-linking, CI toolchain upgrade. Don't bump
+for doc-only edits; a revision bump triggers a rebuild
+across every platform and surfaces as an update on
+every user machine. Full semantics, `.gale-deps.toml`
+staleness model, and shared dylib farm in
+[`../gale/docs/revisions.md`](../gale/docs/revisions.md).
+
 ## Testing a Recipe
 
 Build a recipe (produces a tar.zst archive):
@@ -189,3 +200,10 @@ against by other packages. See
 - CI's update-recipes job commits binary sections back
   to main. Always `git pull --rebase` before pushing to
   avoid rejected pushes.
+- Revision bumps cascade: once a recipe's revision
+  increments, CI rebuilds it across every platform and
+  the rebuild shows up as a pullable update on every
+  user machine. Any dependent recipe with a strict
+  runtime dep (bare string, no version range constraint)
+  will also be flagged stale on users' machines. See
+  [`../gale/docs/revisions.md`](../gale/docs/revisions.md).
