@@ -5,6 +5,14 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Changed
+- jq: drops `libonig.*` and `oniguruma.pc` after
+  `make install`. The recipe builds with
+  `--with-oniguruma=builtin` (static link), but autotools
+  still installed the shared library and pkg-config file,
+  causing a recurring `farm conflict: libonig.5.dylib
+  claimed by both "jq" and "oniguruma"` warning on every
+  sync. Required before gale propagates farm conflicts as
+  install errors.
 - git: statically links curl, expat, pcre2, zstd, and
   libidn2 so git-remote-http no longer depends on those
   dylibs at runtime. Fixes a dyld failure class where a
@@ -20,6 +28,15 @@ All notable changes to gale-recipes are documented here.
   generation rebuild fix
 - CI now pins the Gale build bootstrap version to v0.11.3
   instead of resolving the latest release dynamically
+- CI rebuilds transitive dependents when a recipe changes.
+  `scripts/expand_changed.py` reads changed recipe names,
+  walks every recipe's `[dependencies]` (build/runtime/
+  platform, bare-string and table-form alike), inverts the
+  graph, and expands the build matrix to the full dependent
+  closure. A revision bump on openssl now pre-builds every
+  dependent in one CI run instead of cascading into local
+  source rebuilds for each user. `check_install.py` also
+  learned to accept table-form dep declarations.
 
 ### Added
 - linux-arm64 build support for 15 recipes:
