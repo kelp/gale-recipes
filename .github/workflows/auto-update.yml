@@ -1,8 +1,14 @@
 name: Auto-Update Recipes
 
+# Daily check against upstream GitHub releases for every
+# recipe. Writes _data/upstream.json for the dashboard, and
+# opens a PR for any recipe past the 3-day cooldown.
+
 on:
   schedule:
-    - cron: '0 10 * * *'
+    # Off-peak, non-round minute to avoid top-of-hour API
+    # traffic spikes. 09:17 UTC.
+    - cron: '17 9 * * *'
   workflow_dispatch:
     inputs:
       recipe:
@@ -25,8 +31,81 @@ jobs:
           git config user.email \
             "github-actions[bot]@users.noreply.github.com"
 
+      - name: Startup jitter
+        # Cheap insurance against all scheduled workflows
+        # starting at the same sub-minute offset. Only
+        # jitters on the scheduled run, not manual dispatch.
+        if: ${{ github.event_name == 'schedule' }}
+        run: sleep $((RANDOM % 60))
+
       - name: Check for updates
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_RECIPE: ${{ inputs.recipe }}
         run: bash .github/scripts/auto-update.sh "$INPUT_RECIPE"
+
+      # GITHUB_TOKEN commits don't re-trigger workflows —
+      # same pattern build.yml uses for .binaries.toml.
+      # GraphQL createCommitOnBranch auto-signs "Verified"
+      # so the commit passes the signed-commit branch rule.
+      - name: Commit _data/upstream.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ ! -f _data/upstream.json ]; then
+            echo "No _data/upstream.json produced, skipping commit"
+            exit 0
+          fi
+
+          # Only commit when the tracked file actually changed
+          # relative to origin/main. For an untracked new file
+          # the diff is also non-empty; `git status --porcelain`
+          # covers both cases.
+          if [ -z "$(git status --porcelain -- _data/upstream.json)" ]; then
+            echo "upstream.json unchanged, skipping commit"
+            exit 0
+          fi
+
+          ADDITIONS=$(jq -n \
+            --arg path "_data/upstream.json" \
+            --arg contents "$(base64 -w0 < _data/upstream.json)" \
+            '[{"path":$path,"contents":$contents}]')
+
+          HEAD_OID=$(gh api graphql -f query='
+            query($owner:String!,$name:String!) {
+              repository(owner:$owner,name:$name) {
+                ref(qualifiedName:"refs/heads/main") {
+                  target { oid }
+                }
+              }
+            }' -f owner="${REPO%/*}" \
+               -f name="${REPO#*/}" \
+               --jq '.data.repository.ref.target.oid')
+
+          QUERY='mutation($input:CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input:$input) {
+              commit { oid url }
+            }
+          }'
+          gh api graphql --input <(jq -n \
+            --arg query "$QUERY" \
+            --arg repo "$REPO" \
+            --arg oid "$HEAD_OID" \
+            --argjson adds "$ADDITIONS" \
+            '{
+              query: $query,
+              variables: {
+                input: {
+                  branch: {
+                    repositoryNameWithOwner: $repo,
+                    branchName: "main"
+                  },
+                  message: {
+                    headline: "Update _data/upstream.json from daily check"
+                  },
+                  expectedHeadOid: $oid,
+                  fileChanges: { additions: $adds }
+                }
+              }
+            }')

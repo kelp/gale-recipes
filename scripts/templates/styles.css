@@ -3,6 +3,7 @@
   --fg: #1a1a1a;
   --bg: #ffffff;
   --muted: #6b6b6b;
+  --muted-bg: #f1f1f1;
   --border: #e2e2e2;
   --ok: #1f7a3a;
   --ok-bg: #e7f5ec;
@@ -10,6 +11,8 @@
   --fail-bg: #fbeaea;
   --stale: #8a5a00;
   --stale-bg: #fff4d6;
+  --outdated: #7a3a9a;
+  --outdated-bg: #f3eafa;
   --link: #0b5ed7;
   --row-hover: #f6f6f6;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -20,6 +23,7 @@
     --fg: #e6e6e6;
     --bg: #0f1115;
     --muted: #9a9a9a;
+    --muted-bg: #1b1e25;
     --border: #2a2d33;
     --ok: #58c47a;
     --ok-bg: #142416;
@@ -27,6 +31,8 @@
     --fail-bg: #2a1412;
     --stale: #ffb84d;
     --stale-bg: #2a1f0a;
+    --outdated: #c58dff;
+    --outdated-bg: #1f1330;
     --link: #6ab0ff;
     --row-hover: #181b22;
   }
@@ -137,6 +143,8 @@ td.fail { color: var(--fail); background: var(--fail-bg); }
   vertical-align: middle;
 }
 .pill.stale { color: var(--stale); background: var(--stale-bg); }
+.pill.outdated { color: var(--outdated); background: var(--outdated-bg); }
+.pill.untracked { color: var(--muted); background: var(--muted-bg); }
 
 dl {
   display: grid;

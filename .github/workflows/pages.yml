@@ -1,10 +1,11 @@
 name: Publish Pages
 
 on:
-  # Refresh the dashboard whenever Build Recipes finishes,
-  # so .binaries.toml updates are reflected promptly.
+  # Refresh the dashboard whenever Build Recipes or
+  # Auto-Update Recipes finishes, so .binaries.toml and
+  # _data/upstream.json updates are reflected promptly.
   workflow_run:
-    workflows: ["Build Recipes"]
+    workflows: ["Build Recipes", "Auto-Update Recipes"]
     types: [completed]
     branches: [main]
   # Manual regen.

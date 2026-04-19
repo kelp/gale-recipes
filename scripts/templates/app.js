@@ -9,10 +9,14 @@
   const rows = Array.from(tbody.querySelectorAll("tr"));
   const input = document.getElementById("filter");
   const failingOnly = document.getElementById("failing-only");
+  const outdatedOnly = document.getElementById("outdated-only");
 
   function rowMatches(row, q) {
     if (failingOnly && failingOnly.checked) {
       if (!row.querySelector("td.fail")) return false;
+    }
+    if (outdatedOnly && outdatedOnly.checked) {
+      if (row.dataset.outdated !== "true") return false;
     }
     if (!q) return true;
     return (row.dataset.name || "").toLowerCase().includes(q);
@@ -27,6 +31,7 @@
 
   if (input) input.addEventListener("input", applyFilter);
   if (failingOnly) failingOnly.addEventListener("change", applyFilter);
+  if (outdatedOnly) outdatedOnly.addEventListener("change", applyFilter);
 
   // Column sort.
   const headers = Array.from(table.querySelectorAll("thead th"));

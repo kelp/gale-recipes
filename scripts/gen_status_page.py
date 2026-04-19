@@ -34,6 +34,7 @@ import json
 import shutil
 import sys
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 if sys.version_info < (3, 11):
@@ -64,6 +65,60 @@ class VersionEntry:
 
 
 @dataclass
+class Upstream:
+    """Upstream release status for a recipe, loaded from
+    ``_data/upstream.json``. Written by the daily auto-update
+    workflow."""
+
+    status: str  # up_to_date | outdated | untracked | error
+    current_version: str
+    checked_at: str
+    latest_version: str | None = None
+    latest_released_at: str | None = None  # YYYY-MM-DD
+    latest_release_url: str | None = None
+    reason: str | None = None
+
+    @property
+    def is_outdated(self) -> bool:
+        return self.status == "outdated"
+
+    @property
+    def is_tracked(self) -> bool:
+        return self.status in ("up_to_date", "outdated")
+
+    def age_days(self, today: date | None = None) -> int | None:
+        """Days since upstream released ``latest_version``.
+        Computed at render time so the pill stays accurate
+        between daily regenerations."""
+        if not self.latest_released_at:
+            return None
+        try:
+            released = date.fromisoformat(self.latest_released_at)
+        except ValueError:
+            return None
+        return ((today or date.today()) - released).days
+
+    def to_json(self) -> dict:
+        out: dict = {
+            "status": self.status,
+            "current_version": self.current_version,
+            "checked_at": self.checked_at,
+        }
+        if self.latest_version:
+            out["latest_version"] = self.latest_version
+        if self.latest_released_at:
+            out["latest_released_at"] = self.latest_released_at
+            age = self.age_days()
+            if age is not None:
+                out["age_days"] = age
+        if self.latest_release_url:
+            out["latest_release_url"] = self.latest_release_url
+        if self.reason:
+            out["reason"] = self.reason
+        return out
+
+
+@dataclass
 class Recipe:
     name: str
     letter: str
@@ -75,6 +130,7 @@ class Recipe:
     binaries_version: str | None
     platforms: dict[str, Platform]
     versions_history: list[VersionEntry]
+    upstream: Upstream | None = None
 
     @property
     def all_green(self) -> bool:
@@ -91,11 +147,15 @@ class Recipe:
             and self.binaries_version != self.version
         )
 
+    @property
+    def is_outdated(self) -> bool:
+        return self.upstream is not None and self.upstream.is_outdated
+
     def failing_platforms(self) -> list[str]:
         return [p for p in PLATFORMS if not self.platforms[p].ok]
 
     def to_json(self) -> dict:
-        return {
+        out = {
             "name": self.name,
             "letter": self.letter,
             "recipe_path": self.recipe_path,
@@ -114,6 +174,9 @@ class Recipe:
                 for v in self.versions_history
             ],
         }
+        if self.upstream is not None:
+            out["upstream"] = self.upstream.to_json()
+        return out
 
 
 # ---------- loading ----------
@@ -203,16 +266,67 @@ def load_recipe(
     )
 
 
+def load_upstream_map(
+    repo_root: Path,
+) -> dict[str, Upstream]:
+    """Parse ``_data/upstream.json`` into a name→Upstream map.
+    Returns an empty map if the file is missing (first run,
+    before the auto-update workflow has ever succeeded)."""
+    path = repo_root / "_data" / "upstream.json"
+    if not path.exists():
+        return {}
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(
+            f"warning: could not parse {path}: {e}",
+            file=sys.stderr,
+        )
+        return {}
+    recipes = data.get("recipes")
+    if not isinstance(recipes, dict):
+        return {}
+    out: dict[str, Upstream] = {}
+    for name, entry in recipes.items():
+        if not isinstance(entry, dict):
+            continue
+        status = entry.get("status")
+        if not isinstance(status, str):
+            continue
+        current = entry.get("current_version")
+        checked = entry.get("checked_at")
+        if not isinstance(current, str) or not isinstance(checked, str):
+            continue
+
+        def _opt(key: str) -> str | None:
+            v = entry.get(key)
+            return v if isinstance(v, str) and v else None
+
+        out[name] = Upstream(
+            status=status,
+            current_version=current,
+            checked_at=checked,
+            latest_version=_opt("latest_version"),
+            latest_released_at=_opt("latest_released_at"),
+            latest_release_url=_opt("latest_release_url"),
+            reason=_opt("reason"),
+        )
+    return out
+
+
 def load_all_recipes(repo_root: Path) -> list[Recipe]:
     recipes_dir = repo_root / "recipes"
     if not recipes_dir.is_dir():
         sys.exit(f"recipes dir not found: {recipes_dir}")
+    upstream_map = load_upstream_map(repo_root)
     out: list[Recipe] = []
     for toml_path in sorted(recipes_dir.glob("*/*.toml")):
         if toml_path.name.endswith(".binaries.toml"):
             continue
         r = load_recipe(toml_path, repo_root)
         if r is not None:
+            r.upstream = upstream_map.get(r.name)
             out.append(r)
     out.sort(key=lambda r: r.name)
     return out
@@ -234,6 +348,41 @@ def stale_pill_html(r: Recipe) -> str:
     )
 
 
+def _age_phrase(days: int) -> str:
+    if days < 1:
+        return "today"
+    if days == 1:
+        return "1d ago"
+    return f"{days}d ago"
+
+
+def upstream_pill_html(r: Recipe) -> str:
+    u = r.upstream
+    if u is None:
+        return ""
+    if u.status == "up_to_date":
+        # No pill when current — keeps the row quiet.
+        return ""
+    if u.status == "outdated" and u.latest_version:
+        age = u.age_days()
+        age_bit = f" · {_age_phrase(age)}" if age is not None else ""
+        title = (
+            f"upstream {u.latest_version}"
+            f" (released {u.latest_released_at or '?'})"
+        )
+        return (
+            f' <span class="pill outdated" title="{html.escape(title)}">'
+            f"upstream {html.escape(u.latest_version)}{age_bit}"
+            "</span>"
+        )
+    # untracked or error
+    title = u.reason or u.status
+    return (
+        f' <span class="pill untracked" title="{html.escape(title)}">'
+        "untracked</span>"
+    )
+
+
 def platform_cell_html(p: Platform) -> str:
     if p.ok:
         return '<td class="ok" aria-label="built">✓</td>'
@@ -248,6 +397,7 @@ def render_index(recipes: list[Recipe]) -> str:
     all_green = sum(1 for r in recipes if r.all_green)
     with_fail = sum(1 for r in recipes if r.any_red)
     stale = sum(1 for r in recipes if r.is_stale)
+    outdated = sum(1 for r in recipes if r.is_outdated)
     per_plat = {
         p: sum(1 for r in recipes if r.platforms[p].ok)
         for p in PLATFORMS
@@ -255,14 +405,22 @@ def render_index(recipes: list[Recipe]) -> str:
 
     rows: list[str] = []
     for r in recipes:
-        row_class = "row-stale" if r.is_stale else ""
+        row_classes = []
+        if r.is_stale:
+            row_classes.append("row-stale")
+        if r.is_outdated:
+            row_classes.append("row-outdated")
+        row_class = " ".join(row_classes)
+        data_outdated = "true" if r.is_outdated else "false"
         cells = [
             f'<tr class="{row_class}" '
-            f'data-name="{html.escape(r.name)}">',
+            f'data-name="{html.escape(r.name)}" '
+            f'data-outdated="{data_outdated}">',
             '<td class="name">'
             f'<a href="recipes/{html.escape(r.name)}.html">'
             f"{html.escape(r.name)}</a>"
-            f"{stale_pill_html(r)}</td>",
+            f"{stale_pill_html(r)}"
+            f"{upstream_pill_html(r)}</td>",
             f'<td class="version">{html.escape(r.version)}</td>',
         ]
         for p in PLATFORMS:
@@ -272,7 +430,8 @@ def render_index(recipes: list[Recipe]) -> str:
 
     summary = (
         f"{all_green} of {total} recipes green on all platforms · "
-        f"{with_fail} with failures · {stale} stale"
+        f"{with_fail} with failures · {stale} stale · "
+        f"{outdated} behind upstream"
     )
     per_plat_bits = " · ".join(
         f"{p}: {per_plat[p]}/{total}" for p in PLATFORMS
@@ -302,6 +461,8 @@ def render_index(recipes: list[Recipe]) -> str:
            placeholder="Filter recipes…" autocomplete="off">
     <label><input type="checkbox" id="failing-only">
       failing only</label>
+    <label><input type="checkbox" id="outdated-only">
+      behind upstream only</label>
   </div>
   <table id="status">
     <thead>
@@ -389,6 +550,46 @@ def render_recipe_page(recipe: Recipe) -> str:
         else '<span class="muted">not yet built</span>'
     )
 
+    u = recipe.upstream
+    if u is None:
+        upstream_html = (
+            '<span class="muted">no upstream data yet</span>'
+        )
+    elif u.status == "up_to_date" and u.latest_version:
+        age = u.age_days()
+        age_bit = (
+            f" · released {_age_phrase(age)}"
+            if age is not None
+            else ""
+        )
+        upstream_html = (
+            f'<span class="ok">up to date</span> '
+            f"({html.escape(u.latest_version)}{age_bit})"
+        )
+    elif u.status == "outdated" and u.latest_version:
+        age = u.age_days()
+        age_bit = f" · {_age_phrase(age)}" if age is not None else ""
+        url = u.latest_release_url or ""
+        link = (
+            f'<a href="{html.escape(url)}">'
+            f"{html.escape(u.latest_version)}</a>"
+            if url
+            else html.escape(u.latest_version)
+        )
+        upstream_html = (
+            f'<span class="fail">behind</span> '
+            f"(upstream {link}{age_bit})"
+        )
+    else:
+        reason = (
+            f" ({html.escape(u.reason)})"
+            if u.reason
+            else ""
+        )
+        upstream_html = (
+            f'<span class="muted">untracked</span>{reason}'
+        )
+
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -400,7 +601,7 @@ def render_recipe_page(recipe: Recipe) -> str:
 <body>
 <header>
   <p class="crumbs"><a href="../index.html">← all recipes</a></p>
-  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}</h1>
+  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}{upstream_pill_html(recipe)}</h1>
   <p class="description">{html.escape(recipe.description)}</p>
 </header>
 <main>
@@ -411,6 +612,8 @@ def render_recipe_page(recipe: Recipe) -> str:
       <dd>{html.escape(recipe.version)}</dd>
       <dt>binaries version</dt>
       <dd>{binaries_version_html}</dd>
+      <dt>upstream</dt>
+      <dd>{upstream_html}</dd>
       <dt>license</dt>
       <dd>{license_html}</dd>
       <dt>homepage</dt>
@@ -450,6 +653,7 @@ def render_status_md(recipes: list[Recipe]) -> str:
     all_green = sum(1 for r in recipes if r.all_green)
     with_fail = sum(1 for r in recipes if r.any_red)
     stale = sum(1 for r in recipes if r.is_stale)
+    outdated = sum(1 for r in recipes if r.is_outdated)
     per_plat = {
         p: sum(1 for r in recipes if r.platforms[p].ok)
         for p in PLATFORMS
@@ -464,6 +668,7 @@ def render_status_md(recipes: list[Recipe]) -> str:
     )
     lines.append(f"- With failures: **{with_fail}**")
     lines.append(f"- Stale (version skew): **{stale}**")
+    lines.append(f"- Behind upstream: **{outdated}**")
     lines.append("")
     lines.append("Per platform:")
     for p in PLATFORMS:
@@ -504,6 +709,31 @@ def render_status_md(recipes: list[Recipe]) -> str:
             lines.append(
                 f"- `{r.name}`: recipe {r.version}, "
                 f"binaries {r.binaries_version}"
+            )
+        lines.append("")
+
+    # Recipes behind upstream.
+    outdated_recipes = [r for r in recipes if r.is_outdated]
+    if outdated_recipes:
+        lines.append("## Behind upstream")
+        lines.append("")
+        lines.append(
+            "Recipe version is older than the latest upstream "
+            "release. Sorted by release age (oldest first)."
+        )
+        lines.append("")
+        outdated_recipes.sort(
+            key=lambda r: (r.upstream.age_days() or 0),
+            reverse=True,
+        )
+        for r in outdated_recipes:
+            u = r.upstream
+            assert u is not None
+            age = u.age_days()
+            age_bit = f" ({_age_phrase(age)})" if age is not None else ""
+            lines.append(
+                f"- `{r.name}`: recipe {r.version}, "
+                f"upstream {u.latest_version}{age_bit}"
             )
         lines.append("")
 
