@@ -16,6 +16,11 @@ steps = [
   "./configure --prefix=${PREFIX} --with-oniguruma=builtin --disable-docs --disable-maintainer-mode",
   "make -j${JOBS}",
   "make install",
+  # --with-oniguruma=builtin static-links oniguruma into jq,
+  # but autotools still installs libonig.* and oniguruma.pc.
+  # Drop them so the shared-lib farm does not conflict with
+  # the standalone oniguruma package.
+  "rm -f ${PREFIX}/lib/libonig* ${PREFIX}/lib/pkgconfig/oniguruma.pc",
 ]
 
 [dependencies]
