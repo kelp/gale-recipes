@@ -24,6 +24,10 @@ All notable changes to gale-recipes are documented here.
   cmake for this version ignores `EXPAT_BUILD_STATIC` and
   ships shared-only; dependents (e.g. git) need the static
   archive to link statically.
+- gale: bumped recipe to v0.12.0 for recipe revisions,
+  shared dylib farm, soft-migration, `gale inspect`,
+  install-time Mach-O signing, and `gale doctor --repair`
+  codesign walk
 - gale: bumped recipe to v0.11.3 for the no-op update
   generation rebuild fix
 - CI now pins the Gale build bootstrap version to v0.11.3
