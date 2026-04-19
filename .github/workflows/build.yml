@@ -486,6 +486,20 @@ jobs:
         run: |
           shopt -s nullglob
 
+          # Matrix has darwin-arm64, linux-amd64, linux-arm64.
+          # A recipe's .binaries.toml is only rewritten when
+          # metadata from all three landed — a per-recipe gate,
+          # not a batch-level one. Partial-success cases (one
+          # platform fails, others succeed) would otherwise
+          # overwrite the file and drop the previously-good
+          # shas for the platforms that didn't build this run.
+          # Known gap: platform-filtered recipes (gale build
+          # returns 'unsupported platform' for them and those
+          # platforms contribute no metadata) never have full
+          # coverage, so their .binaries.toml can't update via
+          # this path. Follow-up.
+          EXPECTED_PLATFORMS=3
+
           # Group metadata by recipe name.
           declare -A RECIPE_META
           for META in /tmp/metadata/*.json; do
@@ -497,6 +511,13 @@ jobs:
             LETTER="${RECIPE:0:1}"
             RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
             BINARIES_FILE="recipes/${LETTER}/${RECIPE}.binaries.toml"
+
+            # Count platforms that produced metadata.
+            PLATFORM_COUNT=$(echo "${RECIPE_META[$RECIPE]}" | wc -w | tr -d ' ')
+            if [ "$PLATFORM_COUNT" -lt "$EXPECTED_PLATFORMS" ]; then
+              echo "::warning::Skipping ${RECIPE}: ${PLATFORM_COUNT}/${EXPECTED_PLATFORMS} platforms built; keeping existing ${BINARIES_FILE}"
+              continue
+            fi
 
             # Get version from recipe.
             VERSION=$(grep '^version' "$RECIPE_FILE" | \
