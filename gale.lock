@@ -12,8 +12,8 @@
     version = "0.116.0"
     sha256 = "de3f1447d84af581874844244fdcde9f05a92c29e96a310d292c4091b2e8a070"
   [packages.gale]
-    version = "0.11.3"
-    sha256 = "59b098b695f5436e781a57804d70fb975100e1f4b3defefb1efee3799e8642e3"
+    version = "0.12.3-dev.1+8c7872a-1"
+    sha256 = "12eb20a34ab93ce1a897d8f20c3a098cebca6d64269810292ca1ac92a0c5dcae"
   [packages.git]
     version = "2.53.0"
     sha256 = "0a4885f0b1b994e1d7d278329a2279a2ca1d2adb991cd10bb17704337c20c421"
@@ -21,11 +21,10 @@
     version = "6.4"
     sha256 = "96849d32819812496b1e2ae46231e3a1bd2f51614afecf8bee848fe84cdb3e2d"
   [packages.python]
-    version = "3.12.8"
-    sha256 = "a354713767bb05f47839c0d4f851c2efa1119a538457eddbf2772e5ca7b15d34"
+    version = "3.14.4"
   [packages.readline]
     version = "8.2"
     sha256 = "2bb642a6f2112bcd95fe7bbe202245b463fee6a97a1c2deae69ccd65e5d2cbb2"
   [packages.vibeutils]
-    version = "0.8.2"
-    sha256 = "286270472f03c866fe56875e3aabfe0beed558c2fb9c9ade16bcbc809e80661a"
+    version = "0.9.3"
+    sha256 = "56823414c91a6045972f699b5440eb0edf15ab1b6f952cbfa23db33a1a47704e"
