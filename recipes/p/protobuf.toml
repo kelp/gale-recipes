@@ -3,6 +3,7 @@
 [package]
 name = "protobuf"
 version = "34.1"
+revision = 2
 description = "Protocol buffers (Google's data interchange format)"
 license = "BSD-3-Clause"
 homepage = "https://protobuf.dev/"

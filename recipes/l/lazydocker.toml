@@ -1,6 +1,7 @@
 [package]
 name = "lazydocker"
 version = "0.25.0"
+revision = 2
 description = "The lazier way to manage everything docker"
 license = "MIT"
 homepage = "https://github.com/jesseduffield/lazydocker"

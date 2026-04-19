@@ -3,6 +3,7 @@
 [package]
 name = "glow"
 version = "2.1.1"
+revision = 2
 description = "Render markdown on the CLI"
 license = "MIT"
 homepage = "https://github.com/charmbracelet/glow"

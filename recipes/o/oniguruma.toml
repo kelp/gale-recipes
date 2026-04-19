@@ -1,6 +1,7 @@
 [package]
 name = "oniguruma"
 version = "6.9.10"
+revision = 2
 description = "Regular expression library"
 license = "BSD-2-Clause"
 homepage = "https://github.com/kkos/oniguruma"

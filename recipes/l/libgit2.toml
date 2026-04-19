@@ -1,6 +1,7 @@
 [package]
 name = "libgit2"
 version = "1.9.2"
+revision = 2
 description = "A cross-platform, linkable library implementation of Git that you can use in your application."
 license = "GPL-2.0-only with linking exception"
 homepage = "https://www.libgit2.org"

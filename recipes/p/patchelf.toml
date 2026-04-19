@@ -1,6 +1,7 @@
 [package]
 name = "patchelf"
 version = "0.18.0"
+revision = 2
 description = "Modify ELF executables and libraries"
 license = "GPL-3.0"
 homepage = "https://github.com/NixOS/patchelf"

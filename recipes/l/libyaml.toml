@@ -1,6 +1,7 @@
 [package]
 name = "libyaml"
 version = "0.2.5"
+revision = 2
 description = "YAML 1.1 parser and emitter C library"
 license = "MIT"
 homepage = "https://pyyaml.org/wiki/LibYAML"

@@ -1,6 +1,7 @@
 [package]
 name = "lz4"
 version = "1.10.0"
+revision = 2
 description = "Extremely fast compression algorithm"
 license = "BSD-2-Clause"
 homepage = "https://lz4.github.io/lz4/"

@@ -1,6 +1,7 @@
 [package]
 name = "pkgconf"
 version = "2.5.1"
+revision = 2
 description = "Package compiler and linker metadata toolkit"
 license = "ISC"
 homepage = "http://pkgconf.org"

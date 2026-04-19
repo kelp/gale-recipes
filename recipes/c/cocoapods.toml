@@ -1,6 +1,7 @@
 [package]
 name = "cocoapods"
 version = "1.16.2"
+revision = 2
 description = "The Cocoa Dependency Manager."
 license = "MIT"
 homepage = "https://cocoapods.org/"

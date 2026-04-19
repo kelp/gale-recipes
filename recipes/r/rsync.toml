@@ -1,6 +1,7 @@
 [package]
 name = "rsync"
 version = "3.4.1"
+revision = 2
 description = "Utility that provides fast incremental file transfer"
 license = "GPL-3.0-or-later"
 homepage = "https://rsync.samba.org/"

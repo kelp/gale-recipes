@@ -3,6 +3,7 @@
 [package]
 name = "grpcurl"
 version = "1.9.3"
+revision = 2
 description = "Like cURL, but for gRPC"
 license = "MIT"
 homepage = "https://github.com/fullstorydev/grpcurl"

@@ -3,6 +3,7 @@
 [package]
 name = "stylua"
 version = "2.4.0"
+revision = 2
 description = "Opinionated Lua code formatter"
 license = "MPL-2.0"
 homepage = "https://github.com/JohnnyMorganz/StyLua"

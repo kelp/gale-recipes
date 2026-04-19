@@ -1,6 +1,7 @@
 [package]
 name = "shfmt"
 version = "3.13.0"
+revision = 2
 description = "Autoformat shell script source code"
 license = "BSD-3-Clause"
 homepage = "https://github.com/mvdan/sh"

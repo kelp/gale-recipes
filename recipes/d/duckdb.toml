@@ -3,6 +3,7 @@
 [package]
 name = "duckdb"
 version = "1.5.1"
+revision = 2
 description = "Embeddable SQL OLAP Database Management System"
 license = "MIT"
 homepage = "https://www.duckdb.org"

@@ -3,6 +3,7 @@
 [package]
 name = "mariadb"
 version = "12.2.2"
+revision = 2
 description = "Drop-in replacement for MySQL"
 license = "GPL-2.0-only"
 homepage = "https://mariadb.org/"

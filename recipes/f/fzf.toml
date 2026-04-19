@@ -3,6 +3,7 @@
 [package]
 name = "fzf"
 version = "0.70.0"
+revision = 2
 description = "Command-line fuzzy finder written in Go"
 license = "MIT"
 homepage = "https://github.com/junegunn/fzf"

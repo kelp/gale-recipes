@@ -3,6 +3,7 @@
 [package]
 name = "duf"
 version = "0.9.1"
+revision = 2
 description = "Disk Usage/Free Utility - a better 'df' alternative"
 license = "MIT"
 homepage = "https://github.com/muesli/duf"

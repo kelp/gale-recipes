@@ -3,6 +3,7 @@
 [package]
 name = "atuin"
 version = "18.13.6"
+revision = 2
 description = "Improved shell history for zsh, bash, fish and nushell"
 license = "MIT"
 homepage = "https://atuin.sh/"

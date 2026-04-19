@@ -1,6 +1,7 @@
 [package]
 name = "micro"
 version = "2.0.15"
+revision = 2
 description = "Modern and intuitive terminal-based text editor"
 license = "MIT"
 homepage = "https://github.com/zyedidia/micro"

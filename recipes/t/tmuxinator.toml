@@ -1,6 +1,7 @@
 [package]
 name = "tmuxinator"
 version = "3.3.8"
+revision = 2
 description = "Manage complex tmux sessions easily"
 license = "MIT"
 homepage = "https://github.com/tmuxinator/tmuxinator"

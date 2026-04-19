@@ -3,6 +3,7 @@
 [package]
 name = "rustup"
 version = "1.29.0"
+revision = 2
 description = "Rust toolchain installer"
 license = "Apache-2.0"
 homepage = "https://rust-lang.github.io/rustup/"

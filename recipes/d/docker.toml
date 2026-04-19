@@ -1,6 +1,7 @@
 [package]
 name = "docker"
 version = "29.3.1"
+revision = 2
 description = "Docker CLI for container management"
 license = "Apache-2.0"
 homepage = "https://www.docker.com/"

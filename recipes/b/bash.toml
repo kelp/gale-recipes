@@ -1,6 +1,7 @@
 [package]
 name = "bash"
 version = "5.3"
+revision = 2
 description = "Bourne-Again SHell, a UNIX command interpreter"
 license = "GPL-3.0-or-later"
 homepage = "https://www.gnu.org/software/bash/"

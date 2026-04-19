@@ -1,6 +1,7 @@
 [package]
 name = "httpstat"
 version = "1.2.1"
+revision = 2
 description = "It's like curl -v, with colours"
 license = "MIT"
 homepage = "https://github.com/davecheney/httpstat"

@@ -1,6 +1,7 @@
 [package]
 name = "scc"
 version = "3.7.0"
+revision = 2
 description = "Fast and accurate code counter with complexity and COCOMO estimates"
 license = "MIT"
 homepage = "https://github.com/boyter/scc"

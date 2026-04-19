@@ -1,6 +1,7 @@
 [package]
 name = "actionlint"
 version = "1.7.11"
+revision = 2
 description = "Static checker for GitHub Actions workflow files"
 license = "MIT"
 homepage = "https://github.com/rhysd/actionlint"

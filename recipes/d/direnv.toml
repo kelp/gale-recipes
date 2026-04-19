@@ -1,6 +1,7 @@
 [package]
 name = "direnv"
 version = "2.37.1"
+revision = 2
 description = "Per-directory environment variables"
 license = "MIT"
 homepage = "https://direnv.net"

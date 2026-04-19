@@ -1,6 +1,7 @@
 [package]
 name = "mandoc"
 version = "1.14.6"
+revision = 2
 description = "UNIX manpage compiler toolset"
 license = "ISC"
 homepage = "https://mandoc.bsd.lv"

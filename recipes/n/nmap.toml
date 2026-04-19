@@ -1,6 +1,7 @@
 [package]
 name = "nmap"
 version = "7.99"
+revision = 2
 description = "Port scanning utility for large networks"
 license = "NPSL"
 homepage = "https://nmap.org/"

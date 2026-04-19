@@ -1,6 +1,7 @@
 [package]
 name = "wget"
 version = "1.25.0"
+revision = 2
 description = "Internet file retriever"
 license = "GPL-3.0-or-later"
 homepage = "https://www.gnu.org/software/wget/"

@@ -1,6 +1,7 @@
 [package]
 name = "expat"
 version = "2.7.5"
+revision = 2
 description = "XML parser library written in C"
 license = "MIT"
 homepage = "https://libexpat.github.io/"

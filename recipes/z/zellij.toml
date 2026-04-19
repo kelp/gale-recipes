@@ -3,6 +3,7 @@
 [package]
 name = "zellij"
 version = "0.44.0"
+revision = 2
 description = "Pluggable terminal workspace, with terminal multiplexer as the base feature"
 license = "MIT"
 homepage = "https://zellij.dev"

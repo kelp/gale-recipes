@@ -1,6 +1,7 @@
 [package]
 name = "traceroute"
 version = "2.1.6"
+revision = 2
 description = "Traces the route taken by packets over an IP network"
 license = "GPL-2.0-only"
 homepage = "https://traceroute.sourceforge.net/"

@@ -3,6 +3,7 @@
 [package]
 name = "chezmoi"
 version = "2.70.0"
+revision = 2
 description = "Manage your dotfiles across multiple diverse machines, securely"
 license = "MIT"
 homepage = "https://chezmoi.io/"

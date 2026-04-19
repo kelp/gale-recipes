@@ -3,6 +3,7 @@
 [package]
 name = "bottom"
 version = "0.12.3"
+revision = 2
 description = "Yet another cross-platform graphical process/system monitor"
 license = "MIT"
 homepage = "https://clementtsang.github.io/bottom/"

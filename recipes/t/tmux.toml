@@ -1,6 +1,7 @@
 [package]
 name = "tmux"
 version = "3.6a"
+revision = 2
 description = "Terminal multiplexer"
 license = "ISC"
 homepage = "https://tmux.github.io/"

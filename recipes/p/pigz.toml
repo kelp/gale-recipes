@@ -1,6 +1,7 @@
 [package]
 name = "pigz"
 version = "2.8"
+revision = 2
 description = "Parallel implementation of gzip"
 license = "Zlib"
 homepage = "https://zlib.net/pigz/"

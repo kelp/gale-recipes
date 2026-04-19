@@ -1,6 +1,7 @@
 [package]
 name = "gdu"
 version = "5.34.4"
+revision = 2
 description = "Disk usage analyzer with console interface written in Go"
 license = "MIT"
 homepage = "https://github.com/dundee/gdu"

@@ -1,6 +1,7 @@
 [package]
 name = "croc"
 version = "10.4.2"
+revision = 2
 description = "Easily and securely send things from one computer to another :crocodile: :package:"
 license = "MIT"
 homepage = "https://schollz.com/software/croc6"

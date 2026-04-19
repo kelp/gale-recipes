@@ -1,6 +1,7 @@
 [package]
 name = "meson"
 version = "1.6.1"
+revision = 2
 description = "The Meson build system"
 license = "Apache-2.0"
 homepage = "https://mesonbuild.com/"

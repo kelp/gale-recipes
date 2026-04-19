@@ -3,6 +3,7 @@
 [package]
 name = "tealdeer"
 version = "1.8.1"
+revision = 2
 description = "Very fast implementation of tldr in Rust"
 license = "Apache-2.0"
 homepage = "https://tealdeer-rs.github.io/tealdeer/"

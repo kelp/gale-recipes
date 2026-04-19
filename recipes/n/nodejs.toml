@@ -1,6 +1,7 @@
 [package]
 name = "nodejs"
 version = "25.8.2"
+revision = 2
 description = "Open-source, cross-platform JavaScript runtime environment"
 license = "MIT"
 homepage = "https://nodejs.org/"

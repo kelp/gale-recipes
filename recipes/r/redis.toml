@@ -1,6 +1,7 @@
 [package]
 name = "redis"
 version = "8.6.2"
+revision = 2
 description = "Persistent key-value database, with built-in net interface"
 license = "AGPL-3.0-only"
 homepage = "https://redis.io/"

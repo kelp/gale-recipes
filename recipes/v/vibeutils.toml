@@ -1,14 +1,15 @@
 [package]
 name = "vibeutils"
-version = "0.8.2"
+version = "0.9.3"
+revision = 2
 description = "Modern Unix coreutils in Zig — git-aware ls, colored output, Nerd Font icons"
 license = "MIT"
 homepage = "https://github.com/kelp/vibeutils"
 
 [source]
 repo = "kelp/vibeutils"
-url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.8.2.tar.gz"
-sha256 = "017c06526052b455613eb49abbd6224eb6810045b9f02fcf71365018d50173d8"
+url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.9.3.tar.gz"
+sha256 = "afe9e18a1d7be265686e7cb89d17ad638ac4db3b39514c265f1b414bdbf198c4"
 
 [build]
 steps = [

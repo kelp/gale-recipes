@@ -3,6 +3,7 @@
 [package]
 name = "tree-sitter"
 version = "0.26.7"
+revision = 2
 description = "Incremental parsing system for programming tools"
 license = "MIT"
 homepage = "https://tree-sitter.github.io/"

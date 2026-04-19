@@ -3,6 +3,7 @@
 [package]
 name = "yq"
 version = "4.52.5"
+revision = 2
 description = "Process YAML, JSON, XML, CSV and properties documents from the CLI"
 license = "MIT"
 homepage = "https://github.com/mikefarah/yq"

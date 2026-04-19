@@ -1,6 +1,7 @@
 [package]
 name = "socat"
 version = "1.8.1.1"
+revision = 2
 description = "SOcket CAT: netcat on steroids"
 license = "GPL-2.0-only"
 homepage = "http://www.dest-unreach.org/socat/"

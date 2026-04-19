@@ -3,6 +3,7 @@
 [package]
 name = "hyperfine"
 version = "1.20.0"
+revision = 2
 description = "Command-line benchmarking tool"
 license = "Apache-2.0"
 homepage = "https://github.com/sharkdp/hyperfine"

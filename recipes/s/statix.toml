@@ -1,6 +1,7 @@
 [package]
 name = "statix"
 version = "0.5.8"
+revision = 2
 description = "Lints and suggestions for the Nix programming language"
 license = "MIT"
 homepage = "https://github.com/oppiliappan/statix"
