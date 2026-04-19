@@ -536,13 +536,14 @@ jobs:
             echo "Wrote ${BINARIES_FILE}"
           done
 
-      # Revision-qualified .versions entries. A recipe at
-      # revision > 1 gets a `<version>-<revision> <commit-sha>`
-      # line appended to its .versions file so gale's registry
-      # resolver can find the prebuilt via an explicit revision
-      # request (gale install foo@1.2.3-2). Revision 1 entries
-      # stay in bare form for back-compat with older clients.
-      - name: Update .versions with revision entries
+      # Append `.versions` entries for every build. The entry
+      # key is the bare version for revision 1 and
+      # `<version>-<revision>` for revision > 1, so gale's
+      # registry resolver can find the prebuilt via an explicit
+      # revision request (gale install foo@1.2.3-2). The file
+      # is the canonical history rendered on the status page,
+      # so we append on every version or revision bump.
+      - name: Update .versions with build entries
         run: |
           shopt -s nullglob
           RECIPES=$(for META in /tmp/metadata/*.json; do
@@ -565,19 +566,27 @@ jobs:
             fi
 
             if [ "$REVISION" -le 1 ]; then
-              echo "${RECIPE} rev=1, no .versions update needed"
-              continue
+              ENTRY_KEY="${VERSION}"
+            else
+              ENTRY_KEY="${VERSION}-${REVISION}"
             fi
 
-            ENTRY_KEY="${VERSION}-${REVISION}"
             if [ -f "$VERSIONS_FILE" ] && \
                grep -q "^${ENTRY_KEY} " "$VERSIONS_FILE"; then
               echo "${ENTRY_KEY} already in ${VERSIONS_FILE}"
-            else
-              printf '%s %s\n' "$ENTRY_KEY" "$GITHUB_SHA" \
-                >> "$VERSIONS_FILE"
-              echo "Appended ${ENTRY_KEY} to ${VERSIONS_FILE}"
+              continue
             fi
+
+            # Ensure the file ends with a newline before
+            # appending so we don't glom onto the last line.
+            if [ -f "$VERSIONS_FILE" ] && \
+               [ -s "$VERSIONS_FILE" ] && \
+               [ -n "$(tail -c1 "$VERSIONS_FILE")" ]; then
+              printf '\n' >> "$VERSIONS_FILE"
+            fi
+            printf '%s %s\n' "$ENTRY_KEY" "$GITHUB_SHA" \
+              >> "$VERSIONS_FILE"
+            echo "Appended ${ENTRY_KEY} to ${VERSIONS_FILE}"
           done
 
       - name: Set up Go for signing
