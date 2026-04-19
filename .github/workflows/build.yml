@@ -17,6 +17,10 @@ permissions:
   packages: write
   id-token: write
   attestations: write
+  # Lets update-recipes dispatch Publish Pages after a
+  # .binaries.toml commit lands — the GITHUB_TOKEN-authored
+  # commit won't fire workflow_run / push triggers on its own.
+  actions: write
 
 jobs:
   discover:
@@ -574,6 +578,7 @@ jobs:
       # Switching to a PAT or App token would cause a
       # rebuild loop — add commit-message filtering first.
       - name: Commit .binaries.toml files
+        id: commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -587,6 +592,7 @@ jobs:
 
           if [ -z "$FILES" ]; then
             echo "No changes to commit"
+            echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -639,3 +645,19 @@ jobs:
                 }
               }
             }')
+
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # GitHub's workflow_run trigger is suppressed when the
+      # upstream workflow was dispatched with GITHUB_TOKEN
+      # (anti-loop safety). push triggers on the just-landed
+      # commit are suppressed for the same reason. So Publish
+      # Pages has no way to auto-refresh after a CI commit.
+      # Dispatch it explicitly, gated on an actual commit to
+      # avoid regenerating for no-op runs (no recipes built,
+      # or build matrix produced nothing new).
+      - name: Regenerate status dashboard
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run pages.yml --ref main
