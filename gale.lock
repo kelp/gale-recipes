@@ -12,8 +12,8 @@
     version = "0.116.0"
     sha256 = "de3f1447d84af581874844244fdcde9f05a92c29e96a310d292c4091b2e8a070"
   [packages.gale]
-    version = "0.12.5-1"
-    sha256 = "58732f9e29238ba02c39d3c1ae5eeef98a1cfd05f13ab27513e062e909081430"
+    version = "0.13.0-1"
+    sha256 = "0d67bbd812d3b846b14547ff3857ca382f1e1f92da3504d9c4c521fe0430687c"
   [packages.git]
     version = "2.53.0"
     sha256 = "0a4885f0b1b994e1d7d278329a2279a2ca1d2adb991cd10bb17704337c20c421"
