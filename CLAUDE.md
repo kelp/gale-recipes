@@ -119,9 +119,9 @@ This is the content repo. The tool lives at `../gale`.
 recipes via git diff, builds only those on macOS ARM64
 and Linux AMD64 runners, attests provenance via Sigstore,
 pushes tar.zst to GHCR via ORAS, writes `.binaries.toml`
-files, signs recipes, and commits back via GraphQL
-(auto-signed "Verified"). workflow_dispatch builds all
-or a named recipe.
+and appends `.versions` entries, and commits back via
+GraphQL (auto-signed "Verified"). workflow_dispatch
+builds all or a named recipe.
 
 ## Linting
 

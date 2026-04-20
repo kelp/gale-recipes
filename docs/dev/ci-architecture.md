@@ -16,9 +16,9 @@
    Sigstore attestation proves provenance.
 
 4. **Clean separation.** Recipes are human-authored.
-   Binary metadata (`.binaries.toml`) and signatures
-   (`.sig`) are CI-managed. CI never modifies recipe
-   files.
+   Binary metadata (`.binaries.toml`) and version
+   history (`.versions`) are CI-managed. CI never
+   modifies recipe files.
 
 5. **Self-contained builds.** `gale build` auto-detects
    the sibling recipes directory and resolves build deps
@@ -66,9 +66,9 @@ for build jobs.
 ### update-recipes
 
 Runs after all builds. Writes `.binaries.toml` files
-with per-platform SHA256 digests. Signs recipes.
-Commits via GraphQL `createCommitOnBranch` mutation
-(auto-signed "Verified").
+with per-platform SHA256 digests and appends
+`.versions` entries. Commits via GraphQL
+`createCommitOnBranch` mutation (auto-signed "Verified").
 
 ## Non-Obvious Details
 
@@ -139,8 +139,14 @@ gh attestation verify <archive> -R kelp/gale-recipes
 - **Binary-only changes** (`.binaries.toml`): Excluded
   from detection — won't trigger rebuilds
 
-### Recipe signing
+### Recipe trust model
 
-CI signs recipes with ed25519 when `RECIPE_SIGNING_KEY`
-secret is set. Detached signatures stored as
-`<recipe>.sig` alongside recipe files.
+Recipes are trusted via HTTPS to this repo plus the
+`[source] sha256` pinned in every recipe. Prebuilt
+binaries carry Sigstore attestations verified by
+`gale verify`. No per-recipe signatures — the
+two-commit sign-after-recipe workflow previously used
+created a race window that broke `gale update` against
+a just-pushed recipe, and the signing key lived in the
+same CI secrets surface as repo write access, so sigs
+didn't actually widen the trust perimeter.
