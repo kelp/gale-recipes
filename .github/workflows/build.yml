@@ -27,10 +27,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       recipes: ${{ steps.list.outputs.recipes }}
+      gale_version: ${{ steps.gale.outputs.version }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      # Read the canonical gale version from its own recipe
+      # so bumping recipes/g/gale.toml is enough to drag the
+      # CI build toolchain forward. No hand-edited pin in
+      # this workflow to drift.
+      - name: Resolve gale version from recipe
+        id: gale
+        run: |
+          VERSION=$(awk -F'"' '/^version[[:space:]]*=/ {print $2; exit}' \
+            recipes/g/gale.toml)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not parse version from recipes/g/gale.toml" >&2
+            exit 1
+          fi
+          echo "version=v${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Using gale v${VERSION} for CI build"
 
       - name: List recipes to build
         id: list
@@ -115,9 +132,9 @@ jobs:
             platform: linux-arm64
     runs-on: ${{ matrix.target.os }}
     env:
-      GALE_VERSION: v0.12.2
+      GALE_VERSION: ${{ needs.discover.outputs.gale_version }}
     steps:
-      - name: Use pinned gale version
+      - name: Use resolved gale version
         run: echo "Using gale ${GALE_VERSION}"
 
       - name: Cache gale binary
