@@ -54,8 +54,24 @@ REPO_URL = "https://github.com/kelp/gale-recipes"
 
 @dataclass
 class Platform:
-    ok: bool
+    # "ok"   — built; sha256 is set
+    # "fail" — eligible but no binary (real failure)
+    # "na"   — recipe excludes this platform via
+    #          [package].platforms; not a failure
+    state: str
     sha256: str | None
+
+    @property
+    def ok(self) -> bool:
+        return self.state == "ok"
+
+    @property
+    def is_failing(self) -> bool:
+        return self.state == "fail"
+
+    @property
+    def is_na(self) -> bool:
+        return self.state == "na"
 
 
 @dataclass
@@ -129,16 +145,18 @@ class Recipe:
     license: str
     binaries_version: str | None
     platforms: dict[str, Platform]
+    eligible_platforms: tuple[str, ...]
     versions_history: list[VersionEntry]
     upstream: Upstream | None = None
 
     @property
     def all_green(self) -> bool:
-        return all(p.ok for p in self.platforms.values())
+        # n/a counts as fine — design, not failure.
+        return not any(p.is_failing for p in self.platforms.values())
 
     @property
     def any_red(self) -> bool:
-        return any(not p.ok for p in self.platforms.values())
+        return any(p.is_failing for p in self.platforms.values())
 
     @property
     def is_stale(self) -> bool:
@@ -152,7 +170,7 @@ class Recipe:
         return self.upstream is not None and self.upstream.is_outdated
 
     def failing_platforms(self) -> list[str]:
-        return [p for p in PLATFORMS if not self.platforms[p].ok]
+        return [p for p in PLATFORMS if self.platforms[p].is_failing]
 
     def to_json(self) -> dict:
         out = {
@@ -165,8 +183,9 @@ class Recipe:
             "license": self.license,
             "binaries_version": self.binaries_version,
             "stale": self.is_stale,
+            "eligible_platforms": list(self.eligible_platforms),
             "platforms": {
-                p: {"ok": v.ok, "sha256": v.sha256}
+                p: {"state": v.state, "sha256": v.sha256}
                 for p, v in self.platforms.items()
             },
             "versions_history": [
@@ -209,10 +228,26 @@ def load_recipe(
         v = pkg.get(key)
         return v if isinstance(v, str) else ""
 
+    # A recipe may declare [package].platforms to restrict
+    # which targets it builds for (e.g. linux-only tools).
+    # Anything outside that list is "n/a", not a failure.
+    declared = pkg.get("platforms")
+    if isinstance(declared, list):
+        eligible = tuple(
+            p for p in PLATFORMS
+            if isinstance(p, str) and p in declared
+        )
+    else:
+        eligible = PLATFORMS
+
     binaries_path = toml_path.with_name(f"{name}.binaries.toml")
     binaries_version: str | None = None
     platforms: dict[str, Platform] = {
-        p: Platform(ok=False, sha256=None) for p in PLATFORMS
+        p: Platform(
+            state=("fail" if p in eligible else "na"),
+            sha256=None,
+        )
+        for p in PLATFORMS
     }
     if binaries_path.exists():
         try:
@@ -222,12 +257,14 @@ def load_recipe(
             if isinstance(bv, str):
                 binaries_version = bv
             for p in PLATFORMS:
+                if p not in eligible:
+                    continue
                 entry = b.get(p)
                 if isinstance(entry, dict):
                     sha = entry.get("sha256")
                     if isinstance(sha, str) and sha:
                         platforms[p] = Platform(
-                            ok=True, sha256=sha
+                            state="ok", sha256=sha
                         )
         except (OSError, tomllib.TOMLDecodeError) as e:
             print(
@@ -262,6 +299,7 @@ def load_recipe(
         license=pkg_str("license"),
         binaries_version=binaries_version,
         platforms=platforms,
+        eligible_platforms=eligible,
         versions_history=history,
     )
 
@@ -383,9 +421,33 @@ def upstream_pill_html(r: Recipe) -> str:
     )
 
 
+def _per_platform_counts(
+    recipes: list[Recipe],
+) -> dict[str, tuple[int, int]]:
+    """For each platform return ``(built, eligible)``.
+    n/a recipes are excluded from the denominator so the
+    success rate isn't deflated by linux-only or macOS-only
+    tools."""
+    out: dict[str, tuple[int, int]] = {}
+    for p in PLATFORMS:
+        eligible = sum(
+            1 for r in recipes if not r.platforms[p].is_na
+        )
+        built = sum(
+            1 for r in recipes if r.platforms[p].state == "ok"
+        )
+        out[p] = (built, eligible)
+    return out
+
+
 def platform_cell_html(p: Platform) -> str:
-    if p.ok:
+    if p.state == "ok":
         return '<td class="ok" aria-label="built">✓</td>'
+    if p.state == "na":
+        return (
+            '<td class="na" aria-label="not applicable" '
+            'title="recipe excludes this platform">—</td>'
+        )
     return '<td class="fail" aria-label="failed">✗</td>'
 
 
@@ -398,10 +460,7 @@ def render_index(recipes: list[Recipe]) -> str:
     with_fail = sum(1 for r in recipes if r.any_red)
     stale = sum(1 for r in recipes if r.is_stale)
     outdated = sum(1 for r in recipes if r.is_outdated)
-    per_plat = {
-        p: sum(1 for r in recipes if r.platforms[p].ok)
-        for p in PLATFORMS
-    }
+    per_plat = _per_platform_counts(recipes)
 
     rows: list[str] = []
     for r in recipes:
@@ -434,7 +493,8 @@ def render_index(recipes: list[Recipe]) -> str:
         f"{outdated} behind upstream"
     )
     per_plat_bits = " · ".join(
-        f"{p}: {per_plat[p]}/{total}" for p in PLATFORMS
+        f"{p}: {per_plat[p][0]}/{per_plat[p][1]}"
+        for p in PLATFORMS
     )
     rows_html = "\n      ".join(rows)
 
@@ -496,11 +556,16 @@ def render_recipe_page(recipe: Recipe) -> str:
     plat_rows: list[str] = []
     for p in PLATFORMS:
         plat = recipe.platforms[p]
-        status = (
-            '<span class="ok">✓ built</span>'
-            if plat.ok
-            else '<span class="fail">✗ failed</span>'
-        )
+        if plat.state == "ok":
+            status = '<span class="ok">✓ built</span>'
+        elif plat.state == "na":
+            status = (
+                '<span class="muted" '
+                'title="recipe excludes this platform">'
+                "— n/a</span>"
+            )
+        else:
+            status = '<span class="fail">✗ failed</span>'
         sha = (
             f'<code>{html.escape(plat.sha256)}</code>'
             if plat.sha256
@@ -654,10 +719,7 @@ def render_status_md(recipes: list[Recipe]) -> str:
     with_fail = sum(1 for r in recipes if r.any_red)
     stale = sum(1 for r in recipes if r.is_stale)
     outdated = sum(1 for r in recipes if r.is_outdated)
-    per_plat = {
-        p: sum(1 for r in recipes if r.platforms[p].ok)
-        for p in PLATFORMS
-    }
+    per_plat = _per_platform_counts(recipes)
 
     lines: list[str] = []
     lines.append("# gale-recipes build status")
@@ -670,9 +732,10 @@ def render_status_md(recipes: list[Recipe]) -> str:
     lines.append(f"- Stale (version skew): **{stale}**")
     lines.append(f"- Behind upstream: **{outdated}**")
     lines.append("")
-    lines.append("Per platform:")
+    lines.append("Per platform (built / eligible):")
     for p in PLATFORMS:
-        lines.append(f"- `{p}`: {per_plat[p]}/{total}")
+        built, eligible = per_plat[p]
+        lines.append(f"- `{p}`: {built}/{eligible}")
     lines.append("")
 
     # Failures grouped by platform — the triage view.
@@ -680,7 +743,9 @@ def render_status_md(recipes: list[Recipe]) -> str:
     lines.append("")
     any_failure = False
     for p in PLATFORMS:
-        failing = [r for r in recipes if not r.platforms[p].ok]
+        failing = [
+            r for r in recipes if r.platforms[p].is_failing
+        ]
         if not failing:
             continue
         any_failure = True
@@ -743,10 +808,11 @@ def render_status_md(recipes: list[Recipe]) -> str:
     header = ["recipe", "version"] + list(PLATFORMS)
     lines.append("| " + " | ".join(header) + " |")
     lines.append("|" + "|".join("---" for _ in header) + "|")
+    glyph = {"ok": "✓", "fail": "✗", "na": "—"}
     for r in recipes:
         cells = [f"`{r.name}`", r.version]
         for p in PLATFORMS:
-            cells.append("✓" if r.platforms[p].ok else "✗")
+            cells.append(glyph[r.platforms[p].state])
         lines.append("| " + " | ".join(cells) + " |")
     lines.append("")
 

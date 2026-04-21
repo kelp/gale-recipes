@@ -22,6 +22,10 @@ smoke recipe *ARGS:
 gen-pages:
     python3 scripts/gen_status_page.py --repo-root . --out-dir _site
 
+# Run unit tests for scripts/ (stdlib unittest).
+test:
+    python3 -m unittest discover -s scripts -p 'test_*.py' -v
+
 # Serve the generated dashboard at http://localhost:8000/.
 # Run `just gen-pages` first.
 serve-pages:

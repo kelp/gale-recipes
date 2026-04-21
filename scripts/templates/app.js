@@ -41,7 +41,8 @@
   function cellValue(row, idx) {
     const td = row.cells[idx];
     if (!td) return "";
-    if (td.classList.contains("ok")) return 1;
+    if (td.classList.contains("ok")) return 2;
+    if (td.classList.contains("na")) return 1;
     if (td.classList.contains("fail")) return 0;
     return (td.textContent || "").trim().toLowerCase();
   }

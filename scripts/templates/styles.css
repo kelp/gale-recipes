@@ -123,13 +123,14 @@ tbody tr:hover { background: var(--row-hover); }
 td.name { font-weight: 500; }
 td.version { font-family: var(--mono); font-size: 0.9em; color: var(--muted); }
 
-td.ok, td.fail {
+td.ok, td.fail, td.na {
   text-align: center;
   font-weight: 700;
   width: 7.5em;
 }
 td.ok { color: var(--ok); background: var(--ok-bg); }
 td.fail { color: var(--fail); background: var(--fail-bg); }
+td.na { color: var(--muted); background: var(--muted-bg); font-weight: 500; }
 
 .row-stale td.name { font-style: italic; }
 
