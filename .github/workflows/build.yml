@@ -505,17 +505,17 @@ jobs:
 
           # Matrix has darwin-arm64, linux-amd64, linux-arm64.
           # A recipe's .binaries.toml is only rewritten when
-          # metadata from all three landed — a per-recipe gate,
-          # not a batch-level one. Partial-success cases (one
-          # platform fails, others succeed) would otherwise
-          # overwrite the file and drop the previously-good
-          # shas for the platforms that didn't build this run.
-          # Known gap: platform-filtered recipes (gale build
-          # returns 'unsupported platform' for them and those
-          # platforms contribute no metadata) never have full
-          # coverage, so their .binaries.toml can't update via
-          # this path. Follow-up.
-          EXPECTED_PLATFORMS=3
+          # metadata from every eligible platform landed — a
+          # per-recipe gate, not a batch-level one.
+          # Partial-success cases (one platform fails, others
+          # succeed) would otherwise overwrite the file and
+          # drop the previously-good shas for the platforms
+          # that didn't build this run. Eligible platforms
+          # come from the recipe's [package].platforms
+          # declaration when set (intersected with the CI
+          # matrix), else the full CI matrix — so linux-only
+          # or macOS-only recipes update their .binaries.toml
+          # as soon as every declared target builds.
 
           # Group metadata by recipe name.
           declare -A RECIPE_META
@@ -528,6 +528,24 @@ jobs:
             LETTER="${RECIPE:0:1}"
             RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
             BINARIES_FILE="recipes/${LETTER}/${RECIPE}.binaries.toml"
+
+            # Eligible platforms for this recipe: intersection
+            # of the CI matrix and the recipe's declared
+            # platforms. Falls back to the full matrix when
+            # the recipe declares none.
+            EXPECTED_PLATFORMS=$(python3 - "$RECIPE_FILE" <<'PY'
+          import sys, tomllib
+          CI = {"darwin-arm64", "linux-amd64", "linux-arm64"}
+          with open(sys.argv[1], "rb") as f:
+              data = tomllib.load(f)
+          declared = data.get("package", {}).get("platforms")
+          if isinstance(declared, list):
+              eligible = {p for p in declared if p in CI}
+              print(len(eligible) or len(CI))
+          else:
+              print(len(CI))
+          PY
+          )
 
             # Count platforms that produced metadata.
             PLATFORM_COUNT=$(echo "${RECIPE_META[$RECIPE]}" | wc -w | tr -d ' ')
