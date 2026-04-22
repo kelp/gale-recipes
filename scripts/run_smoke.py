@@ -48,14 +48,19 @@ def platform_triple() -> tuple[str, str, str]:
     return os_name, arch, f"{os_name}-{arch}"
 
 
-def resolve_prefix(name: str, version: str) -> Path:
+def resolve_prefix(name: str, version: str, revision: int) -> Path:
     """Default install path under the gale store.
 
-    Gale resolves its store as $HOME/.gale/pkg/<name>/<ver>.
+    Gale's canonical store dir is
+    $HOME/.gale/pkg/<name>/<version>-<revision>/, including
+    the -1 suffix when revision is 1. Recipes without an
+    explicit [package] revision default to 1.
+
     Override $HOME to target a different store (e.g. a fresh
     temp dir for clean-install smoke testing).
     """
-    return Path.home() / ".gale" / "pkg" / name / version
+    return (Path.home() / ".gale" / "pkg" / name
+            / f"{version}-{revision}")
 
 
 def substitute(cmd: str, env: dict[str, str]) -> str:
@@ -89,6 +94,7 @@ def main() -> int:
 
     name = recipe["package"]["name"]
     version = recipe["package"]["version"]
+    revision = int(recipe["package"].get("revision", 1))
     smoke = recipe.get("smoke", {})
     commands = smoke.get("commands", [])
 
@@ -102,7 +108,7 @@ def main() -> int:
         return 0
 
     prefix = (args.prefix if args.prefix
-              else resolve_prefix(name, version))
+              else resolve_prefix(name, version, revision))
     if not prefix.is_dir():
         print(f"run_smoke: prefix {prefix} does not exist; "
               f"install the package first", file=sys.stderr)

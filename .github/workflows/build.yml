@@ -343,38 +343,58 @@ jobs:
           export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
           export PATH="${VERIFY_DIR}/bin:${PATH}"
 
-          "$BIN" --version \
-            || "$BIN" version \
-            || "$BIN" --help \
-            || "$BIN" -V \
-            || "$BIN" -v \
-            || {
-              # If execution fails, check if it's a script
-              # (not a compiled binary). Scripts may need
-              # their full install tree to run. Verify it
-              # exists and is executable instead.
-              if file "$BIN" | grep -qiE "text|script"; then
-                echo "Script binary, cannot run outside" \
-                  "install prefix"
-                echo "Verified: $(basename "$BIN") exists" \
-                  "and is executable"
-                rm -rf "$VERIFY_DIR"
-                exit 0
-              fi
-              # Some binaries (e.g. mandoc) don't support
-              # any standard version/help flags but still
-              # ran and printed usage. A valid executable
-              # that produced output is good enough.
-              if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
-                echo "Binary ran but has no version/help flag"
-                echo "Verified: $(basename "$BIN") is a" \
-                  "valid executable"
-                rm -rf "$VERIFY_DIR"
-                exit 0
-              fi
-              echo "::error::Binary failed to run"
-              exit 1
-            }
+          # Probe each flag individually so we can tell
+          # "flag not recognized" (normal nonzero exit)
+          # apart from "binary crashed before running"
+          # (killed by signal — bash reports 128+N, e.g.
+          # 134 for SIGABRT from a dyld "Library not
+          # loaded" failure). The old `|| ... || {fallback}`
+          # chain collapsed both cases together, so a
+          # crashing Mach-O still matched the `file` test
+          # and was waved through as "valid executable".
+          PROBE_OK=0
+          KILLED_BY_SIGNAL=0
+          for args in --version version --help -V -v; do
+            "$BIN" "$args" && PROBE_OK=1 && break
+            rc=$?
+            [ $rc -ge 128 ] && KILLED_BY_SIGNAL=1
+          done
+
+          if [ "$PROBE_OK" = 0 ] && \
+             [ "$KILLED_BY_SIGNAL" = 1 ]; then
+            echo "::error::$(basename "$BIN") was killed" \
+              "by a signal (likely dyld could not load a" \
+              "required library). Diagnostic:"
+            "$BIN" --version 2>&1 | head -20 || true
+            exit 1
+          fi
+
+          if [ "$PROBE_OK" = 0 ]; then
+            # All probes exited nonzero but gracefully —
+            # the binary launched and rejected each flag.
+            if file "$BIN" | grep -qiE "text|script"; then
+              echo "Script binary, cannot run outside" \
+                "install prefix"
+              echo "Verified: $(basename "$BIN") exists" \
+                "and is executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            # Some binaries (e.g. mandoc) don't support
+            # any standard version/help flags but still
+            # ran and printed usage. A valid executable
+            # that produced output is good enough.
+            if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
+              echo "Binary ran but has no version/help flag"
+              echo "Verified: $(basename "$BIN") is a" \
+                "valid executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::Binary failed to run"
+            exit 1
+          fi
+
           echo "Verified: $(basename "$BIN") runs"
           rm -rf "$VERIFY_DIR"
 

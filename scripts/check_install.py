@@ -2,15 +2,22 @@
 """Static rpath check: verify a built package's shared-lib
 references match the recipe's declared runtime deps.
 
-Walks every Mach-O / ELF file under a prefix. For each file,
-extracts its rpath/runpath entries and any absolute dep
-references that point into a gale package store
-(~/.gale/pkg/<name>/<version>/...). Every such <name> must
-appear in the recipe's [dependencies].runtime list.
+Walks every Mach-O / ELF file under a prefix. For each file:
 
-This catches the class of bug where a lib dep was listed as
-build-only — at runtime the prebuilt's rpath points to a
-store dir that was never installed on the user's machine.
+1. Extracts rpath/runpath entries and any absolute dep
+   references that point into a gale package store
+   (~/.gale/pkg/<name>/<version>/...). Every such <name> must
+   appear in the recipe's [dependencies].runtime list. Catches
+   the class of bug where a lib dep was listed as build-only —
+   at runtime the prebuilt's rpath points to a store dir that
+   was never installed on the user's machine.
+
+2. (Mach-O only) Resolves every @rpath/<lib> dep against the
+   binary's LC_RPATH entries and reports any that no rpath
+   dir can satisfy. Catches the class of bug where a recipe
+   deletes or fails to produce a dylib the binary still
+   references — dyld aborts at runtime with "Library not
+   loaded: @rpath/libX.dylib".
 
 Exits nonzero on failure.
 """
@@ -122,7 +129,28 @@ def store_name(path: str) -> str | None:
     return m.group(1) if m else None
 
 
-def resolve_pkg(dep: str, rpaths: list[str]) -> str | None:
+def expand_rpath(rp: str, binary: Path) -> str:
+    """Expand @executable_path / @loader_path in an rpath
+    entry to an absolute path rooted at the binary's dir.
+
+    Handles both the bare token ("@loader_path") and the
+    path-prefixed form ("@loader_path/../lib"). For main
+    executables the two tokens mean the same thing. For
+    dylibs, @loader_path is the loading dylib's own dir,
+    which matches the binary arg here because we resolve each
+    file relative to itself.
+    """
+    for token in ("@executable_path", "@loader_path"):
+        if rp == token:
+            return str(binary.parent)
+        if rp.startswith(token + "/"):
+            return str(binary.parent / rp[len(token) + 1:])
+    return rp
+
+
+def resolve_pkg(
+    dep: str, rpaths: list[str], binary: Path
+) -> str | None:
     """Figure out which gale package provides a dep.
 
     Returns the package name (e.g. 'curl') or None if the
@@ -136,13 +164,40 @@ def resolve_pkg(dep: str, rpaths: list[str]) -> str | None:
     if dep.startswith("@rpath/"):
         lib = dep[len("@rpath/"):]
         for rp in rpaths:
-            if not Path(rp, lib).exists():
+            resolved = expand_rpath(rp, binary)
+            if not Path(resolved, lib).exists():
                 continue
-            return store_name(rp)
+            return store_name(resolved)
         return None
     if dep.startswith(("@loader_path", "@executable_path")):
         return None
     return store_name(dep)
+
+
+def unresolvable_rpath_refs(
+    binary: Path, deps: list[str], rpaths: list[str]
+) -> list[str]:
+    """Return @rpath/<lib> dep names that no rpath resolves.
+
+    For each @rpath/X dep, check every LC_RPATH entry (with
+    @executable_path / @loader_path expanded) for a file
+    named X on disk. If none match, X is unresolvable — dyld
+    will abort with "Library not loaded" at runtime.
+    """
+    unresolved: list[str] = []
+    for dep in deps:
+        if not dep.startswith("@rpath/"):
+            continue
+        lib = dep[len("@rpath/"):]
+        found = False
+        for rp in rpaths:
+            resolved = expand_rpath(rp, binary)
+            if Path(resolved, lib).exists():
+                found = True
+                break
+        if not found:
+            unresolved.append(lib)
+    return unresolved
 
 
 def walk_binaries(root: Path):
@@ -176,14 +231,29 @@ def check_prefix(
         else:
             deps, rpaths = elf_refs(path)
 
+        rel = path.relative_to(prefix)
+
+        # Only Mach-O carries @rpath/ install names that we
+        # can fully resolve with LC_RPATH. ELF DT_NEEDED
+        # goes through the system linker (ld.so) which
+        # searches standard paths in addition to DT_RUNPATH,
+        # so the same check there would false-positive on
+        # libc, libm, etc.
+        if kind == "macho":
+            for lib in unresolvable_rpath_refs(path, deps, rpaths):
+                failures.append(
+                    f"{rel}: references @rpath/{lib} but no "
+                    f"rpath entry resolves to a file "
+                    f"(dyld would abort at runtime)"
+                )
+
         used_pkgs: dict[str, str] = {}
         for dep in deps:
-            pkg = resolve_pkg(dep, rpaths)
+            pkg = resolve_pkg(dep, rpaths, path)
             if pkg and pkg not in allowed:
                 used_pkgs.setdefault(pkg, dep)
 
         if used_pkgs:
-            rel = path.relative_to(prefix)
             for pkg, dep in sorted(used_pkgs.items()):
                 failures.append(
                     f"{rel}: loads '{dep}' from gale "
@@ -192,11 +262,10 @@ def check_prefix(
                 )
         elif verbose:
             resolved = {
-                resolve_pkg(d, rpaths)
-                for d in deps if resolve_pkg(d, rpaths)
+                resolve_pkg(d, rpaths, path)
+                for d in deps if resolve_pkg(d, rpaths, path)
             }
             if resolved:
-                rel = path.relative_to(prefix)
                 print(f"  ok {rel} -> {sorted(resolved)}")
 
     if verbose:
@@ -263,8 +332,11 @@ def main() -> int:
         for msg in failures:
             print(f"  {msg}", file=sys.stderr)
         print(
-            f"\nhint: add the missing package(s) to "
-            f"[dependencies].runtime in {args.recipe}",
+            f"\nhint: undeclared-dep — add the package to "
+            f"[dependencies].runtime in {args.recipe}; "
+            f"unresolvable @rpath — stop linking the lib, or "
+            f"declare+keep its provider so the dylib is "
+            f"present at runtime",
             file=sys.stderr)
         return 1
 
