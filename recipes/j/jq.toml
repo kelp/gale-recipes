@@ -1,7 +1,7 @@
 [package]
 name = "jq"
 version = "1.8.1"
-revision = 3
+revision = 4
 description = "Lightweight and flexible command-line JSON processor"
 license = "MIT"
 homepage = "https://jqlang.github.io/jq"
@@ -13,16 +13,32 @@ sha256 = "2be64e7129cecb11d5906290eba10af694fb9e3e7f9fc208a311dc33ca837eb0"
 released_at = "2025-07-01"
 
 [build]
+# --with-oniguruma=builtin alone still builds oniguruma as a
+# dylib that jq links against. --disable-shared forces the
+# builtin oniguruma (and libjq) to be built static-only, so
+# the jq binary has no @rpath/libonig.5.dylib dep and nothing
+# collides with the standalone oniguruma package in the farm.
 steps = [
-  "./configure --prefix=${PREFIX} --with-oniguruma=builtin --disable-docs --disable-maintainer-mode",
+  "./configure --prefix=${PREFIX} --with-oniguruma=builtin --disable-shared --disable-docs --disable-maintainer-mode",
   "make -j${JOBS}",
   "make install",
-  # --with-oniguruma=builtin static-links oniguruma into jq,
-  # but autotools still installs libonig.* and oniguruma.pc.
-  # Drop them so the shared-lib farm does not conflict with
-  # the standalone oniguruma package.
+  # --disable-shared still leaves the static libonig.a/.la and
+  # oniguruma.pc in place; drop them so they don't collide
+  # with the standalone oniguruma package.
   "rm -f ${PREFIX}/lib/libonig* ${PREFIX}/lib/pkgconfig/oniguruma.pc",
 ]
 
 [dependencies]
 build = []
+
+# The test() filter goes through the builtin oniguruma.
+# This catches the class of bug where jq is linked against
+# an @rpath/libonig.5.dylib that isn't actually present at
+# runtime — revision 2-3 shipped a binary that dyld aborted
+# on, because the recipe deleted the dylib it still loaded.
+[smoke]
+commands = [
+  "${PREFIX}/bin/jq --version",
+  "echo '\"hello world\"' | ${PREFIX}/bin/jq -e 'test(\"hell.\")'",
+  "echo '{\"xs\":[1,2,3]}' | ${PREFIX}/bin/jq '.xs | add'",
+]
