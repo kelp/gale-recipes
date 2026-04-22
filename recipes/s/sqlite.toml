@@ -22,3 +22,4 @@ steps = [
 
 [dependencies]
 build = ["readline", "ncurses"]
+runtime = ["readline"]
