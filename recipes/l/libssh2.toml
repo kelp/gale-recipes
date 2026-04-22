@@ -22,3 +22,4 @@ steps = [
 
 [dependencies]
 build = ["cmake", "openssl"]
+runtime = ["openssl"]
