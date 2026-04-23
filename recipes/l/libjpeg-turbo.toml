@@ -1,0 +1,22 @@
+[package]
+name = "libjpeg-turbo"
+version = "3.1.4.1"
+platforms = ["darwin-amd64", "darwin-arm64"]
+description = "SIMD-accelerated JPEG codec library"
+license = "IJG AND BSD-3-Clause AND Zlib"
+homepage = "https://libjpeg-turbo.org/"
+
+[source]
+repo = "libjpeg-turbo/libjpeg-turbo"
+url = "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.4.1/libjpeg-turbo-3.1.4.1.tar.gz"
+sha256 = "ecae8008e2cc9ade2f2c1bb9d5e6d4fb73e7c433866a056bd82980741571a022"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_STATIC=ON -DENABLE_SHARED=ON -DWITH_JPEG8=ON",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]

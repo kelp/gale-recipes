@@ -1,0 +1,22 @@
+[package]
+name = "lcms2"
+version = "2.18"
+platforms = ["darwin-amd64", "darwin-arm64"]
+description = "Little CMS — color management engine (v2)"
+license = "MIT"
+homepage = "https://www.littlecms.com/"
+
+[source]
+url = "https://downloads.sourceforge.net/project/lcms/lcms/2.18/lcms2-2.18.tar.gz"
+sha256 = "ee67be3566f459362c1ee094fde2c159d33fa0390aa4ed5f5af676f9e5004347"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --disable-dependency-tracking --with-jpeg=${DEP_LIBJPEG_TURBO} --with-tiff=${DEP_LIBTIFF}",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["gnumake", "libjpeg-turbo", "libtiff", "pkgconf"]
+runtime = ["libjpeg-turbo", "libtiff"]

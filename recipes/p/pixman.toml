@@ -1,0 +1,21 @@
+[package]
+name = "pixman"
+version = "0.46.4"
+platforms = ["darwin-amd64", "darwin-arm64"]
+description = "Low-level pixel manipulation library (Cairo's rasterizer)"
+license = "MIT"
+homepage = "https://www.pixman.org/"
+
+[source]
+url = "https://cairographics.org/releases/pixman-0.46.4.tar.gz"
+sha256 = "d09c44ebc3bd5bee7021c79f922fe8fb2fb57f7320f55e97ff9914d2346a591c"
+
+[build]
+steps = [
+  "meson setup build --prefix=${PREFIX} --buildtype=release -Dtests=disabled -Dgtk=disabled -Ddemos=disabled",
+  "meson compile -C build -j ${JOBS}",
+  "meson install -C build",
+]
+
+[dependencies]
+build = ["meson", "ninja", "pkgconf"]

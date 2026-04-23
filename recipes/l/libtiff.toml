@@ -1,0 +1,22 @@
+[package]
+name = "libtiff"
+version = "4.7.1"
+platforms = ["darwin-amd64", "darwin-arm64"]
+description = "TIFF image format library and utilities"
+license = "libtiff"
+homepage = "http://www.simplesystems.org/libtiff/"
+
+[source]
+url = "https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz"
+sha256 = "f698d94f3103da8ca7438d84e0344e453fe0ba3b7486e04c5bf7a9a3fabe9b69"
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --disable-dependency-tracking --disable-docs --disable-tests --with-jpeg-include-dir=${DEP_LIBJPEG_TURBO}/include --with-jpeg-lib-dir=${DEP_LIBJPEG_TURBO}/lib",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["gnumake", "libjpeg-turbo", "pkgconf", "zlib"]
+runtime = ["libjpeg-turbo", "zlib"]

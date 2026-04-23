@@ -1,0 +1,25 @@
+[package]
+name = "cairo"
+version = "1.18.4"
+platforms = ["darwin-amd64", "darwin-arm64"]
+description = "2D graphics library with multiple output backends"
+license = "LGPL-2.1-only OR MPL-1.1"
+homepage = "https://www.cairographics.org/"
+
+[source]
+url = "https://cairographics.org/releases/cairo-1.18.4.tar.xz"
+sha256 = "445ed8208a6e4823de1226a74ca319d3600e83f6369f99b14265006599c32ccb"
+
+# darwin-only for now — uses Quartz backend. Adding Linux
+# means flipping xlib/xcb on via a platform-split build.
+
+[build]
+steps = [
+  "meson setup build --prefix=${PREFIX} --buildtype=release -Dtests=disabled -Dgtk_doc=false -Dxlib=disabled -Dxcb=disabled -Dquartz=enabled -Dfontconfig=enabled -Dfreetype=enabled -Dpng=enabled",
+  "meson compile -C build -j ${JOBS}",
+  "meson install -C build",
+]
+
+[dependencies]
+build = ["fontconfig", "freetype", "libpng", "meson", "ninja", "pixman", "pkgconf", "zlib"]
+runtime = ["fontconfig", "freetype", "libpng", "pixman", "zlib"]
