@@ -486,15 +486,47 @@ jobs:
         if: steps.build.outputs.skipped != 'true'
         env:
           SHA256: ${{ steps.build.outputs.sha256 }}
+          ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
           mkdir -p /tmp/metadata
-          cat > "/tmp/metadata/${RECIPE_NAME}-${PLATFORM}.json" <<ENDJSON
-          {
-            "recipe": "${RECIPE_NAME}",
-            "platform": "${PLATFORM}",
-            "sha256": "${SHA256}"
-          }
-          ENDJSON
+
+          # C4: extract the archive's .gale-deps.toml (written by
+          # gale build) so the resolved dep closure can be baked
+          # into .binaries.toml. Builds with no declared deps
+          # produce no file; write an empty deps list in that
+          # case. gale's .binaries.toml parser tolerates missing
+          # or empty `deps`, so this is safe to include
+          # unconditionally.
+          DEPS_JSON="[]"
+          EXTRACT_DIR=$(mktemp -d)
+          if tar --zstd -xf "${ARCHIVE}" -C "${EXTRACT_DIR}" .gale-deps.toml 2>/dev/null; then
+            DEPS_JSON=$(python3 - "${EXTRACT_DIR}/.gale-deps.toml" <<'PY'
+          import json, sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              data = tomllib.load(f)
+          out = []
+          for dep in data.get("deps", []):
+              out.append({
+                  "name": dep.get("name", ""),
+                  "version": dep.get("version", ""),
+                  "revision": int(dep.get("revision", 1) or 1),
+              })
+          print(json.dumps(out))
+          PY
+          )
+          fi
+          rm -rf "${EXTRACT_DIR}"
+
+          # jq --argjson parses the deps list as JSON (not a
+          # string) so the resulting document has a real array,
+          # not a quoted blob.
+          jq -n \
+            --arg recipe "${RECIPE_NAME}" \
+            --arg platform "${PLATFORM}" \
+            --arg sha256 "${SHA256}" \
+            --argjson deps "${DEPS_JSON}" \
+            '{recipe: $recipe, platform: $platform, sha256: $sha256, deps: $deps}' \
+            > "/tmp/metadata/${RECIPE_NAME}-${PLATFORM}.json"
 
       - uses: actions/upload-artifact@v7
         if: steps.build.outputs.skipped != 'true'
@@ -509,6 +541,21 @@ jobs:
       && github.event_name != 'pull_request'
       && needs.discover.outputs.recipes != '[]'
       && needs.build.result != 'skipped'
+    # Serialize across every trigger that can reach this
+    # job (push to main, workflow_dispatch). The per-matrix
+    # `build` concurrency above is unrelated — it scopes to
+    # one recipe+platform and cancels in progress. Here we
+    # must queue, not cancel: dropping a run would lose the
+    # .versions / .binaries.toml writes it was going to do.
+    # The GraphQL commit below already uses expectedHeadOid
+    # as an optimistic lock, but without serialization the
+    # loser's writes (including a non-transactional
+    # `printf >> .versions` in its working tree) are simply
+    # discarded. Group on a fixed key since we only commit
+    # to `main`.
+    concurrency:
+      group: update-recipes-main
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -586,6 +633,23 @@ jobs:
               SHA256=$(jq -r '.sha256' "$META")
               printf '\n[%s]\nsha256 = "%s"\n' \
                 "$PLATFORM" "$SHA256" >> "$BINARIES_FILE"
+
+              # C4: surface the resolved dep closure recorded at
+              # build time (captured from the archive's
+              # .gale-deps.toml in "Save build metadata"). Purely
+              # informational at install time — the archive's own
+              # .gale-deps.toml stays authoritative — but baking
+              # the closure into the registry lets `gale info` and
+              # audit tooling inspect it without fetching the
+              # tarball. Empty list is omitted to keep diffs
+              # quiet for zero-dep recipes.
+              DEP_COUNT=$(jq '.deps | length' "$META")
+              if [ "$DEP_COUNT" -gt 0 ]; then
+                printf 'deps = [\n' >> "$BINARIES_FILE"
+                jq -r '.deps[] | "  { name = \"\(.name)\", version = \"\(.version)\", revision = \(.revision) },"' \
+                  "$META" >> "$BINARIES_FILE"
+                printf ']\n' >> "$BINARIES_FILE"
+              fi
             done
 
             echo "Wrote ${BINARIES_FILE}"

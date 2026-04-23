@@ -32,6 +32,72 @@ every user machine. Full semantics, `.gale-deps.toml`
 staleness model, and shared dylib farm in
 [`../gale/docs/revisions.md`](../gale/docs/revisions.md).
 
+### Binary trust policy
+
+A recipe that ships an inline `[binary.<platform>]`
+section (rare — CI-produced binaries use the separate
+`.binaries.toml` path instead) may declare a `trust`
+field. Valid values:
+
+- `trust = "sigstore"` (default when omitted) — the
+  binary must be served from `ghcr.io` and carry a
+  Sigstore attestation tied to gale-recipes CI. This
+  is the fail-safe default: forgetting the field
+  enforces attestation, not bypasses it.
+- `trust = "sha256-only"` — the binary is served from
+  an upstream host that doesn't publish attestations
+  keyed to our signing identity (vendor CDN, language
+  toolchain release artifact, etc.). Only the SHA256
+  is verified. Recipes must opt in explicitly.
+
+Typos in `[binary.<platform>]` field names fail parsing
+(same strict-schema rule as `[package]` and `[source]`).
+
+### Dependencies
+
+`[dependencies.build]` and `[dependencies.runtime]` each
+accept a list of entries in either form:
+
+```toml
+[dependencies]
+build = ["curl", "expat", "gnumake", "pkgconf"]
+runtime = [
+  "zlib",
+  { name = "openssl", version = ">=3.6.0-1" },
+]
+```
+
+- **Bare string** — resolves to whatever the current
+  registry says is latest. No constraint; the installer
+  accepts any version the resolver returns. Default for
+  everything the catalog ships today.
+- **Inline table** — pins the dep against a version
+  constraint. Keys: `name` (required), `version`
+  (optional constraint expression). The expression uses
+  the same syntax as `.gale-deps.toml` range constraints:
+  `"=1.2.3-2"` (exact), `">=1.2.3-2"` (floor), `"<2.0.0"`
+  (ceiling), or any of `>`, `>=`, `<`, `<=`, `=`. A bare
+  `"1.2.3"` is treated as `=1.2.3-1`.
+
+The constraint is enforced at install time — if the
+resolved dep's version doesn't satisfy it, the install
+fails with a message naming the dep, the required
+constraint, and the version actually found. Bare deps
+skip this check entirely.
+
+Pin a dep when a soname or ABI change in the dep would
+require rebuilding the dependent. Leave deps bare when
+they're ABI-stable across revisions or the dependent
+statically links them.
+
+CI records the resolved (name, version, revision)
+closure each build was linked against into a per-platform
+`deps` array-of-tables inside `.binaries.toml`. That
+block is informational — the archive's own
+`.gale-deps.toml` remains authoritative for staleness
+detection. See
+[`../gale/docs/revisions.md`](../gale/docs/revisions.md).
+
 ## Testing a Recipe
 
 Build a recipe (produces a tar.zst archive):
