@@ -1,0 +1,10 @@
+version = "15.2.rel1"
+
+[darwin-arm64]
+sha256 = "c7848d11251f2c9c5da801a307a6057feed1a3f3f4a9ef57a8b74f531f0390db"
+
+[linux-amd64]
+sha256 = "7d8c7d0b3f6d60345b63f48f62fae2a3d0eba6be968f76c47fe5935895b1384d"
+
+[linux-arm64]
+sha256 = "f1a1941d207ef5013ec7c8ec21c0fe80c525c3ef07d09f1c142edd541e3546ff"

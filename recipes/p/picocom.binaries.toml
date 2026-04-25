@@ -1,0 +1,19 @@
+version = "3.1"
+
+[darwin-arm64]
+sha256 = "9d2f3742abd4a43af84396824ef6cb383714a4131db64027f27ef37f10eeea80"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+]
+
+[linux-amd64]
+sha256 = "860c233b1ab0463dce6ac810bed01e88631ddfc94f49a3b96b31ac4cd0171798"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+]
+
+[linux-arm64]
+sha256 = "77a33afd4e79d3fae9c8840abf3872c7703228b5e3754af034343ff8716d63db"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+]
