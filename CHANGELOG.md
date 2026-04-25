@@ -4,7 +4,55 @@ All notable changes to gale-recipes are documented here.
 
 ## Unreleased
 
+### Added
+- `.github/workflows/reproducibility.yml` — manual
+  `workflow_dispatch` job that builds a recipe twice on
+  each of the three CI platforms (`darwin-arm64`,
+  `linux-amd64`, `linux-arm64`) and diffs the resulting
+  tar.zst archives. Closes the loop on gale's
+  determinism work (SOURCE_DATE_EPOCH from
+  `[source].released_at`, scoped HOME/TMPDIR,
+  deterministic touchAll, validate-before-swap on the
+  generation). Honors `[package].platforms` — recipes
+  that don't support the matrix leg skip with a notice.
+  On mismatch, uploads both archives + build logs as a
+  forensics artifact. Manual-only (running on every
+  push would double CI minutes).
+- `update-recipes` now bakes the resolved dep closure
+  into `.binaries.toml` as a per-platform
+  `deps = [...]` array of tables, extracted from each
+  archive's `.gale-deps.toml`. Empty closures are
+  omitted. The archive's own `.gale-deps.toml` remains
+  authoritative for staleness; the `.binaries.toml`
+  copy is informational. Old gale clients tolerate the
+  new field (sub-table parser ignores `deps`).
+- `[[repos]]` (tap) usage section in `gale-recipes/CLAUDE.md`
+  covering the binary-trust policy and inline
+  `[binary.<platform>]` requirement for tap recipes.
+
 ### Changed
+- `update-recipes` is now serialized via a job-level
+  `concurrency: { group: update-recipes-main,
+  cancel-in-progress: false }`. Prevents races between
+  push-to-main and `workflow_dispatch` runs (the
+  GraphQL commit's `expectedHeadOid` already gives an
+  optimistic lock, but a loser's `.versions` append +
+  `.binaries.toml` writes would have been discarded
+  silently).
+- `update-recipes` iterates recipes in sorted order
+  (was unspecified-order map iteration). Output diffs
+  between runs no longer reorder the same writes.
+- `update-recipes` now writes a recipe's
+  `.binaries.toml` only when metadata from every
+  expected platform is present, computed per-recipe as
+  the intersection of the CI matrix and the recipe's
+  declared `[package].platforms`. Falls back to the
+  full matrix when the field is absent. A 2/3 failed
+  matrix no longer publishes a partial
+  `.binaries.toml` to main; for platform-filtered
+  recipes (e.g. `traceroute` on linux only) the
+  expected count matches the declared platforms, not
+  the full matrix.
 - jq: drops `libonig.*` and `oniguruma.pc` after
   `make install`. The recipe builds with
   `--with-oniguruma=builtin` (static link), but autotools
