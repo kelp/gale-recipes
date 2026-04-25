@@ -72,6 +72,12 @@ All notable changes to gale-recipes are documented here.
   cmake for this version ignores `EXPAT_BUILD_STATIC` and
   ships shared-only; dependents (e.g. git) need the static
   archive to link statically.
+- gale: bumped recipe to v0.14.0 for the architectural
+  review hardening — tap resolver chain, binary trust
+  policy, dep version constraints, ETag registry cache,
+  build-env scrubbing, deterministic source builds,
+  generation validate-before-swap, and store-gen lock.
+  See gale's CHANGELOG.md for the full v0.14.0 entry.
 - gale: bumped recipe to v0.12.1 for the gc regression
   fix (v0.12.0 reaped canonical revision dirs actively
   referenced by the generation)
