@@ -1,0 +1,43 @@
+[package]
+name = "arm-none-eabi-gcc"
+version = "15.2.rel1"
+description = "ARM GNU bare-metal toolchain (gcc, g++, gdb, binutils, newlib)"
+license = "GPL-3.0-or-later WITH GCC-exception-3.1"
+homepage = "https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain"
+
+# ARM publishes prebuilt toolchain tarballs only — building
+# from source requires a multi-stage cross bootstrap that
+# is well outside what makes sense in a recipe. Each
+# platform downloads the upstream tarball directly.
+
+[source]
+url = "https://developer.arm.com/-/media/Files/downloads/gnu/15.2.rel1/binrel/arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi.tar.xz"
+sha256 = "1938a84b7105c192e3fb4fa5e893ba25f425f7ddab40515ae608cd40f68669a8"
+
+[build.darwin-arm64]
+steps = [
+  "curl -fsSL -o /tmp/arm-toolchain.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${VERSION}/binrel/arm-gnu-toolchain-${VERSION}-darwin-arm64-arm-none-eabi.tar.xz",
+  "echo '1938a84b7105c192e3fb4fa5e893ba25f425f7ddab40515ae608cd40f68669a8  /tmp/arm-toolchain.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/arm-toolchain-extract && tar -xJf /tmp/arm-toolchain.tar.xz -C /tmp/arm-toolchain-extract --strip-components=1",
+  "mkdir -p ${PREFIX}",
+  "cp -R /tmp/arm-toolchain-extract/. ${PREFIX}/",
+  "xattr -dr com.apple.quarantine ${PREFIX} 2>/dev/null || true",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -fsSL -o /tmp/arm-toolchain.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${VERSION}/binrel/arm-gnu-toolchain-${VERSION}-x86_64-arm-none-eabi.tar.xz",
+  "echo '597893282ac8c6ab1a4073977f2362990184599643b4c5ee34870a8215783a16  /tmp/arm-toolchain.tar.xz' | sha256sum -c",
+  "mkdir -p /tmp/arm-toolchain-extract && tar -xJf /tmp/arm-toolchain.tar.xz -C /tmp/arm-toolchain-extract --strip-components=1",
+  "mkdir -p ${PREFIX}",
+  "cp -R /tmp/arm-toolchain-extract/. ${PREFIX}/",
+]
+
+[build.linux-arm64]
+steps = [
+  "curl -fsSL -o /tmp/arm-toolchain.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${VERSION}/binrel/arm-gnu-toolchain-${VERSION}-aarch64-arm-none-eabi.tar.xz",
+  "echo 'd061559d814b205ed30c5b7c577c03317ec447ca51cd5a159d26b12a5bbeb20c  /tmp/arm-toolchain.tar.xz' | sha256sum -c",
+  "mkdir -p /tmp/arm-toolchain-extract && tar -xJf /tmp/arm-toolchain.tar.xz -C /tmp/arm-toolchain-extract --strip-components=1",
+  "mkdir -p ${PREFIX}",
+  "cp -R /tmp/arm-toolchain-extract/. ${PREFIX}/",
+]

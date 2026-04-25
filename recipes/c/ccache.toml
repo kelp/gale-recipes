@@ -1,0 +1,21 @@
+[package]
+name = "ccache"
+version = "4.13.4"
+description = "Compiler cache for fast recompilation of C/C++ code"
+license = "GPL-3.0-or-later"
+homepage = "https://ccache.dev/"
+
+[source]
+repo = "ccache/ccache"
+url = "https://github.com/ccache/ccache/releases/download/v4.13.4/ccache-4.13.4.tar.xz"
+sha256 = "4a7ef278b39d031b9ec524c0778d24bdb3e761940ed368060b54594f15559537"
+
+[build]
+steps = [
+  "cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DREDIS_STORAGE_BACKEND=OFF",
+  "cmake --build build -j ${JOBS}",
+  "cmake --install build",
+]
+
+[dependencies]
+build = ["cmake"]

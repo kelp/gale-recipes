@@ -1,0 +1,29 @@
+[package]
+name = "openocd"
+version = "0.12.0"
+description = "Open On-Chip Debugger (CMSIS-DAP, ST-Link, JTAG)"
+license = "GPL-2.0-or-later"
+homepage = "https://openocd.org/"
+
+[source]
+repo = "openocd-org/openocd"
+url = "https://sourceforge.net/projects/openocd/files/openocd/0.12.0/openocd-0.12.0.tar.bz2/download"
+sha256 = "af254788be98861f2bd9103fe6e60a774ec96a8c374744eef9197f6043075afa"
+
+# Minimal interface set: CMSIS-DAP v2 + ST-Link via libusb.
+# Skips FTDI / J-Link / parallel-port / GPIO bit-bang
+# adapters that need extra system libs (libftdi, hidapi)
+# we don't ship as recipes. CMSIS-DAP v1 (HID transport)
+# also needs hidapi and is left off — modern probes speak
+# v2 anyway.
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --disable-werror --disable-doxygen-html --enable-cmsis-dap-v2 --enable-stlink --disable-cmsis-dap --disable-ftdi --disable-jlink --disable-kitprog --disable-xds110 --disable-presto --disable-openjtag --disable-buspirate --disable-usb-blaster --disable-usb-blaster-2 --disable-vsllink --disable-osbdm --disable-opendous --disable-aice --disable-armjtagew --disable-rlink --disable-ulink --disable-parport --disable-jtag_vpi --disable-jtag_dpi --disable-amtjtagaccel --disable-ep93xx --disable-at91rm9200 --disable-bcm2835gpio --disable-imx_gpio --disable-am335xgpio --disable-gw16012 --disable-sysfsgpio --disable-linuxgpiod --disable-remote-bitbang",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["pkgconf", "libusb"]
+runtime = ["libusb"]

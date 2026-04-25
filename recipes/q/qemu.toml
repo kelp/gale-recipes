@@ -1,0 +1,30 @@
+[package]
+name = "qemu"
+version = "11.0.0"
+description = "Generic machine emulator and virtualizer (ARM/AArch64 only)"
+license = "GPL-2.0-only"
+homepage = "https://www.qemu.org/"
+
+[source]
+repo = "qemu/qemu"
+url = "https://download.qemu.org/qemu-11.0.0.tar.xz"
+sha256 = "c04ca36012653f32d11c674d370cf52a710e7d3f18c2d8b63e4932052a4854d6"
+
+# Narrow target list: arm-softmmu + aarch64-softmmu only.
+# Default builds every architecture qemu supports — half
+# an hour on a fast machine and a hundred megabytes of
+# binaries we'll never run. Skipping graphical frontends
+# (sdl, gtk, cocoa) and most networking backends keeps
+# the dep surface small for a CLI/serial-only embedded
+# debug workflow.
+
+[build]
+steps = [
+  "./configure --prefix=${PREFIX} --target-list=arm-softmmu,aarch64-softmmu --disable-docs --disable-sdl --disable-gtk --disable-cocoa --disable-vnc --disable-curses --disable-libssh --disable-libnfs --disable-libiscsi --disable-rbd --disable-glusterfs --disable-bzip2 --disable-snappy --disable-lzo --disable-curl --disable-libudev --disable-bpf --disable-spice --disable-spice-protocol --disable-usb-redir --disable-smartcard --disable-virglrenderer --disable-opengl --disable-gettext --disable-tools --disable-guest-agent --disable-capstone --disable-fuse --disable-gnutls --disable-nettle --disable-gcrypt",
+  "make -j${JOBS}",
+  "make install",
+]
+
+[dependencies]
+build = ["meson", "ninja", "pkgconf", "python", "glib", "pixman"]
+runtime = ["glib", "pixman"]
