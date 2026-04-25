@@ -86,21 +86,51 @@ class Upstream:
     ``_data/upstream.json``. Written by the daily auto-update
     workflow."""
 
-    status: str  # up_to_date | outdated | untracked | error
+    status: str  # up_to_date | outdated | tampered | untracked | error
     current_version: str
     checked_at: str
     latest_version: str | None = None
     latest_released_at: str | None = None  # YYYY-MM-DD
     latest_release_url: str | None = None
     reason: str | None = None
+    # Tier-1 supply-chain fields, all optional. Older
+    # upstream.json entries (pre-rollout) won't have any.
+    vulnerabilities: list[dict] | None = None
+    swh_archived: bool | None = None
+    swh_revision: str | None = None
+    repo_id: str | None = None
+    owner_id: str | None = None
 
     @property
     def is_outdated(self) -> bool:
         return self.status == "outdated"
 
     @property
+    def is_tampered(self) -> bool:
+        return self.status == "tampered"
+
+    @property
     def is_tracked(self) -> bool:
-        return self.status in ("up_to_date", "outdated")
+        return self.status in ("up_to_date", "outdated", "tampered")
+
+    @property
+    def has_current_vulns(self) -> bool:
+        """True if any recorded advisory affects the
+        currently-shipped version. Renders even on
+        ``up_to_date`` rows."""
+        return any(
+            "current" in (v.get("applies_to") or [])
+            for v in (self.vulnerabilities or [])
+        )
+
+    @property
+    def has_upstream_vulns(self) -> bool:
+        """True if any recorded advisory affects the
+        proposed bump-to version."""
+        return any(
+            "upstream" in (v.get("applies_to") or [])
+            for v in (self.vulnerabilities or [])
+        )
 
     def age_days(self, today: date | None = None) -> int | None:
         """Days since upstream released ``latest_version``.
@@ -131,6 +161,12 @@ class Upstream:
             out["latest_release_url"] = self.latest_release_url
         if self.reason:
             out["reason"] = self.reason
+        if self.vulnerabilities:
+            out["vulnerabilities"] = self.vulnerabilities
+        if self.swh_archived is not None:
+            out["swh_archived"] = self.swh_archived
+        if self.swh_revision:
+            out["swh_revision"] = self.swh_revision
         return out
 
 
@@ -341,6 +377,14 @@ def load_upstream_map(
             v = entry.get(key)
             return v if isinstance(v, str) and v else None
 
+        vulns_raw = entry.get("vulnerabilities")
+        vulns = (
+            [v for v in vulns_raw if isinstance(v, dict)]
+            if isinstance(vulns_raw, list)
+            else None
+        )
+        swh = entry.get("swh_archived")
+        swh = swh if isinstance(swh, bool) else None
         out[name] = Upstream(
             status=status,
             current_version=current,
@@ -349,6 +393,11 @@ def load_upstream_map(
             latest_released_at=_opt("latest_released_at"),
             latest_release_url=_opt("latest_release_url"),
             reason=_opt("reason"),
+            vulnerabilities=vulns,
+            swh_archived=swh,
+            swh_revision=_opt("swh_revision"),
+            repo_id=_opt("repo_id"),
+            owner_id=_opt("owner_id"),
         )
     return out
 
@@ -413,11 +462,44 @@ def upstream_pill_html(r: Recipe) -> str:
             f"upstream {html.escape(u.latest_version)}{age_bit}"
             "</span>"
         )
+    if u.status == "tampered":
+        # sha256 mismatch on same version, or upstream
+        # attestation failed. Explicit red pill — the whole
+        # point of the auto-update cooldown is to surface
+        # this.
+        title = u.reason or "upstream artifact changed after first observation"
+        latest = u.latest_version or "?"
+        return (
+            f' <span class="pill tampered" title="{html.escape(title)}">'
+            f"tampered ({html.escape(latest)})"
+            "</span>"
+        )
     # untracked or error
     title = u.reason or u.status
     return (
         f' <span class="pill untracked" title="{html.escape(title)}">'
         "untracked</span>"
+    )
+
+
+def vulnerability_pill_html(r: Recipe) -> str:
+    """Render a `vulnerable` pill on any recipe whose
+    currently-shipped version matches a published GHSA.
+    Stacks with the upstream/tampered/stale pills — the
+    signal is independent."""
+    u = r.upstream
+    if u is None or not u.has_current_vulns:
+        return ""
+    cves = sorted({
+        v.get("cve_id") or v.get("ghsa_id") or "advisory"
+        for v in (u.vulnerabilities or [])
+        if "current" in (v.get("applies_to") or [])
+    })
+    title = "; ".join(cves) if cves else "GHSA match"
+    return (
+        f' <span class="pill vulnerable" title="{html.escape(title)}">'
+        f"vulnerable ({len(cves)})"
+        "</span>"
     )
 
 
@@ -479,7 +561,8 @@ def render_index(recipes: list[Recipe]) -> str:
             f'<a href="recipes/{html.escape(r.name)}.html">'
             f"{html.escape(r.name)}</a>"
             f"{stale_pill_html(r)}"
-            f"{upstream_pill_html(r)}</td>",
+            f"{upstream_pill_html(r)}"
+            f"{vulnerability_pill_html(r)}</td>",
             f'<td class="version">{html.escape(r.version)}</td>',
         ]
         for p in PLATFORMS:
@@ -616,6 +699,47 @@ def render_recipe_page(recipe: Recipe) -> str:
     )
 
     u = recipe.upstream
+    swh_html = ""
+    if u is not None and u.swh_archived is True:
+        swh_html = (
+            '<span class="ok">archived</span>'
+        )
+        if u.swh_revision:
+            swh_html += (
+                f' (<code>{html.escape(u.swh_revision[:12])}</code>)'
+            )
+    elif u is not None and u.swh_archived is False:
+        swh_html = '<span class="muted">not yet archived</span>'
+
+    security_section_html = ""
+    if u is not None and u.vulnerabilities:
+        rows = []
+        for v in u.vulnerabilities:
+            cve = v.get("cve_id") or v.get("ghsa_id") or "advisory"
+            sev = v.get("severity") or "?"
+            rng = v.get("range") or ""
+            url = v.get("html_url") or ""
+            applies = ", ".join(v.get("applies_to") or [])
+            link = (
+                f'<a href="{html.escape(url)}">{html.escape(cve)}</a>'
+                if url else html.escape(cve)
+            )
+            rows.append(
+                f"<tr><td>{link}</td>"
+                f"<td>{html.escape(sev)}</td>"
+                f"<td><code>{html.escape(rng)}</code></td>"
+                f"<td>{html.escape(applies)}</td></tr>"
+            )
+        security_section_html = (
+            '<section><h2>security advisories</h2>'
+            '<table><thead><tr>'
+            '<th>id</th><th>severity</th>'
+            '<th>vulnerable range</th><th>applies to</th>'
+            '</tr></thead><tbody>'
+            + "".join(rows)
+            + '</tbody></table></section>'
+        )
+
     if u is None:
         upstream_html = (
             '<span class="muted">no upstream data yet</span>'
@@ -645,6 +769,17 @@ def render_recipe_page(recipe: Recipe) -> str:
             f'<span class="fail">behind</span> '
             f"(upstream {link}{age_bit})"
         )
+    elif u.status == "tampered":
+        reason = (
+            f" ({html.escape(u.reason)})"
+            if u.reason
+            else ""
+        )
+        latest = u.latest_version or "?"
+        upstream_html = (
+            f'<span class="fail">tampered</span> '
+            f"(upstream {html.escape(latest)}){reason}"
+        )
     else:
         reason = (
             f" ({html.escape(u.reason)})"
@@ -666,7 +801,7 @@ def render_recipe_page(recipe: Recipe) -> str:
 <body>
 <header>
   <p class="crumbs"><a href="../index.html">← all recipes</a></p>
-  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}{upstream_pill_html(recipe)}</h1>
+  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}{upstream_pill_html(recipe)}{vulnerability_pill_html(recipe)}</h1>
   <p class="description">{html.escape(recipe.description)}</p>
 </header>
 <main>
@@ -679,6 +814,7 @@ def render_recipe_page(recipe: Recipe) -> str:
       <dd>{binaries_version_html}</dd>
       <dt>upstream</dt>
       <dd>{upstream_html}</dd>
+      {f'<dt>software heritage</dt><dd>{swh_html}</dd>' if swh_html else ''}
       <dt>license</dt>
       <dd>{license_html}</dd>
       <dt>homepage</dt>
@@ -697,6 +833,7 @@ def render_recipe_page(recipe: Recipe) -> str:
       </tbody>
     </table>
   </section>
+  {security_section_html}
   <section>
     <h2>version history</h2>
     {history_html}
@@ -799,6 +936,72 @@ def render_status_md(recipes: list[Recipe]) -> str:
             lines.append(
                 f"- `{r.name}`: recipe {r.version}, "
                 f"upstream {u.latest_version}{age_bit}"
+            )
+        lines.append("")
+
+    # Security advisories on currently-shipped versions.
+    # Surface above tamper because it directly affects users
+    # running today's binaries.
+    vuln_recipes = [
+        r for r in recipes
+        if r.upstream is not None and r.upstream.has_current_vulns
+    ]
+    if vuln_recipes:
+        sev_rank = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+        def _max_sev(r: Recipe) -> int:
+            u = r.upstream
+            assert u is not None
+            return max(
+                (sev_rank.get((v.get("severity") or "").lower(), 0)
+                 for v in (u.vulnerabilities or [])
+                 if "current" in (v.get("applies_to") or [])),
+                default=0,
+            )
+        vuln_recipes.sort(key=_max_sev, reverse=True)
+        lines.append("## Security advisories on shipped versions")
+        lines.append("")
+        lines.append(
+            "Recipe's currently-shipped version matches a "
+            "published GitHub Security Advisory. Sorted by "
+            "severity descending."
+        )
+        lines.append("")
+        for r in vuln_recipes:
+            u = r.upstream
+            assert u is not None
+            for v in (u.vulnerabilities or []):
+                if "current" not in (v.get("applies_to") or []):
+                    continue
+                cve = v.get("cve_id") or v.get("ghsa_id") or "advisory"
+                sev = v.get("severity") or "?"
+                rng = v.get("range") or ""
+                lines.append(
+                    f"- `{r.name}` {r.version}: **{cve}** "
+                    f"({sev}) — range `{rng}`"
+                )
+        lines.append("")
+
+    # Tamper alerts — highest priority, surface prominently.
+    tampered = [
+        r for r in recipes
+        if r.upstream is not None and r.upstream.is_tampered
+    ]
+    if tampered:
+        lines.append("## Tampered upstream artifacts")
+        lines.append("")
+        lines.append(
+            "Upstream artifact changed after our first "
+            "observation, or attestation verification failed. "
+            "Review before any version bump."
+        )
+        lines.append("")
+        for r in tampered:
+            u = r.upstream
+            assert u is not None
+            reason = f" — {u.reason}" if u.reason else ""
+            lines.append(
+                f"- `{r.name}`: recipe {r.version}, "
+                f"upstream {u.latest_version or '?'}{reason}"
             )
         lines.append("")
 

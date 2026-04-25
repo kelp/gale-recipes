@@ -13,6 +13,8 @@
   --stale-bg: #fff4d6;
   --outdated: #7a3a9a;
   --outdated-bg: #f3eafa;
+  --vuln: #b34700;
+  --vuln-bg: #fdeee0;
   --link: #0b5ed7;
   --row-hover: #f6f6f6;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -33,6 +35,8 @@
     --stale-bg: #2a1f0a;
     --outdated: #c58dff;
     --outdated-bg: #1f1330;
+    --vuln: #ff9456;
+    --vuln-bg: #2c1808;
     --link: #6ab0ff;
     --row-hover: #181b22;
   }
@@ -146,6 +150,8 @@ td.na { color: var(--muted); background: var(--muted-bg); font-weight: 500; }
 .pill.stale { color: var(--stale); background: var(--stale-bg); }
 .pill.outdated { color: var(--outdated); background: var(--outdated-bg); }
 .pill.untracked { color: var(--muted); background: var(--muted-bg); }
+.pill.tampered { color: var(--fail); background: var(--fail-bg); }
+.pill.vulnerable { color: var(--vuln); background: var(--vuln-bg); }
 
 dl {
   display: grid;

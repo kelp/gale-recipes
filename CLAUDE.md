@@ -207,6 +207,48 @@ and appends `.versions` entries, and commits back via
 GraphQL (auto-signed "Verified"). workflow_dispatch
 builds all or a named recipe.
 
+## Auto-update workflow
+
+`.github/workflows/auto-update.yml` runs daily and, for
+each recipe with a `[source].repo`, queries the upstream's
+latest GitHub release. All status (up_to_date / outdated /
+tampered / untracked) is written to `_data/upstream.json`
+for the dashboard; version-bump PRs are opened under the
+`auto-update/<name>-<version>` branch name.
+
+The 3-day cooldown is a supply-chain gate, not a
+scheduling delay. Its timestamp comes from our own
+*first-observation* clock (recorded in `upstream.json`
+alongside the tarball's sha256), not upstream's tag
+publish date — a maintainer re-tagging to reset
+`published_at` does not move our clock. A sha256 change
+on an already-observed version flips status to
+`tampered`, halts the PR, and surfaces on the dashboard.
+The workflow also runs `gh attestation verify` against
+each downloaded tarball; repos listed in
+`.github/auto-update-attest-required.txt` require a
+valid attestation.
+
+Non-semver tags (release candidates, dated builds with
+dashes, etc.) are recorded as `untracked` and skipped.
+
+### Auto-merge policy
+
+Auto-update PRs are **never** auto-merged. Gates, in
+order:
+
+1. **Pre-PR** — first-observation 3-day cooldown,
+   attestation verification, non-semver filter.
+2. **CI** — `build.yml` rebuilds the recipe on all
+   platforms and smoke-tests the resulting binary
+   (`--help`/`--version`), same as any other PR.
+3. **Human** — a reviewer presses merge.
+
+Do not add `--auto-merge` or a merge-bot. The cooldown
+only protects against issues the *ecosystem* notices;
+the human gate is the last backstop for anything the
+ecosystem missed.
+
 ## Linting
 
 Run all lints:

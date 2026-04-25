@@ -39,19 +39,82 @@ but isn't useful until this is solved.
 
 ## Auto-Update Agent
 
-- [ ] **Cron workflow** — daily workflow. For each
+- [x] **Cron workflow** — daily workflow. For each
   recipe with `[source].repo`, query
   `gh api /repos/{owner}/{repo}/releases/latest`.
-- [ ] **Cooldown enforcement** — skip versions less
-  than 3 days old (from upstream release date).
-  Security patches can be fast-tracked manually.
-- [ ] **PR per update** — each version bump creates a
-  PR with updated version, SHA256, and source URL.
-  CI builds on both platforms.
+- [x] **Cooldown enforcement** — anchored to our own
+  first-observation timestamp, not upstream's
+  `published_at`. Resilient to retag attacks.
+- [x] **Tamper detection** — sha256 mismatch on an
+  already-observed version flips status to `tampered`,
+  halts PR, surfaces on dashboard.
+- [x] **Upstream attestation** — `gh attestation verify`
+  on every downloaded tarball.
+  `.github/auto-update-attest-required.txt` allowlist
+  promotes specific upstreams from optional to required.
+- [x] **Non-semver filter** — release-candidate and
+  date-stamped tags recorded as `untracked`.
+- [x] **PR per update** — branch-name dedup, Python
+  helper for TOML edits, binary sections stripped.
 - [ ] **AI build recovery** — when a version bump
   breaks the build, use Claude Code SDK to read the
   error and attempt a recipe fix. Falls back to
   opening a GitHub issue if the fix fails.
+
+### Supply-Chain Hardening (next pass)
+
+The 3-day cooldown buys time. The follow-ups below
+turn that wait into active signal-gathering — querying
+what the ecosystem learned about the artifact while we
+sat on it.
+
+**Tier 1 — shipped**
+
+- [x] **GitHub Security Advisories query.** Matches
+  current and bumped-to versions against published GHSAs
+  via `scripts/check_ghsa.py`. PR opens as draft with
+  `vulnerability` label when bumped-to matches.
+  Currently-shipped matches surface on the dashboard
+  even on `up_to_date` rows.
+- [x] **Software Heritage cross-check.** Tag's commit
+  is dereferenced (annotated tags handled) and queried
+  against SH's `/api/1/revision/{sha}/`. Result lands in
+  `swh_archived` + `swh_revision` and the PR body.
+- [x] **Repo-identity / maintainer-change detection.**
+  Stable repo_id and owner_id stored in upstream.json.
+  repo_id mismatch on the same declared `[source].repo`
+  → status `tampered`, no PR. owner_id mismatch with
+  same repo_id → PR labeled `ownership-change` with the
+  prior/current IDs in the body.
+
+**Tier 2 — defer**
+
+- [ ] **OSV.dev query.** Broader than GHSA but keyed by
+  ecosystem (PyPI/npm/Crates), so adds little for
+  GitHub-source recipes. Worth it once we ship more
+  language-ecosystem packages.
+- [ ] **Release-cadence anomaly.** We already store
+  `latest_released_at` history; flag projects whose
+  cadence breaks (quarterly project drops a midnight
+  release). Cheap heuristic, high false-positive rate.
+- [ ] **`git tag -v` for signed tags.** Low coverage,
+  and pinning a key per upstream relocates the
+  maintainer-change problem.
+
+**Tier 3 — wait**
+
+- [ ] **Cosign / Sigstore for non-`gh` ecosystems.**
+  PyPI now signs, npm has provenance — but each
+  ecosystem has its own verification path. Defer until
+  a specific recipe demands it.
+- [ ] **Reproducible-build verification.** High value
+  where applicable; single-digit recipe coverage today.
+  Revisit when rebuilderd-style projects gain reach.
+- [ ] **OpenSSF Scorecard floor.** Fuzzy metric. Many
+  great single-maintainer projects score poorly;
+  thresholding without careful tuning is high-FP.
+- [ ] **Multi-source mirror compare.** Powerful but
+  rarely applicable to our catalog.
 
 ## Infrastructure
 
