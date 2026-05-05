@@ -1,7 +1,7 @@
 [package]
 name = "python"
 version = "3.14.4"
-revision = 2
+revision = 3
 description = "The Python programming language"
 license = "Python-2.0"
 homepage = "https://www.python.org/"
@@ -21,6 +21,9 @@ steps = [
   # tkinter is intentionally disabled (no tcl/tk in gale);
   # idle depends on it, so the idle bins can't run.
   "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
+  # PEP 394: provide unversioned `python` for tools with
+  # `#!/usr/bin/env python` shebangs. python2 is EOL.
+  "ln -sf python3 ${PREFIX}/bin/python",
 ]
 
 # On Linux, --enable-shared is needed so that consumers
@@ -35,6 +38,9 @@ steps = [
   # tkinter is intentionally disabled (no tcl/tk in gale);
   # idle depends on it, so the idle bins can't run.
   "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
+  # PEP 394: provide unversioned `python` for tools with
+  # `#!/usr/bin/env python` shebangs. python2 is EOL.
+  "ln -sf python3 ${PREFIX}/bin/python",
 ]
 
 [build.linux-arm64]
@@ -45,6 +51,9 @@ steps = [
   # tkinter is intentionally disabled (no tcl/tk in gale);
   # idle depends on it, so the idle bins can't run.
   "rm -f ${PREFIX}/bin/idle3 ${PREFIX}/bin/idle3.14",
+  # PEP 394: provide unversioned `python` for tools with
+  # `#!/usr/bin/env python` shebangs. python2 is EOL.
+  "ln -sf python3 ${PREFIX}/bin/python",
 ]
 
 [dependencies]
