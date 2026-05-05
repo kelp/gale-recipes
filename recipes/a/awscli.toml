@@ -3,7 +3,7 @@
 [package]
 name = "awscli"
 version = "2.34.19"
-revision = 2
+revision = 3
 description = "Official Amazon AWS command-line interface"
 license = "Apache-2.0"
 homepage = "https://aws.amazon.com/cli/"
@@ -14,10 +14,28 @@ url = "https://github.com/aws/aws-cli/archive/refs/tags/2.34.19.tar.gz"
 sha256 = "0fb0a1fddf6ed9f38c6574dbdae8aa0d9368a5dffd769fb32b175d43bf95a299"
 
 [build]
+# Upstream's lib/aws-cli/bin/aws has `#!/usr/bin/env python`,
+# which finds whatever python is on PATH instead of the
+# bundled venv's python sibling. ${PREFIX}/bin/aws is a
+# symlink to lib/aws-cli/bin/aws, so writing through the
+# symlink hits the venv's bootstrap. Move the bootstrap
+# aside and replace it with a wrapper that walks symlinks
+# (via readlink) to find its real install dir, then execs
+# the sibling venv python with the bootstrap as argv.
 steps = [
   "./configure --prefix=${PREFIX} --with-download-deps",
-  "make -j${JOBS}",
+  # Python 3.14's zipfile.ZipInfo.from_file no longer
+  # silently clamps pre-1980 mtimes — it raises. flit_core
+  # (awscli's wheel build backend) trips on this. Setting
+  # SOURCE_DATE_EPOCH makes flit use a fixed timestamp
+  # instead of reading file mtimes.
+  "SOURCE_DATE_EPOCH=315532800 make -j${JOBS}",
   "make install",
+  "mv ${PREFIX}/lib/aws-cli/bin/aws ${PREFIX}/lib/aws-cli/bin/aws-bootstrap",
+  "mv ${PREFIX}/lib/aws-cli/bin/aws_completer ${PREFIX}/lib/aws-cli/bin/aws_completer-bootstrap",
+  "printf '%s\\n' '#!/bin/sh' 'script=\"$0\"' 'while [ -L \"$script\" ]; do l=$(readlink \"$script\"); case \"$l\" in /*) script=\"$l\";; *) script=\"$(dirname \"$script\")/$l\";; esac; done' 'DIR=$(cd \"$(dirname \"$script\")\" && pwd)' 'exec \"$DIR/python\" \"$DIR/aws-bootstrap\" \"$@\"' > ${PREFIX}/lib/aws-cli/bin/aws",
+  "printf '%s\\n' '#!/bin/sh' 'script=\"$0\"' 'while [ -L \"$script\" ]; do l=$(readlink \"$script\"); case \"$l\" in /*) script=\"$l\";; *) script=\"$(dirname \"$script\")/$l\";; esac; done' 'DIR=$(cd \"$(dirname \"$script\")\" && pwd)' 'exec \"$DIR/python\" \"$DIR/aws_completer-bootstrap\" \"$@\"' > ${PREFIX}/lib/aws-cli/bin/aws_completer",
+  "chmod +x ${PREFIX}/lib/aws-cli/bin/aws ${PREFIX}/lib/aws-cli/bin/aws_completer",
 ]
 
 [dependencies]
