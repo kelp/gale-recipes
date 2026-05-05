@@ -1,10 +1,12 @@
 [packages]
   actionlint = "1.7.11"
+  awscli = "2.34.19"
   cmake = "4.3.1"
   expat = "2.7.5"
   flarectl = "0.116.0"
-  gale = "0.13.0-1"
+  gale = "0.14.0"
   git = "2.53.0"
+  httpie = "3.2.4"
   ncurses = "6.4"
   python = "3.14.4"
   readline = "8.2"

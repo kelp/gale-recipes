@@ -1,30 +1,29 @@
 [packages]
   [packages.actionlint]
-    version = "1.7.11"
-    sha256 = "de52466fcc2755468e8c4c61d37822b5f79749840fada4a94167e4e3d51611b9"
+    version = "1.7.11-2"
+  [packages.awscli]
+    version = "2.34.19-3"
+    sha256 = "aae43fec69991deeb67dadf94de8b0f6c3b3d99dc6ed5f1a87f4d4e950b13448"
   [packages.cmake]
-    version = "4.3.1"
-    sha256 = "7428bf6ecf7d2bc8794fa5f5ede3d62acb91a0d317349942cd9b3d84b2b08789"
+    version = "4.3.1-2"
   [packages.expat]
-    version = "2.7.5"
-    sha256 = "a632bc11e16985863a66a4b08ccf8b43582d6badc7ce3bfe885e42481af16140"
+    version = "2.7.5-2"
   [packages.flarectl]
-    version = "0.116.0"
-    sha256 = "de3f1447d84af581874844244fdcde9f05a92c29e96a310d292c4091b2e8a070"
+    version = "0.116.0-2"
   [packages.gale]
-    version = "0.13.0-1"
-    sha256 = "0d67bbd812d3b846b14547ff3857ca382f1e1f92da3504d9c4c521fe0430687c"
+    version = "0.14.0-1"
   [packages.git]
-    version = "2.53.0"
-    sha256 = "0a4885f0b1b994e1d7d278329a2279a2ca1d2adb991cd10bb17704337c20c421"
+    version = "2.53.0-2"
+    sha256 = "eaeb56e548f2d0b9e4e5e6162a3d209344c9498721da306094aa022b3d654bab"
+  [packages.httpie]
+    version = "3.2.4-2"
+    sha256 = "114051ce76a90a11d326d024d69dc680e8293410c5967233ea77d28e1098866f"
   [packages.ncurses]
-    version = "6.4"
-    sha256 = "96849d32819812496b1e2ae46231e3a1bd2f51614afecf8bee848fe84cdb3e2d"
+    version = "6.4-2"
   [packages.python]
-    version = "3.14.4"
+    version = "3.14.4-3"
+    sha256 = "f85cdbe2b09683ec831d9429d73629c32f6cf18c2947ad5ff7b533041f390b97"
   [packages.readline]
-    version = "8.2"
-    sha256 = "2bb642a6f2112bcd95fe7bbe202245b463fee6a97a1c2deae69ccd65e5d2cbb2"
+    version = "8.2-2"
   [packages.vibeutils]
-    version = "0.9.3"
-    sha256 = "56823414c91a6045972f699b5440eb0edf15ab1b6f952cbfa23db33a1a47704e"
+    version = "0.9.3-2"
