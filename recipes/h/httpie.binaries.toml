@@ -1,10 +1,46 @@
 version = "3.2.4"
 
 [darwin-arm64]
-sha256 = "53c2a0f813da39ac22d40220b5e5b6b822727a17425fe50661ba2c6bc635c0d9"
+sha256 = "1eb1fefdad5c9a4ba838da89c7531db94f4425be9b3fb5b54a43fdfa3f835a28"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "312dc4c7b7e16d0ca932216fbdc287df9e69c7e5de7cc820e8e8cfa0f51da71f"
+sha256 = "47b26e1c6f61339883c6459545bc82fd0b73100db524a485eb90b39d04018733"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "bfa38e8ca7cbf9e7ce2d054f8744bfb02adb91227952e36703e0164e2da7aacc"
+sha256 = "ab528588f56e6aa052d43c86df33092965f2190b6561d0a27eae2965a70682b0"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]

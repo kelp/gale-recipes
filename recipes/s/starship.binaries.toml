@@ -1,10 +1,64 @@
 version = "1.24.2"
 
 [darwin-arm64]
-sha256 = "f1b56726775829928211547af0dc4451de4c437eaba8cbf8c86ad4fd2c0e138f"
+sha256 = "45eaf1fcc4d7d91c03b7063b30ae730353d15a63c995ebfe1d772a1d8d082cb8"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "dbus", version = "1.16.2", revision = 2 },
+  { name = "expat", version = "2.7.5", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "meson", version = "1.6.1", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "ninja", version = "1.13.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "rust", version = "1.94.1", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "4de68b06f4e3a22b2dc0d27d54afbf4d89c0f54abd7bd5046365c1ec0be3e778"
+sha256 = "4f8c2d66c40ceb015fe2ebc414a9d86ba2f7cedcfee855f14fccc06e9a3a8219"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "dbus", version = "1.16.2", revision = 2 },
+  { name = "expat", version = "2.7.5", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "meson", version = "1.6.1", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "ninja", version = "1.13.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "rust", version = "1.94.1", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "c0e5ef01c036219bb8db52c7c54dbafd71c1dc7179981d3aca4819b7522c2db5"
+sha256 = "272db80f337ab3eedc7052da7764a2987f40cc3693de4cf432f6a0596c04c459"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "dbus", version = "1.16.2", revision = 2 },
+  { name = "expat", version = "2.7.5", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "meson", version = "1.6.1", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "ninja", version = "1.13.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "rust", version = "1.94.1", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
