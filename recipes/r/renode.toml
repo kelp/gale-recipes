@@ -1,0 +1,61 @@
+[package]
+name = "renode"
+version = "1.16.1"
+description = "Antmicro's open-source simulator for embedded systems"
+license = "MIT"
+homepage = "https://renode.io"
+
+# Antmicro publishes prebuilt portable distributions only — building
+# from source needs a full mono/dotnet toolchain and a custom
+# tlib build, which is well outside what makes sense in a recipe.
+# Each platform downloads the upstream artifact directly. macOS
+# arm64 ships only as a .dmg, so the build steps mount it with
+# hdiutil. renode-test requires Python 3 + robotframework + psutil;
+# the recipe layers those into ${PREFIX}/libexec/renode/site and a
+# shim in bin/.
+
+# [source] points at the Linux portable tarball so gale's pipeline
+# can extract it. The build steps below re-download the
+# per-platform artifact (DMG on macOS, same tarball on Linux). This
+# matches the pattern in arm-none-eabi-gcc.toml and probe-rs.toml.
+[source]
+repo = "renode/renode"
+url = "https://github.com/renode/renode/releases/download/v1.16.1/renode-1.16.1.linux-portable-dotnet.tar.gz"
+sha256 = "00e113cdbd0f5354cf2f64bbe3f5a070d8958409542fca66e45ac97d982938c0"
+released_at = "2026-02-16"
+
+[build.darwin-arm64]
+steps = [
+  "curl -fsSL -o /tmp/renode.dmg https://github.com/renode/renode/releases/download/v${VERSION}/renode-${VERSION}-dotnet.osx-arm64-portable.dmg",
+  "echo '99b8ae5897b8926ef179868d39a504fe5296555dc9c9b973718ddf3ab09175d9  /tmp/renode.dmg' | shasum -a 256 -c",
+  "rm -rf /tmp/renode-mount && mkdir -p /tmp/renode-mount",
+  "hdiutil attach -nobrowse -readonly -mountpoint /tmp/renode-mount /tmp/renode.dmg",
+  "mkdir -p ${PREFIX}",
+  "cp -R /tmp/renode-mount/Renode.app ${PREFIX}/Renode.app",
+  "hdiutil detach /tmp/renode-mount",
+  "xattr -dr com.apple.quarantine ${PREFIX} 2>/dev/null || true",
+  "mkdir -p ${PREFIX}/libexec/renode/site",
+  "${DEP_PYTHON}/bin/python3 -m pip install --target ${PREFIX}/libexec/renode/site -r ${PREFIX}/Renode.app/Contents/MacOS/tests/requirements.txt",
+  "mkdir -p ${PREFIX}/bin",
+  "printf '#!/bin/sh\\nexec \"%s/Renode.app/Contents/MacOS/renode\" \"$@\"\\n' \"${PREFIX}\" > ${PREFIX}/bin/renode",
+  "printf '#!/bin/sh\\nexport PYTHONPATH=\"%s/libexec/renode/site:${PYTHONPATH:-}\"\\nexec \"%s/Renode.app/Contents/MacOS/renode-test\" \"$@\"\\n' \"${PREFIX}\" \"${PREFIX}\" > ${PREFIX}/bin/renode-test",
+  "chmod +x ${PREFIX}/bin/renode ${PREFIX}/bin/renode-test",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -fsSL -o /tmp/renode.tar.gz https://github.com/renode/renode/releases/download/v${VERSION}/renode-${VERSION}.linux-portable-dotnet.tar.gz",
+  "echo '00e113cdbd0f5354cf2f64bbe3f5a070d8958409542fca66e45ac97d982938c0  /tmp/renode.tar.gz' | sha256sum -c",
+  "mkdir -p ${PREFIX}/libexec/renode/dist",
+  "tar -xzf /tmp/renode.tar.gz -C ${PREFIX}/libexec/renode/dist --strip-components=1",
+  "mkdir -p ${PREFIX}/libexec/renode/site",
+  "${DEP_PYTHON}/bin/python3 -m pip install --target ${PREFIX}/libexec/renode/site -r ${PREFIX}/libexec/renode/dist/tests/requirements.txt",
+  "mkdir -p ${PREFIX}/bin",
+  "printf '#!/bin/sh\\nexec \"%s/libexec/renode/dist/renode\" \"$@\"\\n' \"${PREFIX}\" > ${PREFIX}/bin/renode",
+  "printf '#!/bin/sh\\nexport PYTHONPATH=\"%s/libexec/renode/site:${PYTHONPATH:-}\"\\nexec \"%s/libexec/renode/dist/renode-test\" \"$@\"\\n' \"${PREFIX}\" \"${PREFIX}\" > ${PREFIX}/bin/renode-test",
+  "chmod +x ${PREFIX}/bin/renode ${PREFIX}/bin/renode-test",
+]
+
+[dependencies]
+build = ["python"]
+runtime = [{ name = "python", version = ">=3.14.0" }]
