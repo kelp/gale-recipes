@@ -187,6 +187,15 @@ jobs:
       RECIPE_NAME: ${{ matrix.recipe }}
       PLATFORM: ${{ matrix.target.platform }}
       GHCR_REPO: ghcr.io/${{ github.repository }}
+      # Tells the sccache binary (auto-wired by gale's build
+      # sandbox when sccache resolves on PATH, gale v0.15.0+)
+      # to use the GitHub Actions cache backend. The
+      # ACTIONS_* runtime vars the backend needs are exposed
+      # to the build subprocess by the sccache-action step
+      # below. Harmless for non-Rust recipes — gale only
+      # forwards the var to a sandbox where sccache is the
+      # active wrapper.
+      SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@v6
 
@@ -204,6 +213,18 @@ jobs:
       - name: Install patchelf (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install -y patchelf
+
+      # Installs sccache onto PATH and exports
+      # ACTIONS_CACHE_URL / ACTIONS_RUNTIME_TOKEN /
+      # ACTIONS_RESULTS_URL to subsequent steps. Gale's build
+      # sandbox detects sccache via exec.LookPath and
+      # auto-sets RUSTC_WRAPPER=sccache for cargo invocations,
+      # so no per-recipe wiring is needed — Rust recipes
+      # (bat, fd, ripgrep, starship, ...) shim through
+      # sccache automatically and share a cache across
+      # recipe builds via the GHA backend.
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
 
       - name: Cache build dependencies
         uses: actions/cache@v5
