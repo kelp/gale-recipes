@@ -145,6 +145,24 @@ Build steps run in a clean shell with these variables:
 - `${ARCH}` — `arm64` or `amd64`
 - `${PLATFORM}` — `darwin-arm64` or `linux-amd64`
 
+### sccache passthrough
+
+If `sccache` is on the host PATH (e.g. installed in CI via
+`mozilla-actions/sccache-action`), gale's build sandbox
+auto-sets `RUSTC_WRAPPER=sccache` and forwards these host
+env vars into the build:
+
+- any `SCCACHE_*` key (e.g. `SCCACHE_GHA_ENABLED`,
+  `SCCACHE_DIR`, `SCCACHE_BUCKET`)
+- `ACTIONS_CACHE_URL`, `ACTIONS_RUNTIME_TOKEN`,
+  `ACTIONS_RESULTS_URL`, `ACTIONS_CACHE_SERVICE_V2`
+
+Trigger condition: `sccache` resolvable via the host PATH.
+Nothing else is needed in the recipe — `cargo install`
+picks up `RUSTC_WRAPPER` automatically. A recipe can set
+its own `RUSTC_WRAPPER` (including `""` to opt out) under
+`[build] env` to override the auto-wiring.
+
 ## Build Patterns
 
 **Autotools** (jq): Use `--disable-docs
