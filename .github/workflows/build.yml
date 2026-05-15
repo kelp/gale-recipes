@@ -473,7 +473,15 @@ jobs:
           # a fresh-HOME test here would require a local
           # --archive install mode in gale that doesn't
           # exist yet.
-          gale install "${RECIPE_NAME}" \
+          #
+          # --global pins the install to the runner's global
+          # scope so gale ignores the repo's project gale.toml
+          # (which lists dev-env pins — actionlint, awscli,
+          # cmake, ...). Those aren't installed on a CI
+          # runner, and a project-scope generation rebuild
+          # would fail on the first missing dev-env package
+          # before the smoke test ever ran.
+          gale install --global "${RECIPE_NAME}" \
             --recipe "${RECIPE_FILE}"
           python3 scripts/run_smoke.py \
             --recipe "${RECIPE_FILE}"
