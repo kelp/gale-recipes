@@ -1,0 +1,23 @@
+[package]
+name = "glib"
+version = "2.88.1"
+revision = 6
+description = "Core application building blocks for GNOME libraries and applications"
+license = "LGPL-2.1-or-later"
+homepage = "https://docs.gtk.org/glib/"
+
+[source]
+url = "https://download.gnome.org/sources/glib/2.88/glib-2.88.1.tar.xz"
+sha256 = "51ab804c56f6eab3e5045c774d1290ac5e4c923d4f9a3d8e33123bee45c1840e"
+released_at = "2026-05-02"
+
+[build]
+steps = [
+  "meson setup build --prefix=${PREFIX} --libdir=lib --buildtype=release -Dpkgconfig.relocatable=false -Dtests=false -Dman-pages=disabled -Dinstalled_tests=false",
+  "meson compile -C build -j ${JOBS}",
+  "meson install -C build",
+]
+
+[dependencies]
+build = ["meson", "ninja", "pkgconf", "python", "gettext"]
+runtime = ["libffi", "pcre2", "gettext", "zlib"]
