@@ -226,6 +226,21 @@ jobs:
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
 
+      # Pre-start the sccache server with the runner's
+      # stable TMPDIR. Without this, the server inherits
+      # TMPDIR from the first client invocation — which is
+      # gale's build-scoped ~/.gale/tmp/gale-tmp-XXX. That
+      # dir gets cleaned up at end of each gale sub-build
+      # (rust dep, then the recipe), so subsequent client
+      # invocations hit a server whose internal TMPDIR is
+      # gone: "sccache: error: Failed to create temp dir
+      # at gale-tmp-XXX/sccacheYYY". A running server's
+      # TMPDIR is fixed for its lifetime, so starting it
+      # here under the runner's /tmp is enough to keep it
+      # alive across gale's per-build sandbox churn.
+      - name: Start sccache server
+        run: sccache --start-server
+
       - name: Cache build dependencies
         uses: actions/cache@v5
         with:
