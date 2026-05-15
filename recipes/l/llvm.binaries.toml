@@ -1,4 +1,4 @@
-version = "22.1.1"
+version = "22.1.1-2"
 
 [linux-amd64]
 sha256 = "5cfbe4aacd5689934a65fbb252da9031888c4795ef36e8d108b322e705d94805"

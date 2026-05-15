@@ -1,4 +1,4 @@
-version = "17.2"
+version = "17.2-2"
 
 [linux-amd64]
 sha256 = "393400f27761844e3c4b8d318e89a392b8bc8d76eecff98af4450dfd1342851b"

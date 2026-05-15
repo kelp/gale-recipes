@@ -1,4 +1,4 @@
-version = "1.5.0"
+version = "1.5.0-2"
 
 [darwin-arm64]
 sha256 = "f19f0ca55d6f9c81d42f358d41ab8efca005df09235f733757c1e5d24a931b6b"

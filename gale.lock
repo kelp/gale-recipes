@@ -16,8 +16,8 @@
     version = "2.53.0-2"
     sha256 = "eaeb56e548f2d0b9e4e5e6162a3d209344c9498721da306094aa022b3d654bab"
   [packages.httpie]
-    version = "3.2.4-2"
-    sha256 = "114051ce76a90a11d326d024d69dc680e8293410c5967233ea77d28e1098866f"
+    version = "3.2.4"
+    sha256 = "53c2a0f813da39ac22d40220b5e5b6b822727a17425fe50661ba2c6bc635c0d9"
   [packages.ncurses]
     version = "6.4-2"
   [packages.python]

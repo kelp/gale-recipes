@@ -1,4 +1,4 @@
-version = "5.8.1"
+version = "5.8.1-2"
 
 [linux-amd64]
 sha256 = "38948d38f98c959e90967776e31e001d23fc0641a34231765de53c22b29544bf"

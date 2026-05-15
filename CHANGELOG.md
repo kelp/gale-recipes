@@ -5,6 +5,14 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- dtc recipe (v1.7.2) — Device Tree Compiler and
+  libfdt, builds via plain `make` with the
+  Python/YAML/Valgrind hooks disabled.
+- glib recipe (v2.88.1) — GNOME core library, meson
+  build with relocatable pkgconfig disabled so consumers
+  link against absolute store paths.
+- tio recipe (v3.9) — serial-device I/O tool. Depends
+  on the new glib recipe plus lua.
 - `.github/workflows/reproducibility.yml` — manual
   `workflow_dispatch` job that builds a recipe twice on
   each of the three CI platforms (`darwin-arm64`,
@@ -31,6 +39,18 @@ All notable changes to gale-recipes are documented here.
   `[binary.<platform>]` requirement for tap recipes.
 
 ### Changed
+- `build.yml` now embeds the recipe revision in each
+  `.binaries.toml` `version` field as `X.Y.Z-N` whenever
+  `[package].revision > 1`. Recipes at revision 1 keep
+  the bare version. Brings the index format in line with
+  how the resolver already keys archives in the registry,
+  and lets `gale update` distinguish a pure
+  revision-bump rebuild from a no-op. All existing
+  `.binaries.toml` files were regenerated under the new
+  rule (one-line `version` change per recipe; sha256
+  blocks untouched).
+- `gale.lock`: re-pinned `httpie` to match the resolver
+  output against the updated registry index.
 - `update-recipes` is now serialized via a job-level
   `concurrency: { group: update-recipes-main,
   cancel-in-progress: false }`. Prevents races between

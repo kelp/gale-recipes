@@ -668,9 +668,22 @@ jobs:
             # Get version from recipe.
             VERSION=$(grep '^version' "$RECIPE_FILE" | \
               head -1 | sed 's/.*= *"//' | sed 's/".*//')
+            REVISION=$(grep '^revision' "$RECIPE_FILE" | \
+              head -1 | sed 's/.*= *//; s/[^0-9].*//')
+
+            if [ -z "$REVISION" ] || \
+               [ "$REVISION" -lt 1 ] 2>/dev/null; then
+              REVISION=1
+            fi
+
+            if [ "$REVISION" -le 1 ]; then
+              INDEX_VERSION="${VERSION}"
+            else
+              INDEX_VERSION="${VERSION}-${REVISION}"
+            fi
 
             # Build .binaries.toml with version + platform sha256 entries.
-            printf 'version = "%s"\n' "$VERSION" > "$BINARIES_FILE"
+            printf 'version = "%s"\n' "$INDEX_VERSION" > "$BINARIES_FILE"
 
             for META in ${RECIPE_META[$RECIPE]}; do
               PLATFORM=$(jq -r '.platform' "$META")

@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 version = "1.25.1"
+||||||| Stash base
+version = "1.24.2"
+=======
+version = "1.24.2-2"
+>>>>>>> Stashed changes
 
 [darwin-arm64]
 sha256 = "f431d811a4d4c8133237a035ebc4621279e7fa7b46f61b6ef8fc4b508a3d3f42"
