@@ -1,1375 +1,2403 @@
 {
-  "generated_at": "2026-05-15T10:05:14Z",
+  "generated_at": "2026-05-16T09:51:21Z",
   "recipes": {
     "": {
       "status": "untracked",
-      "current_version": "1.5.7",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "current_version": "1.5.7-2",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "1password-cli": {
       "status": "untracked",
       "current_version": "2.33.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "actionlint": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.7.11",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.7.12",
       "latest_released_at": "2026-03-30",
-      "latest_release_url": "https://github.com/rhysd/actionlint/releases/tag/v1.7.12"
+      "latest_release_url": "https://github.com/rhysd/actionlint/releases/tag/v1.7.12",
+      "reason": "attestation verification failed",
+      "repo": "rhysd/actionlint",
+      "repo_id": "370668507",
+      "owner_id": "823277",
+      "first_observed_version": "1.7.12",
+      "first_observed_sha256": "454800bd4f854592bcfe79b161f71d56e35940eb7016e48a26dd356adc9d400a",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "914e7df21a07ef503a81201c76d2b11c789d3fca"
     },
     "age": {
       "status": "up_to_date",
       "current_version": "1.3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.3.1",
       "latest_released_at": "2025-12-28",
-      "latest_release_url": "https://github.com/FiloSottile/age/releases/tag/v1.3.1"
+      "latest_release_url": "https://github.com/FiloSottile/age/releases/tag/v1.3.1",
+      "repo": "FiloSottile/age",
+      "repo_id": "187403699",
+      "owner_id": "1225294"
     },
     "arm-none-eabi-gcc": {
       "status": "untracked",
       "current_version": "15.2.rel1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "atuin": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "18.13.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "18.16.1",
       "latest_released_at": "2026-05-12",
-      "latest_release_url": "https://github.com/atuinsh/atuin/releases/tag/v18.16.1"
+      "latest_release_url": "https://github.com/atuinsh/atuin/releases/tag/v18.16.1",
+      "reason": "attestation verification failed",
+      "repo": "atuinsh/atuin",
+      "repo_id": "301244405",
+      "owner_id": "122059230",
+      "first_observed_version": "18.16.1",
+      "first_observed_sha256": "aec5c91207f080becc4b13593d5b7edc46685e8d4dbfbaef33d31f8058191bc6",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "671f96b60dac49d1d2de73cc0812986a5e22ce7b"
     },
     "autoconf": {
       "status": "untracked",
       "current_version": "2.73",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "automake": {
       "status": "untracked",
       "current_version": "1.18.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "awscli": {
       "status": "untracked",
       "current_version": "2.34.19",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on aws/aws-cli"
     },
     "bandwhich": {
       "status": "up_to_date",
       "current_version": "0.23.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.23.1",
       "latest_released_at": "2024-10-08",
-      "latest_release_url": "https://github.com/imsnif/bandwhich/releases/tag/v0.23.1"
+      "latest_release_url": "https://github.com/imsnif/bandwhich/releases/tag/v0.23.1",
+      "repo": "imsnif/bandwhich",
+      "repo_id": "206874323",
+      "owner_id": "795598"
     },
     "bash": {
       "status": "untracked",
       "current_version": "5.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "bat": {
       "status": "up_to_date",
       "current_version": "0.26.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.26.1",
       "latest_released_at": "2025-12-02",
-      "latest_release_url": "https://github.com/sharkdp/bat/releases/tag/v0.26.1"
+      "latest_release_url": "https://github.com/sharkdp/bat/releases/tag/v0.26.1",
+      "repo": "sharkdp/bat",
+      "repo_id": "130464961",
+      "owner_id": "4209276"
     },
     "bison": {
       "status": "untracked",
       "current_version": "3.8.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "bottom": {
       "status": "up_to_date",
       "current_version": "0.12.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.12.3",
       "latest_released_at": "2026-01-01",
-      "latest_release_url": "https://github.com/ClementTsang/bottom/releases/tag/0.12.3"
+      "latest_release_url": "https://github.com/ClementTsang/bottom/releases/tag/0.12.3",
+      "repo": "ClementTsang/bottom",
+      "repo_id": "205042455",
+      "owner_id": "34804052"
     },
     "btop": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.4.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.4.7",
       "latest_released_at": "2026-05-01",
-      "latest_release_url": "https://github.com/aristocratos/btop/releases/tag/v1.4.7"
+      "latest_release_url": "https://github.com/aristocratos/btop/releases/tag/v1.4.7",
+      "reason": "attestation verification failed",
+      "repo": "aristocratos/btop",
+      "repo_id": "365005377",
+      "owner_id": "59659483",
+      "first_observed_version": "1.4.7",
+      "first_observed_sha256": "933de2e4d1b2211a638be463eb6e8616891bfba73aef5d38060bd8319baeefc6",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "6e39144aaf5a6bc01b9f795010b0914431067183"
     },
     "bun": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "1.3.11",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "v1.3.14",
       "latest_released_at": "2026-05-13",
-      "latest_release_url": "https://github.com/oven-sh/bun/releases/tag/bun-v1.3.14"
+      "latest_release_url": "https://github.com/oven-sh/bun/releases/tag/bun-v1.3.14",
+      "reason": "non-semver tag: v1.3.14"
     },
     "bzip2": {
       "status": "untracked",
       "current_version": "1.0.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "cairo": {
       "status": "untracked",
       "current_version": "1.18.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "ccache": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.13.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.13.6",
       "latest_released_at": "2026-05-04",
-      "latest_release_url": "https://github.com/ccache/ccache/releases/tag/v4.13.6"
+      "latest_release_url": "https://github.com/ccache/ccache/releases/tag/v4.13.6",
+      "reason": "attestation verification failed",
+      "repo": "ccache/ccache",
+      "repo_id": "461102",
+      "owner_id": "16579254",
+      "first_observed_version": "4.13.6",
+      "first_observed_sha256": "a7de667ca08cf67c3c8af9f213f6aa701a1188a2b3163fb74483858ce5e79fbb",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "c6f36725ddaa247678ff130cf4349055962ac072"
     },
     "chezmoi": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2.70.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.70.3",
       "latest_released_at": "2026-05-07",
-      "latest_release_url": "https://github.com/twpayne/chezmoi/releases/tag/v2.70.3"
+      "latest_release_url": "https://github.com/twpayne/chezmoi/releases/tag/v2.70.3",
+      "reason": "attestation verification failed",
+      "repo": "twpayne/chezmoi",
+      "repo_id": "157245200",
+      "owner_id": "6942",
+      "first_observed_version": "2.70.3",
+      "first_observed_sha256": "57a6f985f74f3015ffbe2bcba72db551f2a711c0504332148c3ddcd28f877118",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "ff6317e356645f92976ac8695424735cadbd5a3b"
     },
     "cloudflared": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2026.3.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2026.5.0",
       "latest_released_at": "2026-05-13",
-      "latest_release_url": "https://github.com/cloudflare/cloudflared/releases/tag/2026.5.0"
+      "latest_release_url": "https://github.com/cloudflare/cloudflared/releases/tag/2026.5.0",
+      "reason": "attestation verification failed",
+      "repo": "cloudflare/cloudflared",
+      "repo_id": "106867604",
+      "owner_id": "314135",
+      "first_observed_version": "2026.5.0",
+      "first_observed_sha256": "21d57fc7da8d83ba9633f79f7593f5898a027f8410fecf5a8c33661090aa7063",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "21ca2e225ea522d857f27a6d58b38e5b906e0bda"
     },
     "cmake": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.3.2",
       "latest_released_at": "2026-04-21",
-      "latest_release_url": "https://github.com/Kitware/CMake/releases/tag/v4.3.2"
+      "latest_release_url": "https://github.com/Kitware/CMake/releases/tag/v4.3.2",
+      "reason": "attestation verification failed",
+      "repo": "Kitware/CMake",
+      "repo_id": "537699",
+      "owner_id": "87549",
+      "first_observed_version": "4.3.2",
+      "first_observed_sha256": "b0231eb39b3c3cabdc568c619df78208a7bd95ea10c9b2236d61218bac1b367d",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "8d3c68cc0f36108f7ebb23ba7a6bc08b9b1d81e4"
     },
     "cocoapods": {
       "status": "up_to_date",
       "current_version": "1.16.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.16.2",
       "latest_released_at": "2024-10-31",
-      "latest_release_url": "https://github.com/CocoaPods/CocoaPods/releases/tag/1.16.2"
+      "latest_release_url": "https://github.com/CocoaPods/CocoaPods/releases/tag/1.16.2",
+      "repo": "CocoaPods/CocoaPods",
+      "repo_id": "2203645",
+      "owner_id": "1189714"
     },
     "colorls": {
       "status": "up_to_date",
       "current_version": "1.5.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.5.0",
       "latest_released_at": "2024-07-12",
-      "latest_release_url": "https://github.com/athityakumar/colorls/releases/tag/v1.5.0"
+      "latest_release_url": "https://github.com/athityakumar/colorls/releases/tag/v1.5.0",
+      "repo": "athityakumar/colorls",
+      "repo_id": "95798441",
+      "owner_id": "17109060"
     },
     "coreutils": {
       "status": "outdated",
       "current_version": "9.10",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "9.11",
       "latest_released_at": "2026-04-20",
-      "latest_release_url": "https://github.com/coreutils/coreutils/releases/tag/v9.11"
+      "latest_release_url": "https://github.com/coreutils/coreutils/releases/tag/v9.11",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "croc": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "10.4.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "10.4.3",
       "latest_released_at": "2026-05-06",
-      "latest_release_url": "https://github.com/schollz/croc/releases/tag/v10.4.3"
+      "latest_release_url": "https://github.com/schollz/croc/releases/tag/v10.4.3",
+      "reason": "attestation verification failed",
+      "repo": "schollz/croc",
+      "repo_id": "107286889",
+      "owner_id": "6550035",
+      "first_observed_version": "10.4.3",
+      "first_observed_sha256": "f70f6d504688ebf53eb297c2cff2759eeed91af261abe5e5916b9241f6f229ea",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "f662ab719808bffeb9ec09f758a67876e532ce84"
     },
     "curl": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "8.19.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "8_20_0",
       "latest_released_at": "2026-04-29",
-      "latest_release_url": "https://github.com/curl/curl/releases/tag/curl-8_20_0"
+      "latest_release_url": "https://github.com/curl/curl/releases/tag/curl-8_20_0",
+      "reason": "non-semver tag: 8_20_0"
     },
     "dbus": {
       "status": "untracked",
       "current_version": "1.16.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "deadnix": {
       "status": "untracked",
       "current_version": "1.3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on astro/deadnix"
     },
     "difftastic": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.68.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.69.0",
       "latest_released_at": "2026-04-30",
-      "latest_release_url": "https://github.com/Wilfred/difftastic/releases/tag/0.69.0"
+      "latest_release_url": "https://github.com/Wilfred/difftastic/releases/tag/0.69.0",
+      "reason": "attestation verification failed",
+      "repo": "Wilfred/difftastic",
+      "repo_id": "162276894",
+      "owner_id": "70800",
+      "first_observed_version": "0.69.0",
+      "first_observed_sha256": "49d722fb80a0324ea99fe11907f796cde635443084d15cc6f1afd9e0de54bde0",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "90a0f1b6aa88401170405a87be139cbabe00b12a"
     },
     "direnv": {
       "status": "up_to_date",
       "current_version": "2.37.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.37.1",
       "latest_released_at": "2025-07-20",
-      "latest_release_url": "https://github.com/direnv/direnv/releases/tag/v2.37.1"
+      "latest_release_url": "https://github.com/direnv/direnv/releases/tag/v2.37.1",
+      "repo": "direnv/direnv",
+      "repo_id": "1219305",
+      "owner_id": "13077327"
     },
     "dive": {
       "status": "up_to_date",
       "current_version": "0.13.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.13.1",
       "latest_released_at": "2025-03-29",
-      "latest_release_url": "https://github.com/wagoodman/dive/releases/tag/v0.13.1"
+      "latest_release_url": "https://github.com/wagoodman/dive/releases/tag/v0.13.1",
+      "repo": "wagoodman/dive",
+      "repo_id": "133251103",
+      "owner_id": "590471"
     },
     "docker": {
       "status": "untracked",
       "current_version": "29.3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on docker/cli"
     },
     "doctl": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.153.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.159.0",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/digitalocean/doctl/releases/tag/v1.159.0"
+      "latest_release_url": "https://github.com/digitalocean/doctl/releases/tag/v1.159.0",
+      "reason": "attestation verification failed",
+      "repo": "digitalocean/doctl",
+      "repo_id": "36529854",
+      "owner_id": "4650108",
+      "first_observed_version": "1.159.0",
+      "first_observed_sha256": "9710b60ce38cdcd1b1354fe349a2c01c319f84f581ec03722320d49cfc2af66e",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": false,
+      "swh_status": "not-archived",
+      "swh_revision": "ab39bd6c9ab8b010c586896275d7ff95bdc5bf8e"
     },
     "doggo": {
       "status": "up_to_date",
       "current_version": "1.1.5",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.1.5",
       "latest_released_at": "2026-02-24",
-      "latest_release_url": "https://github.com/mr-karan/doggo/releases/tag/v1.1.5"
+      "latest_release_url": "https://github.com/mr-karan/doggo/releases/tag/v1.1.5",
+      "repo": "mr-karan/doggo",
+      "repo_id": "319848237",
+      "owner_id": "5689132"
+    },
+    "dtc": {
+      "status": "untracked",
+      "current_version": "1.7.2",
+      "checked_at": "2026-05-16T09:51:21Z",
+      "reason": "no releases found on dgibson/dtc"
     },
     "duckdb": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.5.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.5.2",
       "latest_released_at": "2026-04-13",
-      "latest_release_url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.2"
+      "latest_release_url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.2",
+      "reason": "attestation verification failed",
+      "repo": "duckdb/duckdb",
+      "repo_id": "138754790",
+      "owner_id": "82039556",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-vmp8-hg63-v2hp",
+          "cve_id": "CVE-2025-64429",
+          "severity": "medium",
+          "html_url": "https://github.com/duckdb/duckdb/security/advisories/GHSA-vmp8-hg63-v2hp",
+          "range": ">= 1.4.0",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ],
+      "first_observed_version": "1.5.2",
+      "first_observed_sha256": "6d8612fc87115cf4d3512a934ada5d1669db29378b4cc8e226fdfa8f5c537385",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "8a5851971fae891f292c2714d86046ee018e9737"
     },
     "duf": {
       "status": "up_to_date",
       "current_version": "0.9.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.9.1",
       "latest_released_at": "2025-09-08",
-      "latest_release_url": "https://github.com/muesli/duf/releases/tag/v0.9.1"
+      "latest_release_url": "https://github.com/muesli/duf/releases/tag/v0.9.1",
+      "repo": "muesli/duf",
+      "repo_id": "297165998",
+      "owner_id": "146378"
     },
     "dust": {
       "status": "up_to_date",
       "current_version": "1.2.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.2.4",
       "latest_released_at": "2026-01-08",
-      "latest_release_url": "https://github.com/bootandy/dust/releases/tag/v1.2.4"
+      "latest_release_url": "https://github.com/bootandy/dust/releases/tag/v1.2.4",
+      "repo": "bootandy/dust",
+      "repo_id": "125563061",
+      "owner_id": "311785"
     },
     "expat": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "2.7.5",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "R_2_8_1",
       "latest_released_at": "2026-05-10",
-      "latest_release_url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_1"
+      "latest_release_url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_1",
+      "reason": "non-semver tag: R_2_8_1"
     },
     "eza": {
       "status": "up_to_date",
       "current_version": "0.23.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.23.4",
       "latest_released_at": "2025-10-03",
-      "latest_release_url": "https://github.com/eza-community/eza/releases/tag/v0.23.4"
+      "latest_release_url": "https://github.com/eza-community/eza/releases/tag/v0.23.4",
+      "repo": "eza-community/eza",
+      "repo_id": "671832156",
+      "owner_id": "141388427"
     },
     "fastfetch": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2.61.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.63.1",
       "latest_released_at": "2026-05-13",
-      "latest_release_url": "https://github.com/fastfetch-cli/fastfetch/releases/tag/2.63.1"
+      "latest_release_url": "https://github.com/fastfetch-cli/fastfetch/releases/tag/2.63.1",
+      "reason": "attestation verification failed",
+      "repo": "fastfetch-cli/fastfetch",
+      "repo_id": "340181518",
+      "owner_id": "136235211",
+      "first_observed_version": "2.63.1",
+      "first_observed_sha256": "6e124699ea20fb02c5bc402c0012543303ee75ca55ad664f96bc6cd414d7e6b3",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "acf610416c2d5bb1438f723699aca47647fbeba5"
     },
     "fd": {
       "status": "up_to_date",
       "current_version": "10.4.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "10.4.2",
       "latest_released_at": "2026-03-10",
-      "latest_release_url": "https://github.com/sharkdp/fd/releases/tag/v10.4.2"
+      "latest_release_url": "https://github.com/sharkdp/fd/releases/tag/v10.4.2",
+      "repo": "sharkdp/fd",
+      "repo_id": "90793418",
+      "owner_id": "4209276"
     },
     "fish": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.6.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.7.1",
       "latest_released_at": "2026-05-07",
-      "latest_release_url": "https://github.com/fish-shell/fish-shell/releases/tag/4.7.1"
+      "latest_release_url": "https://github.com/fish-shell/fish-shell/releases/tag/4.7.1",
+      "reason": "attestation verification failed",
+      "repo": "fish-shell/fish-shell",
+      "repo_id": "4279682",
+      "owner_id": "1828073",
+      "first_observed_version": "4.7.1",
+      "first_observed_sha256": "6f4d5b438a6338e3f5dcda19a28261e2ece7a9b7ff97686685e6abdc31dbb7df",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "efb0223da10367031b7c887a3e40eccdf9bf7b06"
     },
     "flac": {
       "status": "up_to_date",
       "current_version": "1.5.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.5.0",
       "latest_released_at": "2025-02-11",
-      "latest_release_url": "https://github.com/xiph/flac/releases/tag/1.5.0"
+      "latest_release_url": "https://github.com/xiph/flac/releases/tag/1.5.0",
+      "repo": "xiph/flac",
+      "repo_id": "23097875",
+      "owner_id": "8365509"
     },
     "flarectl": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.116.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "7.2.0",
       "latest_released_at": "2026-05-07",
-      "latest_release_url": "https://github.com/cloudflare/cloudflare-go/releases/tag/v7.2.0"
+      "latest_release_url": "https://github.com/cloudflare/cloudflare-go/releases/tag/v7.2.0",
+      "reason": "attestation verification failed",
+      "repo": "cloudflare/cloudflare-go",
+      "repo_id": "47340306",
+      "owner_id": "314135",
+      "first_observed_version": "7.2.0",
+      "first_observed_sha256": "925c249efd5c288bed095e00b1543d3bfbdcf316725d33d4dbc4e1ae444bfc1f",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "5ed2476f7cc66f6aa46120cefa733151ddb1ac39"
     },
     "flex": {
       "status": "up_to_date",
       "current_version": "2.6.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.6.4",
       "latest_released_at": "2017-05-06",
-      "latest_release_url": "https://github.com/westes/flex/releases/tag/v2.6.4"
+      "latest_release_url": "https://github.com/westes/flex/releases/tag/v2.6.4",
+      "repo": "westes/flex",
+      "repo_id": "14521001",
+      "owner_id": "1587870"
     },
     "flyctl": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.4.27",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.4.52",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/superfly/flyctl/releases/tag/v0.4.52"
+      "latest_release_url": "https://github.com/superfly/flyctl/releases/tag/v0.4.52",
+      "reason": "attestation verification failed",
+      "repo": "superfly/flyctl",
+      "repo_id": "199060308",
+      "owner_id": "22525303",
+      "first_observed_version": "0.4.52",
+      "first_observed_sha256": "13fd85c6ea7f0b44428c280f51c5b060a46a060c9039698f121fa5ad02ce1975",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": false,
+      "swh_status": "not-archived",
+      "swh_revision": "e4090acb4e44253c06c85816d88ca4ad8422db07"
     },
     "fontconfig": {
       "status": "untracked",
       "current_version": "2.17.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "freetype": {
       "status": "untracked",
       "current_version": "2.14.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "fzf": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.70.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.72.0",
       "latest_released_at": "2026-04-26",
-      "latest_release_url": "https://github.com/junegunn/fzf/releases/tag/v0.72.0"
+      "latest_release_url": "https://github.com/junegunn/fzf/releases/tag/v0.72.0",
+      "reason": "attestation verification failed",
+      "repo": "junegunn/fzf",
+      "repo_id": "13807606",
+      "owner_id": "700826",
+      "first_observed_version": "0.72.0",
+      "first_observed_sha256": "ca5ce083cec5187503ceb96d837c20d8efde85f03e62bba3a8890f8da526f2fc",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "6fefe025461b168eac2546ccba3403b70eb5da16"
     },
     "gale": {
       "status": "up_to_date",
       "current_version": "0.15.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.15.0",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/kelp/gale/releases/tag/v0.15.0"
+      "latest_release_url": "https://github.com/kelp/gale/releases/tag/v0.15.0",
+      "repo": "kelp/gale",
+      "repo_id": "1192341541",
+      "owner_id": "11240"
     },
     "gdu": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "5.34.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "5.36.1",
       "latest_released_at": "2026-04-29",
-      "latest_release_url": "https://github.com/dundee/gdu/releases/tag/v5.36.1"
+      "latest_release_url": "https://github.com/dundee/gdu/releases/tag/v5.36.1",
+      "reason": "attestation verification failed",
+      "repo": "dundee/gdu",
+      "repo_id": "122750502",
+      "owner_id": "27106",
+      "first_observed_version": "5.36.1",
+      "first_observed_sha256": "dd31ea9afd848edf734143aabd5fdf66236ce2c866dc09f9dededb61d39fe63c",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "8d64b4f1ef50bf6694cd17e060f9fd80aed3e297"
     },
     "gettext": {
       "status": "untracked",
       "current_version": "1.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "gh": {
       "status": "outdated",
       "current_version": "2.89.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.92.0",
       "latest_released_at": "2026-04-28",
-      "latest_release_url": "https://github.com/cli/cli/releases/tag/v2.92.0"
+      "latest_release_url": "https://github.com/cli/cli/releases/tag/v2.92.0",
+      "repo": "cli/cli",
+      "repo_id": "212613049",
+      "owner_id": "59704711",
+      "first_observed_version": "2.92.0",
+      "first_observed_sha256": "ad18928ce4e2695d7fc1adefa0f5e0496e570a430016cee4c22d7bf87e5d9c1d",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "unattested",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "6c470f60803784e1558b626022677c53dccb6016"
     },
     "git-delta": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.19.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.19.2",
       "latest_released_at": "2026-03-28",
-      "latest_release_url": "https://github.com/dandavison/delta/releases/tag/0.19.2"
+      "latest_release_url": "https://github.com/dandavison/delta/releases/tag/0.19.2",
+      "reason": "attestation verification failed",
+      "repo": "dandavison/delta",
+      "repo_id": "193526915",
+      "owner_id": "52205",
+      "first_observed_version": "0.19.2",
+      "first_observed_sha256": "f59b86f8c8dda4d76a3ba34b8553777a20c3b461646917d8e480fac6531bba9f",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "1502986e81c8e3fa27bfb5b84bac6b281a6b1edd"
     },
     "git-lfs": {
       "status": "up_to_date",
       "current_version": "3.7.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.7.1",
       "latest_released_at": "2025-10-17",
-      "latest_release_url": "https://github.com/git-lfs/git-lfs/releases/tag/v3.7.1"
+      "latest_release_url": "https://github.com/git-lfs/git-lfs/releases/tag/v3.7.1",
+      "repo": "git-lfs/git-lfs",
+      "repo_id": "13021798",
+      "owner_id": "20246716"
     },
     "git": {
       "status": "untracked",
       "current_version": "2.53.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on git/git"
     },
     "gitui": {
       "status": "up_to_date",
       "current_version": "0.28.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.28.1",
       "latest_released_at": "2026-03-24",
-      "latest_release_url": "https://github.com/extrawurst/gitui/releases/tag/v0.28.1"
+      "latest_release_url": "https://github.com/extrawurst/gitui/releases/tag/v0.28.1",
+      "repo": "extrawurst/gitui",
+      "repo_id": "247725846",
+      "owner_id": "200196069"
     },
     "glances": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.5.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.5.4",
       "latest_released_at": "2026-04-19",
-      "latest_release_url": "https://github.com/nicolargo/glances/releases/tag/v4.5.4"
+      "latest_release_url": "https://github.com/nicolargo/glances/releases/tag/v4.5.4",
+      "reason": "attestation verification failed",
+      "repo": "nicolargo/glances",
+      "repo_id": "2909429",
+      "owner_id": "776747",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-gfc2-9qmw-w7vh",
+          "cve_id": "CVE-2026-34839",
+          "severity": "high",
+          "html_url": "https://github.com/nicolargo/glances/security/advisories/GHSA-gfc2-9qmw-w7vh",
+          "range": "<= 4.5.2",
+          "applies_to": [
+            "current"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-qhj7-v7h7-q4c7",
+          "cve_id": "CVE-2026-33641",
+          "severity": "high",
+          "html_url": "https://github.com/nicolargo/glances/security/advisories/GHSA-qhj7-v7h7-q4c7",
+          "range": "<=4.5.2",
+          "applies_to": [
+            "current"
+          ]
+        }
+      ],
+      "first_observed_version": "4.5.4",
+      "first_observed_sha256": "a4f421c608d6c40e926c0256f915f0e820d92e5837e6b5a9eea582cf9b241c4a",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "05ff62d883d690809509517dec62684e6c4590d4"
+    },
+    "glib": {
+      "status": "untracked",
+      "current_version": "2.88.1",
+      "checked_at": "2026-05-16T09:51:21Z",
+      "reason": "no source.repo field"
     },
     "glow": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2.1.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.1.2",
       "latest_released_at": "2026-04-09",
-      "latest_release_url": "https://github.com/charmbracelet/glow/releases/tag/v2.1.2"
+      "latest_release_url": "https://github.com/charmbracelet/glow/releases/tag/v2.1.2",
+      "reason": "attestation verification failed",
+      "repo": "charmbracelet/glow",
+      "repo_id": "219616873",
+      "owner_id": "57376114",
+      "first_observed_version": "2.1.2",
+      "first_observed_sha256": "1b933139da1d08647bf5b3f112cab9548fdc2b40c056c7fa3d84d8706de5265a",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "f57087499b407d420cdad1d76d0e1ed33c77a3d8"
     },
     "gmp": {
       "status": "untracked",
       "current_version": "6.3.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "gnumake": {
       "status": "untracked",
       "current_version": "4.4.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "go": {
       "status": "untracked",
       "current_version": "1.26.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on golang/go"
     },
     "gofumpt": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.9.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.10.0",
       "latest_released_at": "2026-05-04",
-      "latest_release_url": "https://github.com/mvdan/gofumpt/releases/tag/v0.10.0"
+      "latest_release_url": "https://github.com/mvdan/gofumpt/releases/tag/v0.10.0",
+      "reason": "attestation verification failed",
+      "repo": "mvdan/gofumpt",
+      "repo_id": "178628673",
+      "owner_id": "3576549",
+      "first_observed_version": "0.10.0",
+      "first_observed_sha256": "5f3158f665d1d49a19f3ed48981366c892b68904b2b34cb893c6fe3ff8346929",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "14050252a6d591bb7a3f0167c925c3d6e6f9bdf8"
     },
     "golangci-lint": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2.11.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.12.2",
       "latest_released_at": "2026-05-06",
-      "latest_release_url": "https://github.com/golangci/golangci-lint/releases/tag/v2.12.2"
+      "latest_release_url": "https://github.com/golangci/golangci-lint/releases/tag/v2.12.2",
+      "reason": "attestation verification failed",
+      "repo": "golangci/golangci-lint",
+      "repo_id": "132145189",
+      "owner_id": "35628013",
+      "first_observed_version": "2.12.2",
+      "first_observed_sha256": "568cfb0ad40832177826608003065a976254415509dd8b4e3ba19ee586388b94",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "c0d3ddc9cf3faa61a4e378e879ece580256d76e5"
     },
     "google-cloud-sdk": {
       "status": "untracked",
       "current_version": "563.0.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "gopls": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "0.21.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "gopls/v0.21.1",
       "latest_released_at": "2026-02-12",
-      "latest_release_url": "https://github.com/golang/tools/releases/tag/gopls/v0.21.1"
+      "latest_release_url": "https://github.com/golang/tools/releases/tag/gopls/v0.21.1",
+      "reason": "non-semver tag: gopls/v0.21.1"
     },
     "gperf": {
       "status": "untracked",
       "current_version": "3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "gping": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "1.20.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "v1.20.1",
       "latest_released_at": "2025-08-15",
-      "latest_release_url": "https://github.com/orf/gping/releases/tag/gping-v1.20.1"
+      "latest_release_url": "https://github.com/orf/gping/releases/tag/gping-v1.20.1",
+      "reason": "non-semver tag: v1.20.1"
     },
     "grpcurl": {
       "status": "up_to_date",
       "current_version": "1.9.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.9.3",
       "latest_released_at": "2025-03-11",
-      "latest_release_url": "https://github.com/fullstorydev/grpcurl/releases/tag/v1.9.3"
+      "latest_release_url": "https://github.com/fullstorydev/grpcurl/releases/tag/v1.9.3",
+      "repo": "fullstorydev/grpcurl",
+      "repo_id": "111431261",
+      "owner_id": "33756472"
     },
     "hcloud": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.62.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.64.1",
       "latest_released_at": "2026-04-28",
-      "latest_release_url": "https://github.com/hetznercloud/cli/releases/tag/v1.64.1"
+      "latest_release_url": "https://github.com/hetznercloud/cli/releases/tag/v1.64.1",
+      "reason": "attestation verification failed",
+      "repo": "hetznercloud/cli",
+      "repo_id": "112504630",
+      "owner_id": "22154697",
+      "first_observed_version": "1.64.1",
+      "first_observed_sha256": "70bc7d62f4d07b408afa2eb84b0e1e5854a7f32f9defb4899f2e9a24b6846078",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "fbfa512ee92a876c839357a01b9b49849eca8c74"
     },
     "helix": {
       "status": "up_to_date",
       "current_version": "25.07.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "25.07.1",
       "latest_released_at": "2025-07-18",
-      "latest_release_url": "https://github.com/helix-editor/helix/releases/tag/25.07.1"
+      "latest_release_url": "https://github.com/helix-editor/helix/releases/tag/25.07.1",
+      "repo": "helix-editor/helix",
+      "repo_id": "268424739",
+      "owner_id": "66235900"
     },
     "helm": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.1.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.2.0",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/helm/helm/releases/tag/v4.2.0"
+      "latest_release_url": "https://github.com/helm/helm/releases/tag/v4.2.0",
+      "reason": "attestation verification failed",
+      "repo": "helm/helm",
+      "repo_id": "43723161",
+      "owner_id": "15859888",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-vmx8-mqv2-9gmg",
+          "cve_id": "CVE-2026-35204",
+          "severity": "high",
+          "html_url": "https://github.com/helm/helm/security/advisories/GHSA-vmx8-mqv2-9gmg",
+          "range": ">=4.0.0,<=4.1.3",
+          "applies_to": [
+            "current"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-q5jf-9vfq-h4h7",
+          "cve_id": "CVE-2026-35205",
+          "severity": "critical",
+          "html_url": "https://github.com/helm/helm/security/advisories/GHSA-q5jf-9vfq-h4h7",
+          "range": ">=4.0.0,<=4.1.3",
+          "applies_to": [
+            "current"
+          ]
+        }
+      ],
+      "first_observed_version": "4.2.0",
+      "first_observed_sha256": "98d6b09a7dce667d0638bd293b6ef768cfc6ba51afda42b0fe0be1c7a021ceb7",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "06468084e85c244c712834933d25ea232a4c2093"
     },
     "htop": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "3.4.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.5.1",
       "latest_released_at": "2026-04-28",
-      "latest_release_url": "https://github.com/htop-dev/htop/releases/tag/3.5.1"
+      "latest_release_url": "https://github.com/htop-dev/htop/releases/tag/3.5.1",
+      "reason": "attestation verification failed",
+      "repo": "htop-dev/htop",
+      "repo_id": "288082909",
+      "owner_id": "69567116",
+      "first_observed_version": "3.5.1",
+      "first_observed_sha256": "526cecd62870aa8d14d2a79a35ea197e4e2b5317d275b567cee0574b2ddb2e9a",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "82841011ac3e2ec6ee4d3dbdf80f8d26797abbc6"
     },
     "httpie": {
       "status": "up_to_date",
       "current_version": "3.2.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.2.4",
       "latest_released_at": "2024-11-01",
-      "latest_release_url": "https://github.com/httpie/cli/releases/tag/3.2.4"
+      "latest_release_url": "https://github.com/httpie/cli/releases/tag/3.2.4",
+      "repo": "httpie/cli",
+      "repo_id": "3544424",
+      "owner_id": "24454777"
     },
     "httpstat": {
       "status": "up_to_date",
       "current_version": "1.2.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.2.1",
       "latest_released_at": "2025-01-11",
-      "latest_release_url": "https://github.com/davecheney/httpstat/releases/tag/v1.2.1"
+      "latest_release_url": "https://github.com/davecheney/httpstat/releases/tag/v1.2.1",
+      "repo": "davecheney/httpstat",
+      "repo_id": "69011367",
+      "owner_id": "7171"
     },
     "hyperfine": {
       "status": "up_to_date",
       "current_version": "1.20.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.20.0",
       "latest_released_at": "2025-11-18",
-      "latest_release_url": "https://github.com/sharkdp/hyperfine/releases/tag/v1.20.0"
+      "latest_release_url": "https://github.com/sharkdp/hyperfine/releases/tag/v1.20.0",
+      "repo": "sharkdp/hyperfine",
+      "repo_id": "117356231",
+      "owner_id": "4209276"
     },
     "jless": {
       "status": "up_to_date",
       "current_version": "0.9.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.9.0",
       "latest_released_at": "2023-07-17",
-      "latest_release_url": "https://github.com/PaulJuliusMartinez/jless/releases/tag/v0.9.0"
+      "latest_release_url": "https://github.com/PaulJuliusMartinez/jless/releases/tag/v0.9.0",
+      "repo": "PaulJuliusMartinez/jless",
+      "repo_id": "361079646",
+      "owner_id": "3301004"
     },
     "jq": {
       "status": "up_to_date",
       "current_version": "1.8.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.8.1",
       "latest_released_at": "2025-07-01",
-      "latest_release_url": "https://github.com/jqlang/jq/releases/tag/jq-1.8.1"
+      "latest_release_url": "https://github.com/jqlang/jq/releases/tag/jq-1.8.1",
+      "repo": "jqlang/jq",
+      "repo_id": "5101141",
+      "owner_id": "104800540",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-7q7g-mrq3-phxr",
+          "cve_id": "CVE-2026-43895",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-7q7g-mrq3-phxr",
+          "range": "=1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mg96-6h3q-g846",
+          "cve_id": "CVE-2026-43896",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-mg96-6h3q-g846",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-4jm8-m363-4539",
+          "cve_id": "CVE-2026-41257",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-4jm8-m363-4539",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-hj52-j2c9-r8r4",
+          "cve_id": null,
+          "severity": "low",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-hj52-j2c9-r8r4",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-r7m6-x9c7-h69j",
+          "cve_id": "CVE-2026-40612",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-r7m6-x9c7-h69j",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-5v7p-2r57-2g4g",
+          "cve_id": "CVE-2026-43894",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-5v7p-2r57-2g4g",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-xwrw-4f8h-rjvg",
+          "cve_id": "CVE-2026-33947",
+          "severity": "medium",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-xwrw-4f8h-rjvg",
+          "range": "<= 1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-q3h9-m34w-h76f",
+          "cve_id": "CVE-2026-32316",
+          "severity": "high",
+          "html_url": "https://github.com/jqlang/jq/security/advisories/GHSA-q3h9-m34w-h76f",
+          "range": "1.8.1",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ]
     },
     "just": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.48.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.51.0",
       "latest_released_at": "2026-05-10",
-      "latest_release_url": "https://github.com/casey/just/releases/tag/1.51.0"
+      "latest_release_url": "https://github.com/casey/just/releases/tag/1.51.0",
+      "reason": "attestation verification failed",
+      "repo": "casey/just",
+      "repo_id": "61349723",
+      "owner_id": "1945",
+      "first_observed_version": "1.51.0",
+      "first_observed_sha256": "ed424dcf55ec08e22a0c58f6cfb7333573775d69dac3802bf0c1d96f7557089d",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "f92413bb045a058b35206d590c8f3ae147ea68aa"
     },
     "k9s": {
       "status": "up_to_date",
       "current_version": "0.50.18",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.50.18",
       "latest_released_at": "2026-01-11",
-      "latest_release_url": "https://github.com/derailed/k9s/releases/tag/v0.50.18"
+      "latest_release_url": "https://github.com/derailed/k9s/releases/tag/v0.50.18",
+      "repo": "derailed/k9s",
+      "repo_id": "167596393",
+      "owner_id": "4060"
     },
     "kubectl": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.35.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.36.1",
       "latest_released_at": "2026-05-12",
-      "latest_release_url": "https://github.com/kubernetes/kubernetes/releases/tag/v1.36.1"
+      "latest_release_url": "https://github.com/kubernetes/kubernetes/releases/tag/v1.36.1",
+      "reason": "attestation verification failed",
+      "repo": "kubernetes/kubernetes",
+      "repo_id": "20580498",
+      "owner_id": "13629408",
+      "first_observed_version": "1.36.1",
+      "first_observed_sha256": "1ebfa65cc95fbeb2ef4aad6832a3fae4edb88516e43b6437b69a40895803e0e8",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "756939600b9a7180fc2df6550a4585b638875e67"
     },
     "lazydocker": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.25.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.25.2",
       "latest_released_at": "2026-04-19",
-      "latest_release_url": "https://github.com/jesseduffield/lazydocker/releases/tag/v0.25.2"
+      "latest_release_url": "https://github.com/jesseduffield/lazydocker/releases/tag/v0.25.2",
+      "reason": "attestation verification failed",
+      "repo": "jesseduffield/lazydocker",
+      "repo_id": "187335810",
+      "owner_id": "8456633",
+      "first_observed_version": "0.25.2",
+      "first_observed_sha256": "405071220e5be9aa061c65d290e0347143b73ae0a3cc01df164f0105de2b53c4",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "7e7aadc2071d58031bf2daafca1fbd4093efc23f"
     },
     "lazygit": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.60.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.61.1",
       "latest_released_at": "2026-04-13",
-      "latest_release_url": "https://github.com/jesseduffield/lazygit/releases/tag/v0.61.1"
+      "latest_release_url": "https://github.com/jesseduffield/lazygit/releases/tag/v0.61.1",
+      "reason": "attestation verification failed",
+      "repo": "jesseduffield/lazygit",
+      "repo_id": "134017286",
+      "owner_id": "8456633",
+      "first_observed_version": "0.61.1",
+      "first_observed_sha256": "2a550c9b609c5eb0e1c2640e8114ac05b94c671803f77e08a9dcdbd66372e2c4",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "d167063b4f45d044524f3fba97f850d1eec3f95c"
     },
     "lcms2": {
       "status": "untracked",
       "current_version": "2.18",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "less": {
       "status": "untracked",
       "current_version": "692",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on gwsw/less"
     },
     "libevent": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "2.1.12",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "release-2.1.12-stable",
       "latest_released_at": "2020-07-05",
-      "latest_release_url": "https://github.com/libevent/libevent/releases/tag/release-2.1.12-stable"
+      "latest_release_url": "https://github.com/libevent/libevent/releases/tag/release-2.1.12-stable",
+      "reason": "non-semver tag: release-2.1.12-stable"
     },
     "libffi": {
       "status": "up_to_date",
       "current_version": "3.5.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.5.2",
       "latest_released_at": "2025-08-02",
-      "latest_release_url": "https://github.com/libffi/libffi/releases/tag/v3.5.2"
+      "latest_release_url": "https://github.com/libffi/libffi/releases/tag/v3.5.2",
+      "repo": "libffi/libffi",
+      "repo_id": "321154",
+      "owner_id": "7063475"
     },
     "libgit2": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.9.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.9.3",
       "latest_released_at": "2026-05-04",
-      "latest_release_url": "https://github.com/libgit2/libgit2/releases/tag/v1.9.3"
+      "latest_release_url": "https://github.com/libgit2/libgit2/releases/tag/v1.9.3",
+      "reason": "attestation verification failed",
+      "repo": "libgit2/libgit2",
+      "repo_id": "901662",
+      "owner_id": "394745",
+      "first_observed_version": "1.9.3",
+      "first_observed_sha256": "d532172d7ab24d2a25944e2434212d63ee85f3650e97b5f7579e7f201a78ad64",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "1affb8b19346c4f90e163a9a0364959ff1410f64"
     },
     "libidn2": {
       "status": "untracked",
       "current_version": "2.3.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on libidn/libidn2"
     },
     "libjpeg-turbo": {
       "status": "up_to_date",
       "current_version": "3.1.4.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.1.4.1",
       "latest_released_at": "2026-03-27",
-      "latest_release_url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/tag/3.1.4.1"
+      "latest_release_url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/tag/3.1.4.1",
+      "repo": "libjpeg-turbo/libjpeg-turbo",
+      "repo_id": "39760454",
+      "owner_id": "13406820"
     },
     "libogg": {
       "status": "up_to_date",
       "current_version": "1.3.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.3.6",
       "latest_released_at": "2025-06-16",
-      "latest_release_url": "https://github.com/xiph/ogg/releases/tag/v1.3.6"
+      "latest_release_url": "https://github.com/xiph/ogg/releases/tag/v1.3.6",
+      "repo": "xiph/ogg",
+      "repo_id": "33956205",
+      "owner_id": "8365509"
     },
     "libpng": {
       "status": "untracked",
       "current_version": "1.6.58",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "libpsl": {
       "status": "up_to_date",
       "current_version": "0.21.5",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.21.5",
       "latest_released_at": "2024-01-13",
-      "latest_release_url": "https://github.com/rockdaboot/libpsl/releases/tag/0.21.5"
+      "latest_release_url": "https://github.com/rockdaboot/libpsl/releases/tag/0.21.5",
+      "repo": "rockdaboot/libpsl",
+      "repo_id": "17948072",
+      "owner_id": "2087964"
     },
     "libssh2": {
       "status": "up_to_date",
       "current_version": "1.11.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.11.1",
       "latest_released_at": "2024-10-16",
-      "latest_release_url": "https://github.com/libssh2/libssh2/releases/tag/libssh2-1.11.1"
+      "latest_release_url": "https://github.com/libssh2/libssh2/releases/tag/libssh2-1.11.1",
+      "repo": "libssh2/libssh2",
+      "repo_id": "31701703",
+      "owner_id": "11430937"
     },
     "libtiff": {
       "status": "untracked",
       "current_version": "4.7.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "libtool": {
       "status": "untracked",
       "current_version": "2.5.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "libusb": {
       "status": "up_to_date",
       "current_version": "1.0.29",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.0.29",
       "latest_released_at": "2025-06-01",
-      "latest_release_url": "https://github.com/libusb/libusb/releases/tag/v1.0.29"
+      "latest_release_url": "https://github.com/libusb/libusb/releases/tag/v1.0.29",
+      "repo": "libusb/libusb",
+      "repo_id": "15120676",
+      "owner_id": "4439549"
     },
     "libyaml": {
       "status": "up_to_date",
       "current_version": "0.2.5",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.2.5",
       "latest_released_at": "2020-06-01",
-      "latest_release_url": "https://github.com/yaml/libyaml/releases/tag/0.2.5"
+      "latest_release_url": "https://github.com/yaml/libyaml/releases/tag/0.2.5",
+      "repo": "yaml/libyaml",
+      "repo_id": "2699072",
+      "owner_id": "69535"
     },
     "llvm": {
-      "status": "outdated",
+      "status": "untracked",
       "current_version": "22.1.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "llvmorg-22.1.5",
       "latest_released_at": "2026-05-05",
-      "latest_release_url": "https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.5"
+      "latest_release_url": "https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.5",
+      "reason": "non-semver tag: llvmorg-22.1.5"
     },
     "lsd": {
       "status": "up_to_date",
       "current_version": "1.2.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.2.0",
       "latest_released_at": "2025-10-12",
-      "latest_release_url": "https://github.com/lsd-rs/lsd/releases/tag/v1.2.0"
+      "latest_release_url": "https://github.com/lsd-rs/lsd/releases/tag/v1.2.0",
+      "repo": "lsd-rs/lsd",
+      "repo_id": "158927812",
+      "owner_id": "77716111"
     },
     "lsof": {
       "status": "up_to_date",
       "current_version": "4.99.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.99.6",
       "latest_released_at": "2026-03-04",
-      "latest_release_url": "https://github.com/lsof-org/lsof/releases/tag/4.99.6"
+      "latest_release_url": "https://github.com/lsof-org/lsof/releases/tag/4.99.6",
+      "repo": "lsof-org/lsof",
+      "repo_id": "141953815",
+      "owner_id": "39561916"
     },
     "lua": {
       "status": "untracked",
       "current_version": "5.5.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "lz4": {
       "status": "up_to_date",
       "current_version": "1.10.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.10.0",
       "latest_released_at": "2024-07-22",
-      "latest_release_url": "https://github.com/lz4/lz4/releases/tag/v1.10.0"
+      "latest_release_url": "https://github.com/lz4/lz4/releases/tag/v1.10.0",
+      "repo": "lz4/lz4",
+      "repo_id": "18106269",
+      "owner_id": "11667224"
     },
     "m4": {
       "status": "untracked",
       "current_version": "1.4.19",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on gnu/m4"
     },
     "mandoc": {
       "status": "untracked",
       "current_version": "1.14.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "mariadb": {
       "status": "up_to_date",
       "current_version": "12.2.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "12.2.2",
       "latest_released_at": "2026-02-12",
-      "latest_release_url": "https://github.com/MariaDB/server/releases/tag/mariadb-12.2.2"
+      "latest_release_url": "https://github.com/MariaDB/server/releases/tag/mariadb-12.2.2",
+      "repo": "MariaDB/server",
+      "repo_id": "19816070",
+      "owner_id": "4739304"
     },
     "mdbook": {
       "status": "up_to_date",
       "current_version": "0.5.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.5.2",
       "latest_released_at": "2025-12-11",
-      "latest_release_url": "https://github.com/rust-lang/mdBook/releases/tag/v0.5.2"
+      "latest_release_url": "https://github.com/rust-lang/mdBook/releases/tag/v0.5.2",
+      "repo": "rust-lang/mdBook",
+      "repo_id": "38655056",
+      "owner_id": "5430905",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-gx5w-rrhp-f436",
+          "cve_id": "CVE-2020-26297",
+          "severity": "high",
+          "html_url": "https://github.com/rust-lang/mdBook/security/advisories/GHSA-gx5w-rrhp-f436",
+          "range": ">= 0.1.4",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ]
     },
     "meson": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.6.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.11.1",
       "latest_released_at": "2026-04-21",
-      "latest_release_url": "https://github.com/mesonbuild/meson/releases/tag/1.11.1"
+      "latest_release_url": "https://github.com/mesonbuild/meson/releases/tag/1.11.1",
+      "reason": "attestation verification failed",
+      "repo": "mesonbuild/meson",
+      "repo_id": "19784232",
+      "owner_id": "12551236",
+      "first_observed_version": "1.11.1",
+      "first_observed_sha256": "6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "69b3094f84afcf3758cc74b2f547ca34d8fd1621"
     },
     "micro": {
       "status": "up_to_date",
       "current_version": "2.0.15",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.0.15",
       "latest_released_at": "2025-12-31",
-      "latest_release_url": "https://github.com/zyedidia/micro/releases/tag/v2.0.15"
+      "latest_release_url": "https://github.com/zyedidia/micro/releases/tag/v2.0.15",
+      "repo": "zyedidia/micro",
+      "repo_id": "53632140",
+      "owner_id": "21361806"
     },
     "mise": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2026.4.0",
-      "checked_at": "2026-05-15T10:05:14Z",
-      "latest_version": "2026.5.8",
-      "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/jdx/mise/releases/tag/v2026.5.8"
+      "checked_at": "2026-05-16T09:51:21Z",
+      "latest_version": "2026.5.9",
+      "latest_released_at": "2026-05-15",
+      "latest_release_url": "https://github.com/jdx/mise/releases/tag/v2026.5.9",
+      "reason": "attestation verification failed",
+      "repo": "jdx/mise",
+      "repo_id": "586920414",
+      "owner_id": "216188",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-436v-8fw5-4mj8",
+          "cve_id": "CVE-2026-35533",
+          "severity": "high",
+          "html_url": "https://github.com/jdx/mise/security/advisories/GHSA-436v-8fw5-4mj8",
+          "range": ">= 2026.2.18",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ],
+      "first_observed_version": "2026.5.9",
+      "first_observed_sha256": "d69ee7b367bffb9ddf66bf403131e50577f642f9a428572020610bd5fee33e52",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": false,
+      "swh_status": "not-archived",
+      "swh_revision": "64016bb87d91715ee98c4904db458614930aa60d"
     },
     "mongosh": {
       "status": "outdated",
       "current_version": "2.8.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.8.3",
       "latest_released_at": "2026-05-01",
-      "latest_release_url": "https://github.com/mongodb-js/mongosh/releases/tag/v2.8.3"
+      "latest_release_url": "https://github.com/mongodb-js/mongosh/releases/tag/v2.8.3",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "mosh": {
       "status": "up_to_date",
       "current_version": "1.4.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.4.0",
       "latest_released_at": "2022-10-27",
-      "latest_release_url": "https://github.com/mobile-shell/mosh/releases/tag/mosh-1.4.0"
+      "latest_release_url": "https://github.com/mobile-shell/mosh/releases/tag/mosh-1.4.0",
+      "repo": "mobile-shell/mosh",
+      "repo_id": "1234783",
+      "owner_id": "13547101"
     },
     "mtr": {
       "status": "untracked",
       "current_version": "0.96",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on traviscross/mtr"
     },
     "ncurses": {
       "status": "untracked",
       "current_version": "6.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on mirror/ncurses"
     },
     "neovim": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.11.7",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.12.2",
       "latest_released_at": "2026-04-22",
-      "latest_release_url": "https://github.com/neovim/neovim/releases/tag/v0.12.2"
+      "latest_release_url": "https://github.com/neovim/neovim/releases/tag/v0.12.2",
+      "reason": "attestation verification failed",
+      "repo": "neovim/neovim",
+      "repo_id": "16408992",
+      "owner_id": "6471485",
+      "first_observed_version": "0.12.2",
+      "first_observed_sha256": "ef9f58da7d687ed4d1dad9715542bf0dabdeedbfe8089e2ce17fff21b920a268",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "4b35336f6f850ce68a230716401cdaa21bdb6a25"
     },
     "ninja": {
       "status": "up_to_date",
       "current_version": "1.13.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.13.2",
       "latest_released_at": "2025-11-20",
-      "latest_release_url": "https://github.com/ninja-build/ninja/releases/tag/v1.13.2"
+      "latest_release_url": "https://github.com/ninja-build/ninja/releases/tag/v1.13.2",
+      "repo": "ninja-build/ninja",
+      "repo_id": "1335132",
+      "owner_id": "11653218"
     },
     "nmap": {
       "status": "untracked",
       "current_version": "7.99",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on nmap/nmap"
     },
     "nodejs": {
       "status": "outdated",
       "current_version": "25.8.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "26.1.0",
       "latest_released_at": "2026-05-07",
-      "latest_release_url": "https://github.com/nodejs/node/releases/tag/v26.1.0"
+      "latest_release_url": "https://github.com/nodejs/node/releases/tag/v26.1.0",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "nushell": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.111.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.112.2",
       "latest_released_at": "2026-04-15",
-      "latest_release_url": "https://github.com/nushell/nushell/releases/tag/0.112.2"
+      "latest_release_url": "https://github.com/nushell/nushell/releases/tag/0.112.2",
+      "reason": "attestation verification failed",
+      "repo": "nushell/nushell",
+      "repo_id": "186024298",
+      "owner_id": "50749515",
+      "first_observed_version": "0.112.2",
+      "first_observed_sha256": "32ebcfe41b6390145e90eb86273e221f22eeacd53ecac5274405f148fb4258c2",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "d80ee8c19e07a8058e50a30a4205d3e97068f585"
     },
     "oniguruma": {
       "status": "up_to_date",
       "current_version": "6.9.10",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "6.9.10",
       "latest_released_at": "2025-01-01",
-      "latest_release_url": "https://github.com/kkos/oniguruma/releases/tag/v6.9.10"
+      "latest_release_url": "https://github.com/kkos/oniguruma/releases/tag/v6.9.10",
+      "repo": "kkos/oniguruma",
+      "repo_id": "38999874",
+      "owner_id": "884169"
     },
     "openjpeg": {
       "status": "up_to_date",
       "current_version": "2.5.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.5.4",
       "latest_released_at": "2025-09-20",
-      "latest_release_url": "https://github.com/uclouvain/openjpeg/releases/tag/v2.5.4"
+      "latest_release_url": "https://github.com/uclouvain/openjpeg/releases/tag/v2.5.4",
+      "repo": "uclouvain/openjpeg",
+      "repo_id": "30830585",
+      "owner_id": "9862060"
     },
     "openocd": {
       "status": "up_to_date",
       "current_version": "0.12.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.12.0",
       "latest_released_at": "2023-01-14",
-      "latest_release_url": "https://github.com/openocd-org/openocd/releases/tag/v0.12.0"
+      "latest_release_url": "https://github.com/openocd-org/openocd/releases/tag/v0.12.0",
+      "repo": "openocd-org/openocd",
+      "repo_id": "1983660",
+      "owner_id": "88663258"
     },
     "openssl": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "3.6.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.0.0",
       "latest_released_at": "2026-04-14",
-      "latest_release_url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.0"
+      "latest_release_url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.0",
+      "reason": "attestation verification failed",
+      "repo": "openssl/openssl",
+      "repo_id": "7634677",
+      "owner_id": "3279138",
+      "first_observed_version": "4.0.0",
+      "first_observed_sha256": "c32cf49a959c4f345f9606982dd36e7d28f7c58b19c2e25d75624d2b3d2f79ac",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "11b7b6ea3b65a584e1d31408ed1bdb139465cffd"
     },
     "ouch": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.6.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.7.1",
       "latest_released_at": "2026-04-22",
-      "latest_release_url": "https://github.com/ouch-org/ouch/releases/tag/0.7.1"
+      "latest_release_url": "https://github.com/ouch-org/ouch/releases/tag/0.7.1",
+      "reason": "attestation verification failed",
+      "repo": "ouch-org/ouch",
+      "repo_id": "349334268",
+      "owner_id": "88866076",
+      "first_observed_version": "0.7.1",
+      "first_observed_sha256": "9dadaa3340972347c39e0047668af0e2c59c6128470eeb3fdf86629a3b298443",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "aa7f34fe03ac5a30cc999756ea00e2a5465fe517"
     },
     "patchelf": {
       "status": "up_to_date",
       "current_version": "0.18.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.18.0",
       "latest_released_at": "2023-04-23",
-      "latest_release_url": "https://github.com/NixOS/patchelf/releases/tag/0.18.0"
+      "latest_release_url": "https://github.com/NixOS/patchelf/releases/tag/0.18.0",
+      "repo": "NixOS/patchelf",
+      "repo_id": "2928164",
+      "owner_id": "487568"
     },
     "pcre2": {
       "status": "up_to_date",
       "current_version": "10.47",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "10.47",
       "latest_released_at": "2025-10-21",
-      "latest_release_url": "https://github.com/PCRE2Project/pcre2/releases/tag/pcre2-10.47"
+      "latest_release_url": "https://github.com/PCRE2Project/pcre2/releases/tag/pcre2-10.47",
+      "repo": "PCRE2Project/pcre2",
+      "repo_id": "398251321",
+      "owner_id": "104020533",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-q7rw-r7qq-2hx6",
+          "cve_id": null,
+          "severity": "low",
+          "html_url": "https://github.com/PCRE2Project/pcre2/security/advisories/GHSA-q7rw-r7qq-2hx6",
+          "range": ">= 10.45",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ]
     },
     "picocom": {
       "status": "up_to_date",
       "current_version": "3.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.1",
       "latest_released_at": "2018-02-01",
-      "latest_release_url": "https://github.com/npat-efault/picocom/releases/tag/3.1"
+      "latest_release_url": "https://github.com/npat-efault/picocom/releases/tag/3.1",
+      "repo": "npat-efault/picocom",
+      "repo_id": "40332167",
+      "owner_id": "6217904"
     },
     "pigz": {
       "status": "untracked",
       "current_version": "2.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "pixman": {
       "status": "untracked",
       "current_version": "0.46.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "pkgconf": {
       "status": "untracked",
       "current_version": "2.5.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on https://github.com/pkgconf/pkgconf"
     },
     "pnpm": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "10.33.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "11.1.2",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/pnpm/pnpm/releases/tag/v11.1.2"
+      "latest_release_url": "https://github.com/pnpm/pnpm/releases/tag/v11.1.2",
+      "reason": "attestation verification failed",
+      "repo": "pnpm/pnpm",
+      "repo_id": "50565430",
+      "owner_id": "21320719",
+      "first_observed_version": "11.1.2",
+      "first_observed_sha256": "be6c470488cd11c4755bc1527003ff23420c285c7e59785c1e5440df4d15bb26",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": false,
+      "swh_status": "not-archived",
+      "swh_revision": "8a80235c7b087bbbfdad98594bbf02fc00eddb57"
     },
     "podman": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "5.8.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "5.8.2",
       "latest_released_at": "2026-04-14",
-      "latest_release_url": "https://github.com/containers/podman/releases/tag/v5.8.2"
+      "latest_release_url": "https://github.com/containers/podman/releases/tag/v5.8.2",
+      "reason": "attestation verification failed",
+      "repo": "containers/podman",
+      "repo_id": "109145553",
+      "owner_id": "5874934",
+      "first_observed_version": "5.8.2",
+      "first_observed_sha256": "b20ea65afc5a58ea1cea019bd51a5d84eb9042d25d3eb82c55010c8815732d84",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "5b263b5f5b48004a87caac44e67349a8266d9ef4"
     },
     "poppler-utils": {
       "status": "untracked",
       "current_version": "26.04.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "postgresql": {
       "status": "untracked",
       "current_version": "17.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on postgres/postgres"
     },
     "probe-rs": {
       "status": "up_to_date",
       "current_version": "0.31.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.31.0",
       "latest_released_at": "2026-01-17",
-      "latest_release_url": "https://github.com/probe-rs/probe-rs/releases/tag/v0.31.0"
+      "latest_release_url": "https://github.com/probe-rs/probe-rs/releases/tag/v0.31.0",
+      "repo": "probe-rs/probe-rs",
+      "repo_id": "170021740",
+      "owner_id": "54669567"
     },
     "procs": {
       "status": "up_to_date",
       "current_version": "0.14.11",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.14.11",
       "latest_released_at": "2026-02-27",
-      "latest_release_url": "https://github.com/dalance/procs/releases/tag/v0.14.11"
+      "latest_release_url": "https://github.com/dalance/procs/releases/tag/v0.14.11",
+      "repo": "dalance/procs",
+      "repo_id": "167957539",
+      "owner_id": "4331004"
     },
     "protobuf": {
       "status": "up_to_date",
       "current_version": "34.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "34.1",
       "latest_released_at": "2026-03-19",
-      "latest_release_url": "https://github.com/protocolbuffers/protobuf/releases/tag/v34.1"
+      "latest_release_url": "https://github.com/protocolbuffers/protobuf/releases/tag/v34.1",
+      "repo": "protocolbuffers/protobuf",
+      "repo_id": "23357588",
+      "owner_id": "26310541"
     },
     "pscale": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.277.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.283.0",
       "latest_released_at": "2026-05-08",
-      "latest_release_url": "https://github.com/planetscale/cli/releases/tag/v0.283.0"
+      "latest_release_url": "https://github.com/planetscale/cli/releases/tag/v0.283.0",
+      "reason": "attestation verification failed",
+      "repo": "planetscale/cli",
+      "repo_id": "317614271",
+      "owner_id": "35612527",
+      "first_observed_version": "0.283.0",
+      "first_observed_sha256": "734a407ab65e52bacc1b1bb9c46a0b429ce65463d031acc28ee87c695f1f20db",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "b378aff89316151f7934773bcc061fec6b2791b9"
     },
     "python": {
       "status": "untracked",
       "current_version": "3.14.4",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on python/cpython"
     },
     "qemu": {
       "status": "untracked",
       "current_version": "11.0.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on qemu/qemu"
     },
     "readline": {
       "status": "untracked",
       "current_version": "8.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on readline/readline"
     },
     "redis": {
       "status": "outdated",
       "current_version": "8.6.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "8.6.3",
       "latest_released_at": "2026-05-05",
-      "latest_release_url": "https://github.com/redis/redis/releases/tag/8.6.3"
+      "latest_release_url": "https://github.com/redis/redis/releases/tag/8.6.3",
+      "reason": "unrecognized URL pattern for auto-rewrite"
+    },
+    "renode": {
+      "status": "up_to_date",
+      "current_version": "1.16.1",
+      "checked_at": "2026-05-16T09:51:21Z",
+      "latest_version": "1.16.1",
+      "latest_released_at": "2026-02-16",
+      "latest_release_url": "https://github.com/renode/renode/releases/tag/v1.16.1",
+      "repo": "renode/renode",
+      "repo_id": "95903234",
+      "owner_id": "28949360"
     },
     "ripgrep": {
       "status": "up_to_date",
       "current_version": "15.1.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "15.1.0",
       "latest_released_at": "2025-10-22",
-      "latest_release_url": "https://github.com/BurntSushi/ripgrep/releases/tag/15.1.0"
+      "latest_release_url": "https://github.com/BurntSushi/ripgrep/releases/tag/15.1.0",
+      "repo": "BurntSushi/ripgrep",
+      "repo_id": "53631945",
+      "owner_id": "456674"
     },
     "rsync": {
       "status": "outdated",
       "current_version": "3.4.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.4.2",
       "latest_released_at": "2026-04-28",
-      "latest_release_url": "https://github.com/RsyncProject/rsync/releases/tag/v3.4.2"
+      "latest_release_url": "https://github.com/RsyncProject/rsync/releases/tag/v3.4.2",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "ruby": {
       "status": "outdated",
       "current_version": "4.0.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.0.4",
       "latest_released_at": "2026-05-11",
-      "latest_release_url": "https://github.com/ruby/ruby/releases/tag/v4.0.4"
+      "latest_release_url": "https://github.com/ruby/ruby/releases/tag/v4.0.4",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "ruff": {
       "status": "up_to_date",
       "current_version": "0.15.13",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.15.13",
       "latest_released_at": "2026-05-14",
-      "latest_release_url": "https://github.com/astral-sh/ruff/releases/tag/0.15.13"
+      "latest_release_url": "https://github.com/astral-sh/ruff/releases/tag/0.15.13",
+      "repo": "astral-sh/ruff",
+      "repo_id": "523043277",
+      "owner_id": "115962839"
     },
     "rust": {
       "status": "outdated",
       "current_version": "1.94.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.95.0",
       "latest_released_at": "2026-04-16",
-      "latest_release_url": "https://github.com/rust-lang/rust/releases/tag/1.95.0"
+      "latest_release_url": "https://github.com/rust-lang/rust/releases/tag/1.95.0",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "rustup": {
       "status": "untracked",
       "current_version": "1.29.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on rust-lang/rustup"
     },
     "scc": {
       "status": "up_to_date",
       "current_version": "3.7.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.7.0",
       "latest_released_at": "2026-03-04",
-      "latest_release_url": "https://github.com/boyter/scc/releases/tag/v3.7.0"
+      "latest_release_url": "https://github.com/boyter/scc/releases/tag/v3.7.0",
+      "repo": "boyter/scc",
+      "repo_id": "123394155",
+      "owner_id": "612151"
     },
     "sd": {
       "status": "up_to_date",
       "current_version": "1.1.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.1.0",
       "latest_released_at": "2026-02-25",
-      "latest_release_url": "https://github.com/chmln/sd/releases/tag/v1.1.0"
+      "latest_release_url": "https://github.com/chmln/sd/releases/tag/v1.1.0",
+      "repo": "chmln/sd",
+      "repo_id": "162863623",
+      "owner_id": "11352152"
     },
     "shellcheck": {
       "status": "up_to_date",
       "current_version": "0.11.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.11.0",
       "latest_released_at": "2025-08-04",
-      "latest_release_url": "https://github.com/koalaman/shellcheck/releases/tag/v0.11.0"
+      "latest_release_url": "https://github.com/koalaman/shellcheck/releases/tag/v0.11.0",
+      "repo": "koalaman/shellcheck",
+      "repo_id": "6731432",
+      "owner_id": "2818758"
     },
     "shfmt": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "3.13.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.13.1",
       "latest_released_at": "2026-04-06",
-      "latest_release_url": "https://github.com/mvdan/sh/releases/tag/v3.13.1"
+      "latest_release_url": "https://github.com/mvdan/sh/releases/tag/v3.13.1",
+      "reason": "attestation verification failed",
+      "repo": "mvdan/sh",
+      "repo_id": "49766020",
+      "owner_id": "3576549",
+      "first_observed_version": "3.13.1",
+      "first_observed_sha256": "b31aad2d4c26b0c6e8ebe894d59022520bbebce33e082d7d29e4325eee35d308",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "2f3f5e36d9b0f8f14c998d50aa20a28832205ae8"
     },
     "socat": {
       "status": "untracked",
       "current_version": "1.8.1.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "sqlite": {
       "status": "untracked",
       "current_version": "3.48.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on sqlite/sqlite"
     },
     "starship": {
       "status": "up_to_date",
       "current_version": "1.25.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.25.1",
       "latest_released_at": "2026-04-30",
-      "latest_release_url": "https://github.com/starship/starship/releases/tag/v1.25.1"
+      "latest_release_url": "https://github.com/starship/starship/releases/tag/v1.25.1",
+      "repo": "starship/starship",
+      "repo_id": "178991158",
+      "owner_id": "49654870"
     },
     "statix": {
       "status": "up_to_date",
       "current_version": "0.5.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.5.8",
       "latest_released_at": "2023-09-09",
-      "latest_release_url": "https://github.com/oppiliappan/statix/releases/tag/v0.5.8"
+      "latest_release_url": "https://github.com/oppiliappan/statix/releases/tag/v0.5.8",
+      "repo": "oppiliappan/statix",
+      "repo_id": "420681370",
+      "owner_id": "23743547"
     },
     "stylua": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "2.4.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.4.1",
       "latest_released_at": "2026-04-06",
-      "latest_release_url": "https://github.com/JohnnyMorganz/StyLua/releases/tag/v2.4.1"
+      "latest_release_url": "https://github.com/JohnnyMorganz/StyLua/releases/tag/v2.4.1",
+      "reason": "attestation verification failed",
+      "repo": "JohnnyMorganz/StyLua",
+      "repo_id": "321792527",
+      "owner_id": "19635171",
+      "first_observed_version": "2.4.1",
+      "first_observed_sha256": "882eadb417294399a89ba2b3f17edc751d4b6d1892e4814bfbf5c024bb89de6c",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "080c3aa843e9ae6541d9c167ac4f913c5e34730a"
     },
     "tealdeer": {
       "status": "up_to_date",
       "current_version": "1.8.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.8.1",
       "latest_released_at": "2025-11-11",
-      "latest_release_url": "https://github.com/tealdeer-rs/tealdeer/releases/tag/v1.8.1"
+      "latest_release_url": "https://github.com/tealdeer-rs/tealdeer/releases/tag/v1.8.1",
+      "repo": "tealdeer-rs/tealdeer",
+      "repo_id": "48739367",
+      "owner_id": "178226396"
     },
     "terraform": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "1.14.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.15.3",
       "latest_released_at": "2026-05-13",
-      "latest_release_url": "https://github.com/hashicorp/terraform/releases/tag/v1.15.3"
+      "latest_release_url": "https://github.com/hashicorp/terraform/releases/tag/v1.15.3",
+      "reason": "attestation verification failed",
+      "repo": "hashicorp/terraform",
+      "repo_id": "17728164",
+      "owner_id": "761456",
+      "first_observed_version": "1.15.3",
+      "first_observed_sha256": "29320eb6910f4ecba97391bfd5b9878989a2fb5fd640824f4701416b9f320ece",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "94363314099a4b374a521f19fa43aa4f09cc5da9"
     },
     "tig": {
       "status": "up_to_date",
       "current_version": "2.6.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2.6.0",
       "latest_released_at": "2025-09-16",
-      "latest_release_url": "https://github.com/jonas/tig/releases/tag/tig-2.6.0"
+      "latest_release_url": "https://github.com/jonas/tig/releases/tag/tig-2.6.0",
+      "repo": "jonas/tig",
+      "repo_id": "140656",
+      "owner_id": "8417"
+    },
+    "tio": {
+      "status": "up_to_date",
+      "current_version": "3.9",
+      "checked_at": "2026-05-16T09:51:21Z",
+      "latest_version": "3.9",
+      "latest_released_at": "2025-04-13",
+      "latest_release_url": "https://github.com/tio/tio/releases/tag/v3.9",
+      "repo": "tio/tio",
+      "repo_id": "24528317",
+      "owner_id": "9334987"
     },
     "tmux": {
       "status": "up_to_date",
       "current_version": "3.6a",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.6a",
       "latest_released_at": "2025-12-05",
-      "latest_release_url": "https://github.com/tmux/tmux/releases/tag/3.6a"
+      "latest_release_url": "https://github.com/tmux/tmux/releases/tag/3.6a",
+      "repo": "tmux/tmux",
+      "repo_id": "36836475",
+      "owner_id": "12054114"
     },
     "tmuxinator": {
       "status": "up_to_date",
       "current_version": "3.3.8",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "3.3.8",
       "latest_released_at": "2026-03-26",
-      "latest_release_url": "https://github.com/tmuxinator/tmuxinator/releases/tag/v3.3.8"
+      "latest_release_url": "https://github.com/tmuxinator/tmuxinator/releases/tag/v3.3.8",
+      "repo": "tmuxinator/tmuxinator",
+      "repo_id": "1157388",
+      "owner_id": "6574276"
     },
     "tokei": {
       "status": "up_to_date",
       "current_version": "14.0.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "14.0.0",
       "latest_released_at": "2025-12-30",
-      "latest_release_url": "https://github.com/XAMPPRocky/tokei/releases/tag/v14.0.0"
+      "latest_release_url": "https://github.com/XAMPPRocky/tokei/releases/tag/v14.0.0",
+      "repo": "XAMPPRocky/tokei",
+      "repo_id": "36323226",
+      "owner_id": "4464295"
     },
     "traceroute": {
       "status": "untracked",
       "current_version": "2.1.6",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "tree-sitter": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.26.7",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.26.8",
       "latest_released_at": "2026-03-31",
-      "latest_release_url": "https://github.com/tree-sitter/tree-sitter/releases/tag/v0.26.8"
+      "latest_release_url": "https://github.com/tree-sitter/tree-sitter/releases/tag/v0.26.8",
+      "reason": "attestation verification failed",
+      "repo": "tree-sitter/tree-sitter",
+      "repo_id": "14164618",
+      "owner_id": "17203512",
+      "first_observed_version": "0.26.8",
+      "first_observed_sha256": "e6826b7533ec3a885aba598377a6d20b5a6321ff3db76968e960c2352d3a5077",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "cd5b087cd9f45ca6d93ab1954f6b7c8534f324d2"
     },
     "tree": {
       "status": "untracked",
       "current_version": "2.3.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on Old-Man-Programmer/tree"
     },
     "trippy": {
       "status": "up_to_date",
       "current_version": "0.13.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.13.0",
       "latest_released_at": "2025-05-05",
-      "latest_release_url": "https://github.com/fujiapple852/trippy/releases/tag/0.13.0"
+      "latest_release_url": "https://github.com/fujiapple852/trippy/releases/tag/0.13.0",
+      "repo": "fujiapple852/trippy",
+      "repo_id": "474961035",
+      "owner_id": "36075719"
     },
     "unzip": {
       "status": "untracked",
       "current_version": "6.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "uv": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.11.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.11.14",
       "latest_released_at": "2026-05-12",
-      "latest_release_url": "https://github.com/astral-sh/uv/releases/tag/0.11.14"
+      "latest_release_url": "https://github.com/astral-sh/uv/releases/tag/0.11.14",
+      "reason": "attestation verification failed",
+      "repo": "astral-sh/uv",
+      "repo_id": "699532645",
+      "owner_id": "115962839",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-pjjw-68hj-v9mw",
+          "cve_id": null,
+          "severity": "low",
+          "html_url": "https://github.com/astral-sh/uv/security/advisories/GHSA-pjjw-68hj-v9mw",
+          "range": "<= 0.11.5",
+          "applies_to": [
+            "current"
+          ]
+        }
+      ],
+      "first_observed_version": "0.11.14",
+      "first_observed_sha256": "17e2cca308b31247079e732f21ca43ac07ee44657dc947560beb0ddbca9121e0",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "3fdfdc7d4a63c9f283eb751823b7628b13116684"
     },
     "vibeutils": {
       "status": "up_to_date",
       "current_version": "0.9.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.9.3",
       "latest_released_at": "2026-04-16",
-      "latest_release_url": "https://github.com/kelp/vibeutils/releases/tag/v0.9.3"
+      "latest_release_url": "https://github.com/kelp/vibeutils/releases/tag/v0.9.3",
+      "repo": "kelp/vibeutils",
+      "repo_id": "1026535918",
+      "owner_id": "11240"
     },
     "wget": {
       "status": "untracked",
       "current_version": "1.25.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on mirror/wget"
     },
     "xh": {
       "status": "up_to_date",
       "current_version": "0.25.3",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.25.3",
       "latest_released_at": "2025-12-16",
-      "latest_release_url": "https://github.com/ducaale/xh/releases/tag/v0.25.3"
+      "latest_release_url": "https://github.com/ducaale/xh/releases/tag/v0.25.3",
+      "repo": "ducaale/xh",
+      "repo_id": "294521053",
+      "owner_id": "16341131"
     },
     "xz": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "5.8.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "5.8.3",
       "latest_released_at": "2026-03-31",
-      "latest_release_url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.3"
+      "latest_release_url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.3",
+      "reason": "attestation verification failed",
+      "repo": "tukaani-project/xz",
+      "repo_id": "553665726",
+      "owner_id": "116083088",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-x872-m794-cxhv",
+          "cve_id": "CVE-2026-34743",
+          "severity": "low",
+          "html_url": "https://github.com/tukaani-project/xz/security/advisories/GHSA-x872-m794-cxhv",
+          "range": "<= 5.8.2",
+          "applies_to": [
+            "current"
+          ]
+        }
+      ],
+      "first_observed_version": "5.8.3",
+      "first_observed_sha256": "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "4b73f2ec19a99ef465282fbce633e8deb33691b3"
     },
     "yq": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "4.52.5",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "4.53.2",
       "latest_released_at": "2026-04-17",
-      "latest_release_url": "https://github.com/mikefarah/yq/releases/tag/v4.53.2"
+      "latest_release_url": "https://github.com/mikefarah/yq/releases/tag/v4.53.2",
+      "reason": "attestation verification failed",
+      "repo": "mikefarah/yq",
+      "repo_id": "43225113",
+      "owner_id": "1151925",
+      "first_observed_version": "4.53.2",
+      "first_observed_sha256": "1bc19bb8b1029148afa3465a9383f6dcccb1ecce28a0af1d81f07c93396ce37d",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "751d8ad57b84f1794661bc70c0afb92a22ad7b3c"
     },
     "yt-dlp": {
       "status": "up_to_date",
       "current_version": "2026.03.17",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "2026.03.17",
       "latest_released_at": "2026-03-17",
-      "latest_release_url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.03.17"
+      "latest_release_url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.03.17",
+      "repo": "yt-dlp/yt-dlp",
+      "repo_id": "307260205",
+      "owner_id": "79589310",
+      "vulnerabilities": [
+        {
+          "ghsa_id": "GHSA-3ch3-jhc6-5r8x",
+          "cve_id": "CVE-2023-46121",
+          "severity": "medium",
+          "html_url": "https://github.com/yt-dlp/yt-dlp/security/advisories/GHSA-3ch3-jhc6-5r8x",
+          "range": ">=2022.10.04",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-v8mc-9377-rwjj",
+          "cve_id": "CVE-2023-35934",
+          "severity": "medium",
+          "html_url": "https://github.com/yt-dlp/yt-dlp/security/advisories/GHSA-v8mc-9377-rwjj",
+          "range": ">= 2015.01.25",
+          "applies_to": [
+            "current",
+            "upstream"
+          ]
+        }
+      ]
     },
     "zellij": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.44.0",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.44.3",
       "latest_released_at": "2026-05-13",
-      "latest_release_url": "https://github.com/zellij-org/zellij/releases/tag/v0.44.3"
+      "latest_release_url": "https://github.com/zellij-org/zellij/releases/tag/v0.44.3",
+      "reason": "attestation verification failed",
+      "repo": "zellij-org/zellij",
+      "repo_id": "292014229",
+      "owner_id": "73778475",
+      "first_observed_version": "0.44.3",
+      "first_observed_sha256": "33ae61fc802b59462fed49b424893596d3aa819646bdce53d5602f714c1264fe",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": false,
+      "swh_status": "not-archived",
+      "swh_revision": "55a2121b73dce4be624cda425a960e893000777c"
     },
     "zig": {
       "status": "outdated",
-      "current_version": "0.15.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "current_version": "0.16.0",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.15.1",
       "latest_released_at": "2025-08-29",
-      "latest_release_url": "https://github.com/ziglang/zig/releases/tag/0.15.1"
+      "latest_release_url": "https://github.com/ziglang/zig/releases/tag/0.15.1",
+      "reason": "unrecognized URL pattern for auto-rewrite"
     },
     "zlib": {
       "status": "up_to_date",
       "current_version": "1.3.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.3.2",
       "latest_released_at": "2026-02-17",
-      "latest_release_url": "https://github.com/madler/zlib/releases/tag/v1.3.2"
+      "latest_release_url": "https://github.com/madler/zlib/releases/tag/v1.3.2",
+      "repo": "madler/zlib",
+      "repo_id": "2359378",
+      "owner_id": "240717"
     },
     "zls": {
-      "status": "outdated",
+      "status": "tampered",
       "current_version": "0.15.1",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.16.0",
       "latest_released_at": "2026-04-16",
-      "latest_release_url": "https://github.com/zigtools/zls/releases/tag/0.16.0"
+      "latest_release_url": "https://github.com/zigtools/zls/releases/tag/0.16.0",
+      "reason": "attestation verification failed",
+      "repo": "zigtools/zls",
+      "repo_id": "258636766",
+      "owner_id": "65322356",
+      "first_observed_version": "0.16.0",
+      "first_observed_sha256": "e7c5936f5b3a057ce851be0876e4e259b5c4d02f9aae038cd24a5d6b586b029f",
+      "first_observed_at": "2026-05-16T09:51:21Z",
+      "attestation": "invalid",
+      "swh_archived": true,
+      "swh_status": "archived",
+      "swh_revision": "494486203c3a48927f2383aa3d5ce5fca112186d"
     },
     "zmx": {
       "status": "untracked",
       "current_version": "0.4.2",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no releases found on neurosnap/zmx"
     },
     "zoxide": {
       "status": "up_to_date",
       "current_version": "0.9.9",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "0.9.9",
       "latest_released_at": "2026-01-31",
-      "latest_release_url": "https://github.com/ajeetdsouza/zoxide/releases/tag/v0.9.9"
+      "latest_release_url": "https://github.com/ajeetdsouza/zoxide/releases/tag/v0.9.9",
+      "repo": "ajeetdsouza/zoxide",
+      "repo_id": "245166720",
+      "owner_id": "1777663"
     },
     "zsh": {
       "status": "untracked",
       "current_version": "5.9",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "reason": "no source.repo field"
     },
     "zstd": {
       "status": "up_to_date",
       "current_version": "1.5.7",
-      "checked_at": "2026-05-15T10:05:14Z",
+      "checked_at": "2026-05-16T09:51:21Z",
       "latest_version": "1.5.7",
       "latest_released_at": "2025-02-19",
-      "latest_release_url": "https://github.com/facebook/zstd/releases/tag/v1.5.7"
+      "latest_release_url": "https://github.com/facebook/zstd/releases/tag/v1.5.7",
+      "repo": "facebook/zstd",
+      "repo_id": "29759715",
+      "owner_id": "69631"
     }
   }
 }
