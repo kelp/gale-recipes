@@ -185,6 +185,23 @@ crates.io instead of building local source.
 `cmake --build build -j ${JOBS}`,
 `cmake --install build`.
 
+**Zig** (vibeutils, zls, zmx): Always pass
+`-Dcpu=baseline` to `zig build`. The default target is
+`native`, which bakes in whatever instructions the CI
+runner happens to have; the resulting binary then SIGILLs
+on real-world targets that lack them (AMD EPYC Milan
+without AVX-512, older Intel, cloud VMs). Baseline = SSE2
+on x86_64, armv8.0-a on aarch64; perf cost is negligible
+for CLI tools and the binary runs everywhere in the
+architecture family. Symptom of a missed flag is
+"Illegal instruction at address ..." on `bin/<tool>` —
+which masquerades as a system fault, especially when the
+broken tool is a coreutils replacement on PATH ahead of
+GNU. If the upstream pins a specific zig version (check
+`build.zig.zon` for `minimum_zig_version`), pin the build
+dep accordingly — see `recipes/z/zig15.toml` for the
+parallel-install pattern when upstream lags zig releases.
+
 ## Two-Repo Architecture
 
 This is the content repo. The tool lives at `../gale`.
