@@ -1,7 +1,7 @@
 [package]
 name = "zls"
 version = "0.15.1"
-revision = 2
+revision = 3
 description = "A language server for Zig supporting developers with features like autocomplete and goto definition"
 license = "MIT"
 homepage = "https://zigtools.org/zls/install/"
@@ -15,7 +15,7 @@ released_at = "2025-01-15"
 [build]
 system = "zig"
 steps = [
-  "zig build -Doptimize=ReleaseSafe --prefix ${PREFIX}",
+  "zig build -Doptimize=ReleaseSafe -Dcpu=baseline --prefix ${PREFIX}",
 ]
 
 [dependencies]
