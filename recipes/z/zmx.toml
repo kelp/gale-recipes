@@ -1,16 +1,15 @@
 [package]
 name = "zmx"
-version = "0.4.2"
-revision = 2
+version = "0.6.0"
 description = "Session persistence for terminal processes"
 license = "MIT"
 homepage = "https://zmx.sh"
 
 [source]
 repo = "neurosnap/zmx"
-url = "https://github.com/neurosnap/zmx/archive/refs/tags/v0.4.2.tar.gz"
-sha256 = "706129c6e6f16088a6b33641ddb4de4c1835374886e2566ada113b84c59e0745"
-released_at = "2026-03-19"
+url = "https://github.com/neurosnap/zmx/archive/refs/tags/v0.6.0.tar.gz"
+sha256 = "4b5a155a0956abb812ab52fb5d65e63cc1d745eee566ea7fd8930393284d4673"
+released_at = "2026-05-17"
 
 [build]
 system = "zig"
