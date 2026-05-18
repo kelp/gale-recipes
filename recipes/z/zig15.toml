@@ -1,0 +1,48 @@
+[package]
+name = "zig15"
+version = "0.15.2"
+description = "Zig 0.15.x toolchain (parallel install for recipes pinned to 0.15)"
+license = "MIT"
+homepage = "https://ziglang.org"
+
+[source]
+repo = "ziglang/zig"
+url = "https://github.com/ziglang/zig/archive/refs/tags/0.15.2.tar.gz"
+sha256 = "ebe6eb7006f6bbb72e54bd25d0675f2794084909d63a95aa315f2dcf2af5fd99"
+
+# Zig distributes prebuilt, statically-linked binaries.
+# Building from source requires an existing zig + LLVM.
+# These build steps install the official prebuilt binary
+# from ziglang.org under the name `zig` so dependents can
+# invoke it directly. The recipe name `zig15` keeps it
+# parallel-installable alongside the current `zig` recipe.
+
+[build.darwin-arm64]
+steps = [
+  "curl -sL -o /tmp/zig15.tar.xz https://ziglang.org/download/0.15.2/zig-aarch64-macos-0.15.2.tar.xz",
+  "echo '3cc2bab367e185cdfb27501c4b30b1b0653c28d9f73df8dc91488e66ece5fa6b  /tmp/zig15.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig15-extract && tar -xJf /tmp/zig15.tar.xz -C /tmp/zig15-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig15-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig15-extract/lib ${PREFIX}/lib/zig",
+]
+
+[build.linux-amd64]
+steps = [
+  "curl -sL -o /tmp/zig15.tar.xz https://ziglang.org/download/0.15.2/zig-x86_64-linux-0.15.2.tar.xz",
+  "echo '02aa270f183da276e5b5920b1dac44a63f1a49e55050ebde3aecc9eb82f93239  /tmp/zig15.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig15-extract && tar -xJf /tmp/zig15.tar.xz -C /tmp/zig15-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig15-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig15-extract/lib ${PREFIX}/lib/zig",
+]
+
+[build.linux-arm64]
+steps = [
+  "curl -sL -o /tmp/zig15.tar.xz https://ziglang.org/download/0.15.2/zig-aarch64-linux-0.15.2.tar.xz",
+  "echo '958ed7d1e00d0ea76590d27666efbf7a932281b3d7ba0c6b01b0ff26498f667f  /tmp/zig15.tar.xz' | shasum -a 256 -c",
+  "mkdir -p /tmp/zig15-extract && tar -xJf /tmp/zig15.tar.xz -C /tmp/zig15-extract --strip-components=1",
+  "mkdir -p ${PREFIX}/bin ${PREFIX}/lib",
+  "cp /tmp/zig15-extract/zig ${PREFIX}/bin/",
+  "cp -r /tmp/zig15-extract/lib ${PREFIX}/lib/zig",
+]
