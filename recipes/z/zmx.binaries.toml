@@ -1,10 +1,22 @@
-version = "0.4.2-2"
+version = "0.6.0"
 
 [darwin-arm64]
-sha256 = "277648cfcdadde7738d2b77258d770378972ab55c2a80da6ce04366195d11c61"
+sha256 = "893b098d86efa38bf1a8f9d6e5061a2839dfac585edc23f763eab3d6b377b949"
+deps = [
+  { name = "zig", version = "0.16.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
 
 [linux-amd64]
-sha256 = "27ec2c207a4b70b321a85a20525d62115cc6cf829d29392365bb85d33dcc2355"
+sha256 = "fe342958cad446748475db6ac4d3b0ed83a617461da5551d27a0537ba3eab7e9"
+deps = [
+  { name = "zig", version = "0.16.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
 
 [linux-arm64]
-sha256 = "42d54150deb78be0db976595784c976b8603d2b4da68bd1886eae79848084e95"
+sha256 = "c9d6cb0e0976aebfa163dc6dd23f5509dd195af2b2ca4c29e573e61f9a383c77"
+deps = [
+  { name = "zig", version = "0.16.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
