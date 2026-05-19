@@ -1,6 +1,6 @@
 [package]
 name = "nushell"
-version = "0.111.0"
+version = "0.112.2"
 revision = 2
 description = "A new type of shell"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://www.nushell.sh/"
 
 [source]
 repo = "nushell/nushell"
-url = "https://github.com/nushell/nushell/archive/refs/tags/0.111.0.tar.gz"
-sha256 = "e3a7980bb5532016036d9fdbbe0a2acc5a73f9549d1842ff6c8c0de2a6d1ddbe"
-released_at = "2025-01-15"
+url = "https://github.com/nushell/nushell/archive/refs/tags/0.112.2.tar.gz"
+sha256 = "32ebcfe41b6390145e90eb86273e221f22eeacd53ecac5274405f148fb4258c2"
+released_at = "2026-04-15"
 
 [build]
 system = "cargo"
