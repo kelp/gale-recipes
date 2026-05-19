@@ -2,7 +2,7 @@
 
 [package]
 name = "fzf"
-version = "0.70.0"
+version = "0.72.0"
 revision = 2
 description = "Command-line fuzzy finder written in Go"
 license = "MIT"
@@ -10,9 +10,9 @@ homepage = "https://github.com/junegunn/fzf"
 
 [source]
 repo = "junegunn/fzf"
-url = "https://github.com/junegunn/fzf/archive/refs/tags/v0.70.0.tar.gz"
-sha256 = "a99e0df4dfb6228c8af63a2f99f39f7476b7da614833141be30a6b3a3f9d440f"
-released_at = "2026-03-02"
+url = "https://github.com/junegunn/fzf/archive/refs/tags/v0.72.0.tar.gz"
+sha256 = "ca5ce083cec5187503ceb96d837c20d8efde85f03e62bba3a8890f8da526f2fc"
+released_at = "2026-04-26"
 
 [build]
 steps = [
