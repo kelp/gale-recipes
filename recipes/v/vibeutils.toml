@@ -1,7 +1,7 @@
 [package]
 name = "vibeutils"
 version = "0.9.3"
-revision = 3
+revision = 4
 description = "Modern Unix coreutils in Zig — git-aware ls, colored output, Nerd Font icons"
 license = "MIT"
 homepage = "https://github.com/kelp/vibeutils"
@@ -21,5 +21,8 @@ steps = [
 ]
 
 [dependencies]
-build = ["zig"]
+# vibeutils' build.zig.zon pins minimum_zig_version = 0.15.1
+# and source hasn't migrated to 0.16 yet, so use the zig15
+# parallel-install recipe rather than the default zig dep.
+build = ["zig15"]
 runtime = ["mandoc"]
