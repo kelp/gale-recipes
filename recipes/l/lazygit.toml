@@ -1,6 +1,6 @@
 [package]
 name = "lazygit"
-version = "0.60.0"
+version = "0.61.1"
 revision = 2
 description = "Simple terminal UI for git commands"
 license = "MIT"
@@ -8,8 +8,8 @@ homepage = "https://github.com/jesseduffield/lazygit"
 
 [source]
 repo = "jesseduffield/lazygit"
-url = "https://github.com/jesseduffield/lazygit/archive/refs/tags/v0.60.0.tar.gz"
-sha256 = "c0cb64f7861e439ef13fa06845e7ab6b219364b7b083c7ff10d851e764e6b16b"
+url = "https://github.com/jesseduffield/lazygit/archive/refs/tags/v0.61.1.tar.gz"
+sha256 = "2a550c9b609c5eb0e1c2640e8114ac05b94c671803f77e08a9dcdbd66372e2c4"
 
 [dependencies]
 build = ["go"]
