@@ -37,8 +37,19 @@ All notable changes to gale-recipes are documented here.
 - `[[repos]]` (tap) usage section in `gale-recipes/CLAUDE.md`
   covering the binary-trust policy and inline
   `[binary.<platform>]` requirement for tap recipes.
+- Zig build pattern section in `CLAUDE.md` covering
+  `-Dcpu=baseline` and the `zig15` parallel-install
+  fallback for recipes whose `build.zig.zon` pins a
+  pre-0.16 minimum.
 
 ### Changed
+- vibeutils: pinned build dep to `zig15` (revision 4).
+  `build.zig.zon` declares `minimum_zig_version =
+  0.15.1` and the source still uses `std.fs.cwd` etc.,
+  which Zig 0.16 moved to `std.Io.Dir.cwd`. The default
+  `zig` dep is now 0.16, so source builds were failing
+  with "no member named 'cwd'". Revert when vibeutils
+  source migrates to 0.16.
 - `build.yml` now embeds the recipe revision in each
   `.binaries.toml` `version` field as `X.Y.Z-N` whenever
   `[package].revision > 1`. Recipes at revision 1 keep
@@ -118,6 +129,23 @@ All notable changes to gale-recipes are documented here.
   dependent in one CI run instead of cascading into local
   source rebuilds for each user. `check_install.py` also
   learned to accept table-form dep declarations.
+
+### Fixed
+- vibeutils, zls, zmx: added `-Dcpu=baseline` to the
+  `zig build` steps so binaries don't bake in the CI
+  runner's CPU-specific instructions. Without it,
+  `vibeutils 0.9.3-2` and `zmx 0.6.0-1` SIGILLed at
+  startup on AMD EPYC Milan (no AVX-512) — the runner
+  had AVX-512 and Zig emitted `vptestnmb` etc. that the
+  Milan host then refused to execute. Baseline = SSE2 on
+  x86_64, armv8.0-a on aarch64; perf cost is negligible
+  for these CLI tools. Symptom of a missed flag is
+  `Illegal instruction at address …`, which masquerades
+  as a system fault — especially when the broken tool
+  is a coreutils replacement on PATH ahead of GNU
+  (vibeutils' broken `timeout` silently broke the SSH
+  commit-signing wrapper). Bumps revisions on vibeutils,
+  zls, and zmx.
 
 ### Added
 - linux-arm64 build support for 15 recipes:
