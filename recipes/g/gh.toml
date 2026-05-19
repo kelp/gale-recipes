@@ -1,6 +1,6 @@
 [package]
 name = "gh"
-version = "2.89.0"
+version = "2.92.0"
 revision = 2
 description = "GitHub command-line tool"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://cli.github.com/"
 
 [source]
 repo = "cli/cli"
-url = "https://github.com/cli/cli/archive/refs/tags/v2.89.0.tar.gz"
-sha256 = "bc9c11f75e4aeb7e1f0bd5f543a3edabb8958655025f8cdc3d9bbe14435a7441"
-released_at = "2026-03-26"
+url = "https://github.com/cli/cli/archive/refs/tags/v2.92.0.tar.gz"
+sha256 = "ad18928ce4e2695d7fc1adefa0f5e0496e570a430016cee4c22d7bf87e5d9c1d"
+released_at = "2026-04-28"
 
 [build]
 steps = [
