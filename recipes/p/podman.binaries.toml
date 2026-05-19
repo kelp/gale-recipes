@@ -1,7 +1,15 @@
-version = "5.8.1-2"
+version = "5.8.2-2"
 
 [linux-amd64]
-sha256 = "38948d38f98c959e90967776e31e001d23fc0641a34231765de53c22b29544bf"
+sha256 = "e805b66a22f02eb6d7721e30436bbf5906659651767387d9d3cd6cc235db5103"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+  { name = "go", version = "1.26.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "36b25dc984f4a7758def81223d8d267dbf287a5d79da03b679b59ba18ce30fc2"
+sha256 = "ef3f7e3ea18f0fa257c983dd3a50d61b93b2bb5f92e0cc4539a233c9eca7a045"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+  { name = "go", version = "1.26.1", revision = 2 },
+]

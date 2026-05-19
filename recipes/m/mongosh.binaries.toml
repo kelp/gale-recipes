@@ -1,10 +1,19 @@
-version = "2.8.2-2"
+version = "2.8.3-2"
 
 [darwin-arm64]
-sha256 = "7bd73aa4c66ec6fee22249cbed9ffc02c7e96f6533f35503a8460a9e019d5bf3"
+sha256 = "22015efb98fbd775e5f435569137ae4b768d23df9465ad5017d7204be21381d7"
+deps = [
+  { name = "nodejs", version = "26.1.0", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "a138190dc9714d942fe2da8207a5de8e3fd40a6e86c2cb46d7d37c457c72880c"
+sha256 = "b4b827562ef36767a86bb68dc4f03a6877ebdc826ebf59b6ac40d376937df9df"
+deps = [
+  { name = "nodejs", version = "26.1.0", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "8da338063146acdcffc80a72de5b7efaf021833a361c991243364c2a03149d9a"
+sha256 = "91c227b63b48a6e859af17a13df847fd6eb127bb4be5e5a1517fa7fe30a10f52"
+deps = [
+  { name = "nodejs", version = "26.1.0", revision = 2 },
+]

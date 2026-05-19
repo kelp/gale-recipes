@@ -1,46 +1,46 @@
 version = "2026.03.17-2"
 
 [darwin-arm64]
-sha256 = "c012e0c579884369d87511b8a88b8abde7f746e36963b54aed25f22b717ab160"
+sha256 = "4069200d246c9d743294310d68ca09a3ed329b736d226d5da2f92fb9be0e7d60"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "python", version = "3.14.4", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "5629e19f7acf8980e90e3bf8dcd334b0a8f31fcb259c767121f06cc5806ee655"
+sha256 = "56ce88ce6a72bac87deb1cbae196f7ac321038e3900317a059d41f209df24ff4"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "python", version = "3.14.4", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "4879f356760269ab6da9a8eb6f9ddfe5fc8feda7d487536a8287cf54f7064d8d"
+sha256 = "f24cbb3d91d6c31e55efda60574aebee7837583c403e4be98dcb776ff51c6a04"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "python", version = "3.14.4", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.2", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]

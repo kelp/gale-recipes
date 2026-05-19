@@ -1,10 +1,40 @@
 version = "12.2.2-2"
 
 [darwin-arm64]
-sha256 = "a40fe195dd6f60faa5834a1b60d7fb2bc6593d705095595365673075385e8672"
+sha256 = "2aaeefe8888de7646f1c7f78b4d8c0bd9d2366a0f5800f846f674a46cff2b70f"
+deps = [
+  { name = "bison", version = "3.8.2", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "lz4", version = "1.10.0", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "pcre2", version = "10.47", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "29b170d03b0277ef6f0b45c8161b83e5ceb5be462c97e9c23d06266588c73995"
+sha256 = "8811906e3347096f14b669d5e0f2c870363bd4b1401ae32f8784e1ac307f431a"
+deps = [
+  { name = "bison", version = "3.8.2", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "lz4", version = "1.10.0", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "pcre2", version = "10.47", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "090705872ce2ec7262802073dc577633e46750af33c2b0851e7224b72cc6896d"
+sha256 = "a33c39df3c37f0fd90bc29a7985ddf374129d4253c3d59bb885a7a649bac53be"
+deps = [
+  { name = "bison", version = "3.8.2", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "lz4", version = "1.10.0", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "pcre2", version = "10.47", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 2 },
+]

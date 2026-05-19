@@ -1,31 +1,31 @@
 version = "0.9.3-4"
 
 [darwin-arm64]
-sha256 = "48734fe0cf780ca3e493e8f3745a0ca33a368e6ede6204d7ec93e73fea2a3f92"
+sha256 = "75cc532ae09b33fd5ed8b53de47ac7b7516404f1e004433d8e9701599a4ed7a1"
 deps = [
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "zig15", version = "0.15.2", revision = 1 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "e9b6accd4f138e010dbb3d52edde49063351568c8d5e2ee11a7338fe47e21c4e"
+sha256 = "26a39b977b9c228593deca033ea58d593dd7d4fd1fef386747ae8217994eab34"
 deps = [
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "zig15", version = "0.15.2", revision = 1 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "5b73a0613884dfcf9c7cb92c315865c6e0453cf23397166700e1d8b1ea1a3059"
+sha256 = "8aaa81c6d2a71839ee472d264630dfca3b8610747d9d74864ca6a5fd1434309b"
 deps = [
-  { name = "cmake", version = "4.3.1", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
   { name = "zig15", version = "0.15.2", revision = 1 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
