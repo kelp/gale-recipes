@@ -1,6 +1,6 @@
 [package]
 name = "meson"
-version = "1.6.1"
+version = "1.11.1"
 revision = 2
 description = "The Meson build system"
 license = "Apache-2.0"
@@ -8,9 +8,9 @@ homepage = "https://mesonbuild.com/"
 
 [source]
 repo = "mesonbuild/meson"
-url = "https://github.com/mesonbuild/meson/releases/download/1.6.1/meson-1.6.1.tar.gz"
-sha256 = "1eca49eb6c26d58bbee67fd3337d8ef557c0804e30a6d16bfdf269db997464de"
-released_at = "2025-01-15"
+url = "https://github.com/mesonbuild/meson/releases/download/1.11.1/meson-1.11.1.tar.gz"
+sha256 = "6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866"
+released_at = "2026-04-21"
 
 [build]
 system = "python"
