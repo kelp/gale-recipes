@@ -206,7 +206,7 @@ check_recipe() {
   # (owner_id). Repo-id mismatch is a hard tamper signal —
   # the URL we trusted now points to a different
   # repository.
-  local repo_meta repo_id owner_id
+  local repo_meta="" repo_id="" owner_id=""
   repo_meta=$(gh api "/repos/${repo}" 2>/dev/null) || repo_meta=""
   if [ -n "$repo_meta" ]; then
     repo_id=$(echo "$repo_meta" | jq -r '.id // empty')
