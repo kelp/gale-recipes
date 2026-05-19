@@ -471,6 +471,14 @@ check_recipe() {
   fi
   python3 scripts/update_recipe.py strip-binary "$file"
 
+  # NO_PR=1 short-circuits the PR step — useful for
+  # bulk local backfills where the caller commits to
+  # main directly.
+  if [ "${NO_PR:-0}" = "1" ]; then
+    echo "EDITED $name $new_version (NO_PR set, no branch/PR)"
+    return
+  fi
+
   # PR.
   git checkout -b "$branch"
   git add "$file"
