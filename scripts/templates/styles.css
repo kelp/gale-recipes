@@ -126,6 +126,11 @@ tbody tr:hover { background: var(--row-hover); }
 
 td.name { font-weight: 500; }
 td.version { font-family: var(--mono); font-size: 0.9em; color: var(--muted); }
+td.version.version-behind { color: var(--fail); font-weight: 600; }
+td.upstream { font-family: var(--mono); font-size: 0.9em; color: var(--muted); }
+td.upstream.upstream-newer { color: var(--outdated); font-weight: 600; }
+td.upstream.upstream-newer a { color: inherit; }
+td.upstream.upstream-tampered { color: var(--fail); font-weight: 600; }
 
 td.ok, td.fail, td.na {
   text-align: center;

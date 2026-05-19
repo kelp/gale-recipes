@@ -482,6 +482,35 @@ def upstream_pill_html(r: Recipe) -> str:
     )
 
 
+def upstream_cell_html(r: Recipe) -> str:
+    """Render the upstream-version column cell. Shows the
+    latest upstream version when known (same string as our
+    own version when up-to-date), the new version in an
+    "upstream-newer" cell when behind, or a muted dash when
+    upstream is untracked."""
+    u = r.upstream
+    if u is None or u.status in ("untracked", "error"):
+        return '<td class="upstream muted">—</td>'
+    if u.status == "up_to_date":
+        v = u.latest_version or r.version
+        return f'<td class="upstream">{html.escape(v)}</td>'
+    if u.status == "outdated" and u.latest_version:
+        url = u.latest_release_url or ""
+        label = html.escape(u.latest_version)
+        inner = (
+            f'<a href="{html.escape(url)}">{label}</a>'
+            if url else label
+        )
+        return f'<td class="upstream upstream-newer">{inner}</td>'
+    if u.status == "tampered":
+        latest = u.latest_version or "?"
+        return (
+            '<td class="upstream upstream-tampered">'
+            f'{html.escape(latest)}</td>'
+        )
+    return '<td class="upstream muted">—</td>'
+
+
 def vulnerability_pill_html(r: Recipe) -> str:
     """Render a `vulnerable` pill on any recipe whose
     currently-shipped version matches a published GHSA.
@@ -553,6 +582,10 @@ def render_index(recipes: list[Recipe]) -> str:
             row_classes.append("row-outdated")
         row_class = " ".join(row_classes)
         data_outdated = "true" if r.is_outdated else "false"
+        version_cls = "version"
+        u = r.upstream
+        if u is not None and u.status in ("outdated", "tampered"):
+            version_cls += " version-behind"
         cells = [
             f'<tr class="{row_class}" '
             f'data-name="{html.escape(r.name)}" '
@@ -563,7 +596,8 @@ def render_index(recipes: list[Recipe]) -> str:
             f"{stale_pill_html(r)}"
             f"{upstream_pill_html(r)}"
             f"{vulnerability_pill_html(r)}</td>",
-            f'<td class="version">{html.escape(r.version)}</td>',
+            f'<td class="{version_cls}">{html.escape(r.version)}</td>',
+            upstream_cell_html(r),
         ]
         for p in PLATFORMS:
             cells.append(platform_cell_html(r.platforms[p]))
@@ -612,6 +646,7 @@ def render_index(recipes: list[Recipe]) -> str:
       <tr>
         <th data-sort="name">recipe</th>
         <th data-sort="version">version</th>
+        <th data-sort="upstream">upstream</th>
         <th data-sort="darwin-arm64">darwin-arm64</th>
         <th data-sort="linux-amd64">linux-amd64</th>
         <th data-sort="linux-arm64">linux-arm64</th>

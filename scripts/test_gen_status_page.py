@@ -14,6 +14,7 @@ or ``python3 scripts/test_gen_status_page.py``.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -240,6 +241,108 @@ class RenderingTests(unittest.TestCase):
         # as a failure.
         self.assertIn("n/a", html.lower())
         self.assertNotIn("✗ failed", html)
+
+
+def _write_upstream(repo_root: Path, recipes: dict[str, dict]) -> None:
+    data = {
+        "generated_at": "2026-05-18T10:44:50Z",
+        "recipes": recipes,
+    }
+    out = repo_root / "_data" / "upstream.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(data))
+
+
+def _row_for(html_doc: str, name: str) -> str:
+    """Return the <tr ...> block for a given recipe row."""
+    pattern = re.compile(
+        rf'<tr [^>]*data-name="{re.escape(name)}".*?</tr>',
+        re.DOTALL,
+    )
+    m = pattern.search(html_doc)
+    assert m, f"no row for {name} in:\n{html_doc}"
+    return m.group(0)
+
+
+class UpstreamColumnTests(unittest.TestCase):
+    """Index has an upstream-version column. The cell always
+    shows a version when upstream data exists; rows behind
+    upstream render the recipe's own version in red."""
+
+    def _make(self, root: Path) -> list[g.Recipe]:
+        _write_recipe(root, "uptodate", version="1.2.3",
+                      binaries={"linux-amd64": "a" * 64})
+        _write_recipe(root, "behind", version="0.9.0",
+                      binaries={"linux-amd64": "b" * 64})
+        _write_recipe(root, "lonely", version="0.1.0",
+                      binaries={"linux-amd64": "c" * 64})
+        _write_upstream(root, {
+            "uptodate": {
+                "status": "up_to_date",
+                "current_version": "1.2.3",
+                "checked_at": "2026-05-18T10:44:50Z",
+                "latest_version": "1.2.3",
+                "latest_released_at": "2026-01-01",
+            },
+            "behind": {
+                "status": "outdated",
+                "current_version": "0.9.0",
+                "checked_at": "2026-05-18T10:44:50Z",
+                "latest_version": "1.0.0",
+                "latest_released_at": "2026-04-01",
+                "latest_release_url": "https://example/v1.0.0",
+            },
+        })
+        return g.load_all_recipes(root)
+
+    def test_index_has_upstream_column_header(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            recipes = self._make(root)
+            html_doc = g.render_index(recipes)
+        self.assertIn('data-sort="upstream"', html_doc)
+
+    def test_up_to_date_row_shows_same_version_in_upstream(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            recipes = self._make(root)
+            html_doc = g.render_index(recipes)
+        row = _row_for(html_doc, "uptodate")
+        # New upstream cell present with version text.
+        self.assertRegex(
+            row, r'<td class="upstream[^"]*"[^>]*>[^<]*1\.2\.3'
+        )
+        # Version cell isn't red.
+        self.assertNotIn("version-behind", row)
+
+    def test_outdated_row_shows_latest_and_reds_our_version(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            recipes = self._make(root)
+            html_doc = g.render_index(recipes)
+        row = _row_for(html_doc, "behind")
+        # Upstream cell shows the new version.
+        self.assertIn("1.0.0", row)
+        # Upstream cell is flagged as newer.
+        self.assertIn("upstream-newer", row)
+        # Our version cell is rendered red.
+        self.assertIn("version-behind", row)
+
+    def test_unknown_upstream_renders_dash(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            recipes = self._make(root)
+            html_doc = g.render_index(recipes)
+        row = _row_for(html_doc, "lonely")
+        # Upstream cell is the muted dash.
+        self.assertRegex(
+            row, r'<td class="upstream[^"]*muted[^"]*"[^>]*>\s*—'
+        )
+        self.assertNotIn("version-behind", row)
 
 
 if __name__ == "__main__":
