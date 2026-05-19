@@ -2,7 +2,7 @@
 
 [package]
 name = "btop"
-version = "1.4.6"
+version = "1.4.7"
 revision = 2
 description = "Resource monitor. C++ version and continuation of bashtop and bpytop"
 license = "Apache-2.0"
@@ -10,8 +10,8 @@ homepage = "https://github.com/aristocratos/btop"
 
 [source]
 repo = "aristocratos/btop"
-url = "https://github.com/aristocratos/btop/archive/refs/tags/v1.4.6.tar.gz"
-sha256 = "4beb90172c6acaac08c1b4a5112fb616772e214a7ef992bcbd461453295a58be"
+url = "https://github.com/aristocratos/btop/archive/refs/tags/v1.4.7.tar.gz"
+sha256 = "933de2e4d1b2211a638be463eb6e8616891bfba73aef5d38060bd8319baeefc6"
 
 [build]
 steps = [
