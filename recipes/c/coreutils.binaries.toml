@@ -1,10 +1,19 @@
-version = "9.10-2"
+version = "9.11-2"
 
 [darwin-arm64]
-sha256 = "9ba4e768360bfc5c3e102bef73ad27a965a5b40e5756e696eb18b2cd3d33caaf"
+sha256 = "5dbc2ea1105546dcd20cfdc8784ed3d6d6775f32bde5ff9f7377e35229f291d3"
+deps = [
+  { name = "gmp", version = "6.3.0", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "7110a90bcf755f471825d6320095f19bfd47b377df8c86e8d23e3e08e5e16077"
+sha256 = "7527416932ec64b0e5ad473cf499944ec4248c710485da12b9e5dbb6101a722e"
+deps = [
+  { name = "gmp", version = "6.3.0", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "2cf24304d27e00f3fa116457357a7a7a8738d6b2988c5b9d348b7bfaa04493d6"
+sha256 = "69f4f0d8974dc929158b5b70c83666f3c1f2be33adb8b1932f3997382a560320"
+deps = [
+  { name = "gmp", version = "6.3.0", revision = 2 },
+]

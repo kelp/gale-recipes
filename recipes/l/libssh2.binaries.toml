@@ -1,10 +1,22 @@
 version = "1.11.1-2"
 
 [darwin-arm64]
-sha256 = "834ad147e69b3edc370289f2ecf2765b2cc245490022b5dfa0e83bab8cf768bb"
+sha256 = "f23129b484e7af927f66aaab23da8d6fa35ea77191461e8c4ec24b59370b59ff"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "58eaa59fb3b77bc7ea03ca0053939865023fc44f1ee0111090e92557c786282d"
+sha256 = "bfac74780303f7ef1a8ed450adfa5e7bfef7ad10574af59f8d20b696a05de65c"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "08886303f99a5270c4d339132c16f50d048d59704c6394265ea65647eab24d24"
+sha256 = "d1b3641b18794a921b513184f04eb4b97d16ad6283115a4e0441c5cea5f91873"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "4.0.0", revision = 2 },
+]

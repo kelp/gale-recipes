@@ -1,10 +1,19 @@
-version = "3.4.1-2"
+version = "3.5.1-2"
 
 [darwin-arm64]
-sha256 = "cc2dfd38d8de8d656d435eadce0a9c2462028a9d60899d43db65da4f6ebed2d0"
+sha256 = "3f10ef5c5940002143554ed714724d94b1ebd9ae2a12bdf03dcd454e14ef5886"
+deps = [
+  { name = "ncurses", version = "6.4", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "06ba3d38da8fc5dbb3e930c058d89e83ac73eabe3312e367cfed27ce94500a44"
+sha256 = "75130916a8a8a0b5913ac05ee16a3d317294c6cbf594146b749f1edab37f019f"
+deps = [
+  { name = "ncurses", version = "6.4", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "af128667469bba34fd1b516ea60cfeeacc8f663c883c05097f568901a83f8936"
+sha256 = "e9ca9545c59a0c3cbce827e27526702bb6fa4edef4de98e6a9a1af2b856e1b2b"
+deps = [
+  { name = "ncurses", version = "6.4", revision = 2 },
+]

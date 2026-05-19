@@ -1,19 +1,19 @@
-version = "0.16.0"
+version = "0.16.1"
 
 [darwin-arm64]
-sha256 = "3a119dcc2728e17413e4a32577aa633a4fd095f8573c5e5b7f6a5f98e0a42de2"
+sha256 = "4b27b8ce1d7b80986768caef24e2caf01b550d89e5ed7e3b24b86f7d73529589"
 deps = [
   { name = "go", version = "1.26.1", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "166d845a5eab698fccb41eacfb8cf6b74719d93f7b7542b4a8ac912d06bec196"
+sha256 = "55eb0586bf84604a535a083e707a409766fa7ee928dd101c6e0694d7aec83ad3"
 deps = [
   { name = "go", version = "1.26.1", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "9737e3ea07a36841d41f63cf1d49af9f013839ef2faadabc461fed623d6d276a"
+sha256 = "3c3556b21c0e9d9859a0f8a14ffb160521ff66197d3eabbda67e696e531ef830"
 deps = [
   { name = "go", version = "1.26.1", revision = 2 },
 ]
