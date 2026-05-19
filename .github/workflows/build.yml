@@ -521,10 +521,26 @@ jobs:
           VERSION=$(grep '^version' "$RECIPE_FILE" | \
             head -1 | sed 's/.*= *"//' | sed 's/".*//')
           TAG="${VERSION}-${PLATFORM}"
-          oras push --disable-path-validation \
-            --annotation "org.opencontainers.image.source=${REPO_URL}" \
-            "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
-            "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"
+          # Retry to absorb GHCR's first-push race: when multiple
+          # platform jobs concurrently create a brand-new package,
+          # the loser of the create-and-link race can get `denied`
+          # on manifest upload even though its blob upload
+          # succeeded. The package exists after the first attempt,
+          # so a short backoff resolves it.
+          for attempt in 1 2 3; do
+            if oras push --disable-path-validation \
+                --annotation "org.opencontainers.image.source=${REPO_URL}" \
+                "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
+                "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 10))
+              echo "::warning::oras push attempt $attempt failed, retrying..."
+            fi
+          done
+          echo "::error::oras push failed after 3 attempts"
+          exit 1
 
       - name: Save build metadata
         if: steps.build.outputs.skipped != 'true'
