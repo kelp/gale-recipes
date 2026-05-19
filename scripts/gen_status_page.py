@@ -51,6 +51,11 @@ PLATFORMS: tuple[str, ...] = (
 
 REPO_URL = "https://github.com/kelp/gale-recipes"
 
+# A recipe behind upstream graduates from "outdated"
+# (informational) to "stale" (needs attention) once the
+# upstream release is this many days old.
+STALE_UPSTREAM_AGE_DAYS = 7
+
 
 @dataclass
 class Platform:
@@ -204,11 +209,30 @@ class Recipe:
         return self.version
 
     @property
-    def is_stale(self) -> bool:
+    def is_stale_drift(self) -> bool:
+        """Recipe and binaries disagree on version. CI hasn't
+        rebuilt yet."""
         return (
             self.binaries_version is not None
             and self.binaries_version != self.expected_binaries_version
         )
+
+    def is_stale_upstream_on(self, today: date | None = None) -> bool:
+        """Behind upstream by at least STALE_UPSTREAM_AGE_DAYS
+        days. Today is parameterized so tests don't depend on
+        the wall clock."""
+        u = self.upstream
+        if u is None or not u.is_outdated:
+            return False
+        age = u.age_days(today)
+        return age is not None and age >= STALE_UPSTREAM_AGE_DAYS
+
+    def is_stale_on(self, today: date | None = None) -> bool:
+        return self.is_stale_drift or self.is_stale_upstream_on(today)
+
+    @property
+    def is_stale(self) -> bool:
+        return self.is_stale_on()
 
     @property
     def is_outdated(self) -> bool:
@@ -438,10 +462,19 @@ def load_all_recipes(repo_root: Path) -> list[Recipe]:
 def stale_pill_html(r: Recipe) -> str:
     if not r.is_stale:
         return ""
-    title = (
-        f"recipe at {r.expected_binaries_version}, binaries at "
-        f"{r.binaries_version or ''}"
-    )
+    reasons: list[str] = []
+    if r.is_stale_drift:
+        reasons.append(
+            f"recipe at {r.expected_binaries_version}, binaries at "
+            f"{r.binaries_version or ''}"
+        )
+    if r.is_stale_upstream_on():
+        u = r.upstream
+        assert u is not None and u.latest_version is not None
+        age = u.age_days()
+        age_bit = f" · {_age_phrase(age)}" if age is not None else ""
+        reasons.append(f"upstream {u.latest_version}{age_bit}")
+    title = " · ".join(reasons)
     return (
         f' <span class="pill stale" title="{html.escape(title)}">'
         "stale</span>"

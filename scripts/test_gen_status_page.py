@@ -360,6 +360,87 @@ class RevisionStaleTests(unittest.TestCase):
         self.assertIn("1.9.0-3", pill)
 
 
+class StaleByUpstreamAgeTests(unittest.TestCase):
+    """A recipe behind upstream becomes stale once the
+    upstream release is ``STALE_UPSTREAM_AGE_DAYS`` (7) or
+    more days old. Fresher upstreams just show as outdated.
+
+    Tests use ``Recipe.is_stale_on(today)`` so the result
+    doesn't depend on the real wall clock."""
+
+    def _make_outdated(
+        self, root: Path, name: str, released: str
+    ) -> g.Recipe:
+        _write_recipe(
+            root, name, version="0.9.0",
+            binaries={"linux-amd64": "a" * 64},
+        )
+        _write_upstream(root, {
+            name: {
+                "status": "outdated",
+                "current_version": "0.9.0",
+                "checked_at": "2026-05-18T10:44:50Z",
+                "latest_version": "1.0.0",
+                "latest_released_at": released,
+                "latest_release_url": "https://example/v1.0.0",
+            },
+        })
+        return g.load_all_recipes(root)[0]
+
+    def test_outdated_under_7_days_is_not_stale(self) -> None:
+        import datetime as dt
+        with TemporaryDirectory() as tmp:
+            r = self._make_outdated(Path(tmp), "fresh", "2026-05-15")
+        today = dt.date(2026, 5, 18)
+        self.assertEqual(r.upstream.age_days(today), 3)
+        self.assertFalse(r.is_stale_on(today))
+
+    def test_outdated_at_7_days_is_stale(self) -> None:
+        import datetime as dt
+        with TemporaryDirectory() as tmp:
+            r = self._make_outdated(Path(tmp), "edge", "2026-05-11")
+        today = dt.date(2026, 5, 18)
+        self.assertEqual(r.upstream.age_days(today), 7)
+        self.assertTrue(r.is_stale_on(today))
+
+    def test_outdated_well_past_7_days_is_stale(self) -> None:
+        import datetime as dt
+        with TemporaryDirectory() as tmp:
+            r = self._make_outdated(Path(tmp), "rotten", "2026-04-01")
+        today = dt.date(2026, 5, 18)
+        self.assertTrue(r.is_stale_on(today))
+
+    def test_up_to_date_recipe_is_not_stale(self) -> None:
+        import datetime as dt
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root, "fine", version="1.0.0",
+                binaries={"linux-amd64": "a" * 64},
+            )
+            _write_upstream(root, {
+                "fine": {
+                    "status": "up_to_date",
+                    "current_version": "1.0.0",
+                    "checked_at": "2026-05-18T10:44:50Z",
+                    "latest_version": "1.0.0",
+                    "latest_released_at": "2025-01-01",
+                },
+            })
+            (r,) = g.load_all_recipes(root)
+        self.assertFalse(r.is_stale_on(dt.date(2026, 5, 18)))
+
+    def test_stale_pill_renders_for_upstream_reason(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._make_outdated(Path(tmp), "old", "2026-04-01")
+        pill = g.stale_pill_html(r)
+        # Yellow stale pill renders.
+        self.assertIn('pill stale', pill)
+        # Tooltip names the upstream version, not just the
+        # binaries-vs-recipe skew.
+        self.assertIn("1.0.0", pill)
+
+
 class UpstreamColumnTests(unittest.TestCase):
     """Index has an upstream-version column. The cell always
     shows a version when upstream data exists; rows behind
