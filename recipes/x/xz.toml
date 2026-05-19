@@ -1,6 +1,6 @@
 [package]
 name = "xz"
-version = "5.8.2"
+version = "5.8.3"
 revision = 2
 description = "General-purpose data compression with high compression ratio"
 license = "0BSD AND GPL-2.0-or-later"
@@ -8,8 +8,8 @@ homepage = "https://tukaani.org/xz/"
 
 [source]
 repo = "tukaani-project/xz"
-url = "https://github.com/tukaani-project/xz/releases/download/v5.8.2/xz-5.8.2.tar.gz"
-sha256 = "ce09c50a5962786b83e5da389c90dd2c15ecd0980a258dd01f70f9e7ce58a8f1"
+url = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz"
+sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0"
 
 [build]
 steps = [
