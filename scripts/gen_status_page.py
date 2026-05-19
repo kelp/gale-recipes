@@ -176,6 +176,7 @@ class Recipe:
     letter: str
     recipe_path: str
     version: str
+    revision: int
     description: str
     homepage: str
     license: str
@@ -195,10 +196,18 @@ class Recipe:
         return any(p.is_failing for p in self.platforms.values())
 
     @property
+    def expected_binaries_version(self) -> str:
+        # .binaries.toml writes the joined "X.Y.Z-N" form
+        # when revision > 1, bare version otherwise.
+        if self.revision > 1:
+            return f"{self.version}-{self.revision}"
+        return self.version
+
+    @property
     def is_stale(self) -> bool:
         return (
             self.binaries_version is not None
-            and self.binaries_version != self.version
+            and self.binaries_version != self.expected_binaries_version
         )
 
     @property
@@ -263,6 +272,9 @@ def load_recipe(
     def pkg_str(key: str) -> str:
         v = pkg.get(key)
         return v if isinstance(v, str) else ""
+
+    rev = pkg.get("revision")
+    revision = rev if isinstance(rev, int) and rev >= 1 else 1
 
     # A recipe may declare [package].platforms to restrict
     # which targets it builds for (e.g. linux-only tools).
@@ -330,6 +342,7 @@ def load_recipe(
         letter=name[0],
         recipe_path=rel,
         version=pkg_str("version"),
+        revision=revision,
         description=pkg_str("description"),
         homepage=pkg_str("homepage"),
         license=pkg_str("license"),
@@ -426,7 +439,7 @@ def stale_pill_html(r: Recipe) -> str:
     if not r.is_stale:
         return ""
     title = (
-        f"recipe at {r.version}, binaries at "
+        f"recipe at {r.expected_binaries_version}, binaries at "
         f"{r.binaries_version or ''}"
     )
     return (

@@ -30,8 +30,10 @@ def _write_recipe(
     name: str,
     *,
     version: str = "1.0.0",
+    revision: int | None = None,
     platforms: list[str] | None = None,
     binaries: dict[str, str] | None = None,
+    binaries_version: str | None = None,
 ) -> Path:
     """Materialize a recipe and (optionally) its binaries
     file. Returns the recipe TOML path."""
@@ -42,10 +44,16 @@ def _write_recipe(
         "[package]",
         f'name = "{name}"',
         f'version = "{version}"',
-        f'description = "test recipe {name}"',
-        'homepage = ""',
-        'license = "MIT"',
     ]
+    if revision is not None:
+        lines.append(f"revision = {revision}")
+    lines.extend(
+        [
+            f'description = "test recipe {name}"',
+            'homepage = ""',
+            'license = "MIT"',
+        ]
+    )
     if platforms is not None:
         rendered = ", ".join(f'"{p}"' for p in platforms)
         lines.append(f"platforms = [{rendered}]")
@@ -64,7 +72,12 @@ def _write_recipe(
 
     if binaries is not None:
         b = letter_dir / f"{name}.binaries.toml"
-        bl = [f'version = "{version}"', ""]
+        bv = (
+            binaries_version
+            if binaries_version is not None
+            else version
+        )
+        bl = [f'version = "{bv}"', ""]
         for plat, sha in binaries.items():
             bl.append(f"[{plat}]")
             bl.append(f'sha256 = "{sha}"')
@@ -262,6 +275,89 @@ def _row_for(html_doc: str, name: str) -> str:
     m = pattern.search(html_doc)
     assert m, f"no row for {name} in:\n{html_doc}"
     return m.group(0)
+
+
+class RevisionStaleTests(unittest.TestCase):
+    """``.binaries.toml`` records ``version`` as the joined
+    ``X.Y.Z-N`` form when revision > 1. The recipe stores
+    version (bare) and revision (int) separately. Stale must
+    compare the joined form, not the bare version."""
+
+    def test_revision_2_matching_binaries_not_stale(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "agelike",
+                version="1.3.1",
+                revision=2,
+                binaries={"linux-amd64": "a" * 64},
+                binaries_version="1.3.1-2",
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertFalse(r.is_stale)
+
+    def test_revision_1_matching_binaries_not_stale(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "plain",
+                version="1.7.2",
+                revision=1,
+                binaries={"linux-amd64": "a" * 64},
+                binaries_version="1.7.2",
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertFalse(r.is_stale)
+
+    def test_revision_default_matching_binaries_not_stale(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "defaultrev",
+                version="2.0.0",
+                binaries={"linux-amd64": "a" * 64},
+                binaries_version="2.0.0",
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertFalse(r.is_stale)
+
+    def test_truly_stale_still_detected(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "drift",
+                version="2.0.0",
+                revision=3,
+                binaries={"linux-amd64": "a" * 64},
+                binaries_version="1.9.0-3",
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertTrue(r.is_stale)
+
+    def test_stale_pill_uses_synthesized_expected(self) -> None:
+        """Pill tooltip should show the expected joined form,
+        not the bare recipe version, so the user sees what
+        the binaries should match."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "drift",
+                version="2.0.0",
+                revision=3,
+                binaries={"linux-amd64": "a" * 64},
+                binaries_version="1.9.0-3",
+            )
+            (r,) = g.load_all_recipes(root)
+            pill = g.stale_pill_html(r)
+        self.assertIn("2.0.0-3", pill)
+        self.assertIn("1.9.0-3", pill)
 
 
 class UpstreamColumnTests(unittest.TestCase):
