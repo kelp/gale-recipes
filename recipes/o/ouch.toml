@@ -2,7 +2,7 @@
 
 [package]
 name = "ouch"
-version = "0.6.1"
+version = "0.7.1"
 revision = 2
 description = "Painless compression and decompression for your terminal"
 license = "MIT"
@@ -10,8 +10,8 @@ homepage = "https://github.com/ouch-org/ouch"
 
 [source]
 repo = "ouch-org/ouch"
-url = "https://github.com/ouch-org/ouch/archive/refs/tags/0.6.1.tar.gz"
-sha256 = "e6265071affab228ba7d3ca85f2206029445038b3a3d96036e9bf02b795ad651"
+url = "https://github.com/ouch-org/ouch/archive/refs/tags/0.7.1.tar.gz"
+sha256 = "9dadaa3340972347c39e0047668af0e2c59c6128470eeb3fdf86629a3b298443"
 
 [build]
 steps = [
