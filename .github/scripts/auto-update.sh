@@ -75,9 +75,19 @@ attest_required() {
 # Verify upstream GitHub attestation for a downloaded
 # tarball. Echoes one of: verified | unattested | invalid.
 # Exit status mirrors: 0 for verified/unattested, 1 for
-# invalid. `gh attestation verify` distinguishes "no
-# attestations found" from "verification failed" in stderr;
-# we parse that to tell the two apart.
+# invalid.
+#
+# `gh attestation verify` doesn't have a clean exit code
+# split between "no attestations" and "real failure", so
+# we parse stderr. Three flavors of "no attestations":
+#   - "no attestations found" / "no matching attestations"
+#     (older gh, sometimes seen on bundle-mode calls)
+#   - HTTP 404 against /attestations/sha256:... (current
+#     real-world wording: the attestations API returns 404
+#     when nothing is attested for that artifact's digest).
+# Anything else — signature mismatch, transparency-log
+# failure, network error against a different endpoint —
+# stays "invalid" so we don't mask real problems.
 verify_upstream_attestation() {
   local tarball="$1" repo="$2"
   local owner="${repo%/*}"
@@ -88,7 +98,8 @@ verify_upstream_attestation() {
     return 0
   fi
   if grep -qi "no attestations" "$err" \
-     || grep -qi "no matching attestations" "$err"; then
+     || grep -qi "no matching attestations" "$err" \
+     || grep -qE 'HTTP 404.*/attestations/sha256:' "$err"; then
     echo "unattested"
     return 0
   fi
@@ -538,6 +549,13 @@ PRBODY
 
   echo "PR created for $name $new_version"
 }
+
+# Allow tests to source this file for its functions without
+# triggering the recipe loop. Bash sets $BASH_SOURCE[0]
+# to the script path and $0 to "bash" when sourced.
+if [ "${BASH_SOURCE[0]}" != "$0" ]; then
+  return 0
+fi
 
 # Find recipes to check.
 if [ -n "$FILTER" ]; then
