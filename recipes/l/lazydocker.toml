@@ -1,6 +1,6 @@
 [package]
 name = "lazydocker"
-version = "0.25.0"
+version = "0.25.2"
 revision = 2
 description = "The lazier way to manage everything docker"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://github.com/jesseduffield/lazydocker"
 
 [source]
 repo = "jesseduffield/lazydocker"
-url = "https://github.com/jesseduffield/lazydocker/archive/refs/tags/v0.25.0.tar.gz"
-sha256 = "480234dec2dbe989462d177f1aa78debec972893ab5981d48d23d7aec8430a58"
-released_at = "2025-01-15"
+url = "https://github.com/jesseduffield/lazydocker/archive/refs/tags/v0.25.2.tar.gz"
+sha256 = "405071220e5be9aa061c65d290e0347143b73ae0a3cc01df164f0105de2b53c4"
+released_at = "2026-04-19"
 
 [build]
 system = "go"
