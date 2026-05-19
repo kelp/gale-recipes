@@ -2,7 +2,7 @@
 
 [package]
 name = "glow"
-version = "2.1.1"
+version = "2.1.2"
 revision = 2
 description = "Render markdown on the CLI"
 license = "MIT"
@@ -10,8 +10,8 @@ homepage = "https://github.com/charmbracelet/glow"
 
 [source]
 repo = "charmbracelet/glow"
-url = "https://github.com/charmbracelet/glow/archive/refs/tags/v2.1.1.tar.gz"
-sha256 = "f13e1d6be1ab4baf725a7fedc4cd240fc7e5c7276af2d92f199e590e1ef33967"
+url = "https://github.com/charmbracelet/glow/archive/refs/tags/v2.1.2.tar.gz"
+sha256 = "1b933139da1d08647bf5b3f112cab9548fdc2b40c056c7fa3d84d8706de5265a"
 
 [build]
 steps = [
