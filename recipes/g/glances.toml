@@ -1,6 +1,6 @@
 [package]
 name = "glances"
-version = "4.5.2"
+version = "4.5.4"
 revision = 2
 description = "A cross-platform curses-based monitoring tool"
 license = "LGPL-3.0-only"
@@ -8,9 +8,9 @@ homepage = "http://nicolargo.github.io/glances/"
 
 [source]
 repo = "nicolargo/glances"
-url = "https://github.com/nicolargo/glances/archive/refs/tags/v4.5.2.tar.gz"
-sha256 = "89db3857f07aeb02350d6f388385f6fa31f5bcbd463ff467f97c7905a3e1b1bd"
-released_at = "2025-01-15"
+url = "https://github.com/nicolargo/glances/archive/refs/tags/v4.5.4.tar.gz"
+sha256 = "a4f421c608d6c40e926c0256f915f0e820d92e5837e6b5a9eea582cf9b241c4a"
+released_at = "2026-04-19"
 
 [build]
 system = "python"
