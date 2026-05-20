@@ -1,15 +1,24 @@
 [package]
-name = "openssl"
-version = "3.6.1"
-revision = 2
-description = "Cryptography and SSL/TLS Toolkit"
+name = "openssl4"
+version = "4.0.0"
+revision = 1
+description = "OpenSSL 4.x — staging recipe for the upcoming major"
 license = "Apache-2.0"
 homepage = "https://openssl-library.org"
 
+# 4.0.0 ships breaking API changes (ASN1_BIT_STRING is now
+# opaque, TLSv1_method removed, libcrypto soname → .4).
+# Ruby/Python and other openssl-linkers don't yet support
+# it as of 2026-05. Recipes that want to try 4.x early
+# should depend on `openssl4`; the default `openssl` stays
+# on 3.x until the ecosystem catches up. When 3.x is no
+# longer the consensus default, bump `openssl` to 4.x and
+# this file can be retired.
+
 [source]
 repo = "openssl/openssl"
-url = "https://github.com/openssl/openssl/releases/download/openssl-3.6.1/openssl-3.6.1.tar.gz"
-sha256 = "b1bfedcd5b289ff22aee87c9d600f515767ebf45f77168cb6d64f231f518a82e"
+url = "https://github.com/openssl/openssl/releases/download/openssl-4.0.0/openssl-4.0.0.tar.gz"
+sha256 = "c32cf49a959c4f345f9606982dd36e7d28f7c58b19c2e25d75624d2b3d2f79ac"
 
 [build.darwin-arm64]
 steps = [
