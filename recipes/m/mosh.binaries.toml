@@ -1,33 +1,33 @@
 version = "1.4.0-2"
 
 [darwin-arm64]
-sha256 = "bee7ba2f627c3307307b8746a67f1a3cb497f4df8946dfe923838f19c2fff2a7"
+sha256 = "ed0d8e1bdbeee3661d38d44948928c5689eac8faf74acd29130f881ddf747b86"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "protobuf", version = "34.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "c0bc4a36d41e8ed1147818b4a7b67454aaa2f9ec5e2b860ed67fbc3d32b993db"
+sha256 = "80b36e68ceb9baa4c246b5dbe41a56d9cff91eb57b3194b988d05530bf3733de"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "protobuf", version = "34.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "0a9103368ba3f965caef957b04ef91462c826595e7bfd2da239d1eb0d779734e"
+sha256 = "9d422bc78e8d592d3bde1972c49cc7a78c87546702cf3230a63aa7fbecb0e817"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "protobuf", version = "34.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },

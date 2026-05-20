@@ -1,10 +1,19 @@
 version = "25.07.1-2"
 
 [darwin-arm64]
-sha256 = "f39e38ceb21b358fe34ae4e7ccd1acd8eb0c0390452493e38853980a6285b30f"
+sha256 = "ab3f99d1d058b2b0a406806d18be80c827e00a4e358da0c6effa75ecd0f48445"
+deps = [
+  { name = "rust", version = "1.95.0", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "638370874da71a7077ea5f9097bc01457f5de14eb6a18ba3a5fd291eafbf233d"
+sha256 = "8b55b4619f10644ef4c85ca919d173f9dcdd5507ce1840c85dee485a164ec5ca"
+deps = [
+  { name = "rust", version = "1.95.0", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "4f738509e860c53a047c896f9966c0ea0f8013f16c92400cfac1225098de1a0a"
+sha256 = "8a016d1a7db28d6da06db54aa718a11698bd96ca353a88b8069a97559f57bc40"
+deps = [
+  { name = "rust", version = "1.95.0", revision = 2 },
+]

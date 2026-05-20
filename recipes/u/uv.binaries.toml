@@ -1,10 +1,22 @@
 version = "0.11.2-2"
 
 [darwin-arm64]
-sha256 = "b6f4ec0b71418c8cf6d69cb11ebceab91f7194312d647bc67476701742668826"
+sha256 = "3c7e3dade43e85a9f85200960e41c0484913a4c3a83e8a075a657fea7236ed42"
+deps = [
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "cdea3265c19c8484dfbe95fcb5d3f7d4e1376c01cf8f791c4f9664c8d2e48d05"
+sha256 = "9d560ad01b4a5d6707b5d58f89485d3d438ab17c82f18d417bcc324d373a6ac0"
+deps = [
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "ad747392b816e12e81b3888417fb3df0d94350fd8edcf59cf698807e7fd51a36"
+sha256 = "771f6d0971c6b35c328027af92c17bd587b70602ea6ec88cfdcb7686fd592ea2"
+deps = [
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+]

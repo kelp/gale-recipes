@@ -1,10 +1,22 @@
-version = "8.6.2-2"
+version = "8.6.3-2"
 
 [darwin-arm64]
-sha256 = "ef36e42093cb8607f22390519466541f51e987ab222325cd15951c1fc8dc8e7c"
+sha256 = "646d94265d2f5554c245a191c6c61dacd650f949bbc33616ffc6fd08f0eb8151"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "932d187cb91918a6ebd5f3a86607844db7a12bf692ddcb6530a557a53f1470c0"
+sha256 = "7752949e9df1fb5ba5b977ff4eb1d659efbbb711df71b3167ebb43b542218a0a"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "dcd26c5b77789a4e8fc040898e9c0b88c4969306ec01f81b45e8b29b1d1631c9"
+sha256 = "bc992fdea76d1a02f0d9c2cdaa8a5cff5aca2a49842d8c55190a499e60ca8d00"
+deps = [
+  { name = "gnumake", version = "4.4.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]

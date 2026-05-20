@@ -1,10 +1,28 @@
-version = "0.6.1-2"
+version = "0.7.1-2"
 
 [darwin-arm64]
-sha256 = "4d465eba5cd8305662d85c07afac32c544feb7dd72be5843bf2293e56c8b87ea"
+sha256 = "245848efb7932557101634bd41c0e045f23a4c37c866c3bb2b75cbaa802f477c"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "8692ffeae2039f5d289974f3698b648ea5e7643f3c4ac8e9ce6d23bcad84a3a0"
+sha256 = "38cca39b4f16ca9ab3f10d363acfea52dbffa519a749d642d0880000dddad5fd"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "fcec9d5608f53f32003fa6da759363e5ca83c70c278a4d8a1fcac20ce7ed02dc"
+sha256 = "ec90e17665850c48c70089103e0ae3eb75fcf9bd1e1884ae5a8eda06f9cb52b2"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "rust", version = "1.95.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]

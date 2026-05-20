@@ -1,4 +1,7 @@
 version = "0.9.0-2"
 
 [darwin-arm64]
-sha256 = "5bfa038be645dbcf25ad8add20a24faee5eab0ba2b8269af5659c7e5a53d1af9"
+sha256 = "66dc535a938c2e19673dda1ed7e803349f9682a06788e6ad68cc1b4d9820d233"
+deps = [
+  { name = "rust", version = "1.95.0", revision = 2 },
+]

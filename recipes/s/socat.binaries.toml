@@ -1,10 +1,22 @@
 version = "1.8.1.1-2"
 
 [darwin-arm64]
-sha256 = "bf3eeb7a53e3bf161acb181ac627e989b15fb2bf262f90cc5593c3b4d3dde7b5"
+sha256 = "a3887f74679238116f5b487558f181514591d6bd3e9ea5e97053aa3508b8f5c0"
+deps = [
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "f877d6b6a287a254786d864f2f147a9034b39898678c346792d5f8266232a02c"
+sha256 = "3d9e832dfb31d8cfe6fed3bfaf040a67f085ea3dbc6561fa3d57294b8f22a31a"
+deps = [
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "fb0afbf5058d69559aae7ef72cb41ba864d4c1ee4711890c74fb6dbc5239594d"
+sha256 = "03ba7a9b5103097eb5ab906d0bb6527eb59b1c40a68079a8f31cf16f4d04dfa5"
+deps = [
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]

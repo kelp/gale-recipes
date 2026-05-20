@@ -1,10 +1,28 @@
 version = "1.25.0-2"
 
 [darwin-arm64]
-sha256 = "5b5728eaad5ed2cd9542144468f670b5a79c4a4475cba913d46519d237df6d24"
+sha256 = "ea22d02e2dd49ccff6793d2821048c746c678e2893992533b2b30d72f4199ad7"
+deps = [
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "libidn2", version = "2.3.8", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "2a678546333a2950b43a678013671f021b3c43a74fccfa3d76a0c376ce5cff06"
+sha256 = "5f2ffbfd6932e92303b8ffbc86f700dd3f60cf21c041d9b1e3ee2369a52756b4"
+deps = [
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "libidn2", version = "2.3.8", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "08f522c8a58f21abf4c570e91b06d2c0ae75a32391eac44f993935815eade4bd"
+sha256 = "98d21a44846e0052064870d4676b9466a4d21d9c2cc2ac0885d9c75c053f5efc"
+deps = [
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "libidn2", version = "2.3.8", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
