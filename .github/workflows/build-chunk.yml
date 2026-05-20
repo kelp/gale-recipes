@@ -1,0 +1,373 @@
+name: Build Chunk
+
+# Reusable workflow invoked once per recipe chunk by
+# build.yml. GH Actions caps a single job's matrix at 256
+# entries; when a push touches many recipes (transitive
+# dependents expand quickly), the recipe × platform product
+# overflows. Splitting into multiple reusable-workflow calls
+# gives each its own 256-entry budget.
+#
+# Edits here should mirror build.yml semantics one-for-one.
+# Only the matrix `recipe` source changes (inputs vs.
+# discover output) and the gale binary download is owned by
+# the parent.
+
+on:
+  workflow_call:
+    inputs:
+      recipes_json:
+        description: 'JSON array of recipe names for this chunk'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    timeout-minutes: 180
+    concurrency:
+      group: build-${{ matrix.recipe }}-${{ matrix.target.platform }}-${{ github.ref }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        recipe: ${{ fromJson(inputs.recipes_json) }}
+        target:
+          - os: macos-26
+            platform: darwin-arm64
+          - os: ubuntu-latest
+            platform: linux-amd64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
+    runs-on: ${{ matrix.target.os }}
+    env:
+      RECIPE_NAME: ${{ matrix.recipe }}
+      PLATFORM: ${{ matrix.target.platform }}
+      GHCR_REPO: ghcr.io/${{ github.repository }}
+      SCCACHE_GHA_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: gale-${{ matrix.target.platform }}
+          path: gale-bin
+
+      - name: Install gale
+        run: |
+          chmod +x gale-bin/gale
+          echo "${GITHUB_WORKSPACE}/gale-bin" \
+            >> "$GITHUB_PATH"
+
+      - name: Install patchelf (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y patchelf
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696  # v0.0.10
+
+      - name: Start sccache server
+        run: sccache --start-server
+
+      - name: Cache build dependencies
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: |
+            ~/.gale/pkg
+            ~/.gale/cache
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            ~/.cache/pip
+            ~/Library/Caches/pip
+            ~/.npm
+          key: deps-${{ matrix.target.platform }}-${{ hashFiles('recipes/**/*.toml') }}
+          restore-keys: |
+            deps-${{ matrix.target.platform }}-
+
+      - name: Find recipe file
+        id: recipe
+        run: |
+          LETTER="${RECIPE_NAME:0:1}"
+          FILE="recipes/${LETTER}/${RECIPE_NAME}.toml"
+          echo "file=${FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: Build recipe
+        id: build
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          SKIPPED=false
+
+          for attempt in 1 2 3; do
+            OUTPUT=$(gale build "$RECIPE_FILE" \
+              2>&1 | tee /tmp/build.log)
+            ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' \
+              | awk '{print $2}')
+            SHA=$(echo "$OUTPUT" | grep '^sha256:' \
+              | awk '{print $2}')
+
+            if [ -n "$ARCHIVE" ]; then
+              break
+            fi
+
+            if grep -q 'unsupported platform' /tmp/build.log; then
+              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
+              SKIPPED=true
+              break
+            fi
+
+            echo "::warning::Build attempt $attempt failed, retrying..."
+            sleep $((attempt * 10))
+          done
+
+          echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
+          echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
+
+          if [ "$SKIPPED" = true ]; then
+            exit 0
+          fi
+
+          if [ -z "$ARCHIVE" ]; then
+            echo "::error::Build failed after 3 attempts"
+            echo "--- build log ---"
+            cat /tmp/build.log || true
+            exit 1
+          fi
+
+      - name: Verify binary runs
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+        run: |
+          VERIFY_DIR=$(mktemp -d)
+          tar --zstd -xf "${ARCHIVE}" -C "${VERIFY_DIR}"
+
+          BIN=""
+
+          for dir in bin sbin; do
+            if [ -x "${VERIFY_DIR}/${dir}/${RECIPE_NAME}" ]; then
+              BIN="${VERIFY_DIR}/${dir}/${RECIPE_NAME}"
+              break
+            fi
+          done
+
+          if [ -z "$BIN" ]; then
+            for dir in bin sbin; do
+              for f in "${VERIFY_DIR}/${dir}/"*; do
+                if [ -x "$f" ] && [ ! -d "$f" ]; then
+                  BIN="$f"
+                  break 2
+                fi
+              done
+            done
+          fi
+
+          if [ -z "$BIN" ]; then
+            LIB_COUNT=0
+            for dir in lib include; do
+              if [ -d "${VERIFY_DIR}/${dir}" ]; then
+                COUNT=$(find "${VERIFY_DIR}/${dir}" \
+                  -type f 2>/dev/null | wc -l)
+                LIB_COUNT=$((LIB_COUNT + COUNT))
+              fi
+            done
+            if [ "$LIB_COUNT" -gt 0 ]; then
+              echo "Library recipe: ${LIB_COUNT} files" \
+                "in lib/ and/or include/"
+              echo "Verified: library install produced output"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::No executables or library files"
+            ls -laR "$VERIFY_DIR" 2>/dev/null | head -40
+            exit 1
+          fi
+
+          echo "Testing: $(basename "$BIN")"
+
+          export PERL5LIB="${VERIFY_DIR}/share:${PERL5LIB}"
+          for sp in "${VERIFY_DIR}"/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
+          for sp in "${VERIFY_DIR}"/lib/*/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
+          export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
+          export PATH="${VERIFY_DIR}/bin:${PATH}"
+
+          PROBE_OK=0
+          KILLED_BY_SIGNAL=0
+          for args in --version version --help -V -v; do
+            "$BIN" "$args" && PROBE_OK=1 && break
+            rc=$?
+            [ $rc -ge 128 ] && KILLED_BY_SIGNAL=1
+          done
+
+          if [ "$PROBE_OK" = 0 ] && \
+             [ "$KILLED_BY_SIGNAL" = 1 ]; then
+            echo "::error::$(basename "$BIN") was killed" \
+              "by a signal (likely dyld could not load a" \
+              "required library). Diagnostic:"
+            "$BIN" --version 2>&1 | head -20 || true
+            exit 1
+          fi
+
+          if [ "$PROBE_OK" = 0 ]; then
+            if file "$BIN" | grep -qiE "text|script"; then
+              echo "Script binary, cannot run outside" \
+                "install prefix"
+              echo "Verified: $(basename "$BIN") exists" \
+                "and is executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
+              echo "Binary ran but has no version/help flag"
+              echo "Verified: $(basename "$BIN") is a" \
+                "valid executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::Binary failed to run"
+            exit 1
+          fi
+
+          echo "Verified: $(basename "$BIN") runs"
+          rm -rf "$VERIFY_DIR"
+
+      - name: Check install (rpath vs runtime deps)
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          CHECK_DIR=$(mktemp -d)
+          tar --zstd -xf "${ARCHIVE}" -C "${CHECK_DIR}"
+          python3 scripts/check_install.py \
+            --recipe "${RECIPE_FILE}" \
+            --prefix "${CHECK_DIR}"
+          rm -rf "${CHECK_DIR}"
+
+      - name: Install and smoke test
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          HAS_SMOKE=$(python3 -c "
+          import sys, tomllib
+          with open('${RECIPE_FILE}', 'rb') as f:
+              r = tomllib.load(f)
+          sys.exit(0 if r.get('smoke', {}).get('commands') else 1)
+          " && echo yes || echo no)
+
+          if [ "$HAS_SMOKE" != "yes" ]; then
+            echo "No [smoke] section; skipping"
+            exit 0
+          fi
+
+          gale install --global "${RECIPE_NAME}" \
+            --recipe "${RECIPE_FILE}"
+          python3 scripts/run_smoke.py \
+            --recipe "${RECIPE_FILE}"
+
+      - name: Upload build log on failure
+        if: failure() && steps.build.outputs.skipped != 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: build-log-${{ matrix.recipe }}-${{ matrix.target.platform }}
+          path: /tmp/build.log
+          retention-days: 7
+
+      - name: Attest build provenance
+        if: steps.build.outputs.skipped != 'true'
+        uses: actions/attest@v4.1.0  # v4.1.0
+        with:
+          subject-path: ${{ steps.build.outputs.archive }}
+
+      - uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3  # v2.0.0
+        if: steps.build.outputs.skipped != 'true'
+
+      - name: Login to GHCR
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GH_TOKEN" | \
+            oras login ghcr.io --password-stdin -u github
+
+      - name: Push to GHCR
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: |
+          VERSION=$(grep '^version' "$RECIPE_FILE" | \
+            head -1 | sed 's/.*= *"//' | sed 's/".*//')
+          TAG="${VERSION}-${PLATFORM}"
+          for attempt in 1 2 3; do
+            if oras push --disable-path-validation \
+                --annotation "org.opencontainers.image.source=${REPO_URL}" \
+                "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
+                "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 10))
+              echo "::warning::oras push attempt $attempt failed, retrying..."
+            fi
+          done
+          echo "::error::oras push failed after 3 attempts"
+          exit 1
+
+      - name: Save build metadata
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          SHA256: ${{ steps.build.outputs.sha256 }}
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+        run: |
+          mkdir -p /tmp/metadata
+
+          DEPS_JSON="[]"
+          EXTRACT_DIR=$(mktemp -d)
+          if tar --zstd -xf "${ARCHIVE}" -C "${EXTRACT_DIR}" .gale-deps.toml 2>/dev/null; then
+            DEPS_JSON=$(python3 - "${EXTRACT_DIR}/.gale-deps.toml" <<'PY'
+          import json, sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              data = tomllib.load(f)
+          out = []
+          for dep in data.get("deps", []):
+              out.append({
+                  "name": dep.get("name", ""),
+                  "version": dep.get("version", ""),
+                  "revision": int(dep.get("revision", 1) or 1),
+              })
+          print(json.dumps(out))
+          PY
+          )
+          fi
+          rm -rf "${EXTRACT_DIR}"
+
+          jq -n \
+            --arg recipe "${RECIPE_NAME}" \
+            --arg platform "${PLATFORM}" \
+            --arg sha256 "${SHA256}" \
+            --argjson deps "${DEPS_JSON}" \
+            '{recipe: $recipe, platform: $platform, sha256: $sha256, deps: $deps}' \
+            > "/tmp/metadata/${RECIPE_NAME}-${PLATFORM}.json"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: steps.build.outputs.skipped != 'true'
+        with:
+          name: metadata-${{ matrix.recipe }}-${{ matrix.target.platform }}
+          path: /tmp/metadata/
