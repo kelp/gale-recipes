@@ -13,9 +13,28 @@ sha256 = "ad18928ce4e2695d7fc1adefa0f5e0496e570a430016cee4c22d7bf87e5d9c1d"
 released_at = "2026-04-28"
 
 [build]
+# CGO_ENABLED=0 forces a pure-Go static binary — the
+# previous default-cgo build linked dynamically against the
+# build host's libc, which segfaulted on hosts with a
+# differently-versioned glibc (e.g. ubuntu-24.04 build,
+# debian-13 runtime). The ldflag Version/Date pair is what
+# `gh --version` prints; keep these in sync with the
+# [package] version on bumps.
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -trimpath -ldflags \"-X github.com/cli/cli/v2/internal/build.Version=v2.89.0 -X github.com/cli/cli/v2/internal/build.Date=2026-03-26\" -o ${PREFIX}/bin/gh ./cmd/gh",
+  "CGO_ENABLED=0 go build -trimpath -ldflags \"-s -w -X github.com/cli/cli/v2/internal/build.Version=v${VERSION} -X github.com/cli/cli/v2/internal/build.Date=2026-04-28\" -o ${PREFIX}/bin/gh ./cmd/gh",
+]
+
+# Smoke runs against the installed binary. --version
+# alone catches segfaults (verify step does this too);
+# the help + subcommand probes exercise gh's command
+# parser, which would catch a binary whose Go runtime
+# fails to initialize past the first syscall.
+[smoke]
+commands = [
+  "${PREFIX}/bin/gh --version",
+  "${PREFIX}/bin/gh help",
+  "${PREFIX}/bin/gh release --help",
 ]
 
 [dependencies]
