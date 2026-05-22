@@ -8,7 +8,7 @@ homepage = "https://rsync.samba.org/"
 
 [source]
 repo = "RsyncProject/rsync"
-url = "https://rsync.samba.org/ftp/rsync/rsync-3.4.2.tar.gz"
+url = "https://download.samba.org/pub/rsync/src/rsync-3.4.2.tar.gz"
 sha256 = "ff10aa2c151cd4b2dbbe6135126dbc854046113d2dfb49572a348233267eb315"
 released_at = "2026-04-28"
 
