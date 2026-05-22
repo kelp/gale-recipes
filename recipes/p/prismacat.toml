@@ -1,0 +1,24 @@
+[package]
+name = "prismacat"
+version = "0.1.0"
+revision = 1
+description = "Themeable truecolor cat for terminal gradients"
+license = "MIT"
+homepage = "https://github.com/mattrobenolt/prismacat"
+
+[source]
+repo = "mattrobenolt/prismacat"
+url = "https://github.com/mattrobenolt/prismacat/archive/refs/tags/v0.1.0.tar.gz"
+sha256 = "5f4429e2e4d979acf582f34437f8a55a79e666e6523f34a1f59887d7eb662447"
+released_at = "2026-05-22"
+
+[build]
+system = "zig"
+steps = [
+  "zig build -Doptimize=ReleaseSafe -Dcpu=baseline --prefix ${PREFIX}",
+]
+
+[dependencies]
+# build.zig.zon pins minimum_zig_version = 0.16.0
+# fetches iTerm2-Color-Schemes as a git+ dep, so git must be on PATH
+build = ["zig", "git"]
