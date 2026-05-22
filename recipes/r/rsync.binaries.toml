@@ -1,28 +1,28 @@
 version = "3.4.2-2"
 
 [darwin-arm64]
-sha256 = "07bb9cabc447db8717a9fc3b82a31d36001119ade62e0d998d424b083e3667c7"
+sha256 = "9e93b253358c7b10effd732c30ebfe45d29f0b1dc41153fe28e129c82f5f00a0"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "4f4073d07ad2e352eb156fb418e376e8b40e23d8ca442bcb9c0a19431a4e54d1"
+sha256 = "6565dd284d7f6779781efd615eb6c58f882993f1332e5b8080912d70764d23d0"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "97e66140792cb3d8cfe28ab0799ee1706ced33d9270d374b2bfe9d6d99f14617"
+sha256 = "155841293b33400e20e702ee6d0fed2e7f84fabbf40ed37d7ddc8f55141d9088"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "openssl", version = "4.0.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
