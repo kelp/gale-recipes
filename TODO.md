@@ -16,10 +16,6 @@ sqlite, llvm, bash, gettext, gnumake, libtool — the
 foundation packages where a substituted tarball has the
 largest blast radius.
 
-- [ ] **Loosen non-semver filter.** Accept prefixed semver:
-  `openssl-X.Y.Z`, `llvmorg-X.Y.Z`,
-  `<subcomponent>/vX.Y.Z`. Currently rejected as
-  `untracked`; ~9 recipes.
 - [ ] **Generic-mirror / GNU FTP fetcher.** Directory-
   listing parser → newest semver. Covers the ~32 recipes
   with no `[source].repo` field (autoconf, automake, bash,
@@ -169,8 +165,10 @@ exists but isn't useful until this is solved.
 - Upstream attestation via `gh attestation verify`;
   `.github/auto-update-attest-required.txt` allowlist
   promotes specific upstreams from optional to required.
-- Non-semver filter for release candidates and dated tags
-  (now scheduled for loosening — see Active).
+- Non-semver filter for release candidates and dated tags;
+  generic prefix stripping for `<word>/`, `<word>-`, and
+  leading `v` so `gopls/v0.22.0`, `llvmorg-22.1.6`,
+  `openssl-4.0.0`, `bun-v1.3.14` all pass.
 - URL rewriter handles version-in-path mirror URLs
   (kernel.org, go.dev, python.org) in addition to GitHub
   release-asset and tag-archive shapes.

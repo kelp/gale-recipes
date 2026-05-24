@@ -425,4 +425,54 @@ jq -e '.recipes.testpkg.status == "tampered"
   || { echo "FAIL 11a_status_tampered"; \
        jq . _data/upstream.json; exit 1; }
 
+# ---------------------------------------------------------
+# 12. prefixed-semver tags accepted — covers tags like
+#     llvmorg-22.1.6, openssl-4.0.0, gopls/v0.22.0,
+#     bun-v1.3.14 that older releases of the script
+#     rejected as "non-semver".
+# ---------------------------------------------------------
+for case_idx in 12a 12b 12c 12d; do
+  case "$case_idx" in
+    12a) tag="llvmorg-22.1.6"; expect_ver="22.1.6" ;;
+    12b) tag="openssl-4.0.0";  expect_ver="4.0.0"  ;;
+    12c) tag="gopls/v0.22.0";  expect_ver="0.22.0" ;;
+    12d) tag="bun-v1.3.14";    expect_ver="1.3.14" ;;
+  esac
+  rm -f _data/upstream.json
+  # Reset recipe so we can compare cleanly.
+  cat > recipes/t/testpkg.toml <<'RECIPE'
+[package]
+name = "testpkg"
+version = "0.1.0"
+
+[source]
+repo = "example/testpkg"
+url = "https://github.com/example/testpkg/archive/refs/tags/v0.1.0.tar.gz"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+released_at = "2020-01-01"
+
+[build]
+steps = ["true"]
+RECIPE
+  out=$(MOCK_TAG="$tag" MOCK_SHA256="aaaa" MOCK_REPO_ID=12345 \
+        MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+        MOCK_TAG_OBJECT_SHA=deadbeef \
+        run_case 2>&1)
+  # Must NOT be rejected as non-semver. Acceptable
+  # outcomes: COOLDOWN (fresh observation) or PR creation.
+  if echo "$out" | grep -q 'non-semver tag'; then
+    echo "FAIL ${case_idx}_prefixed_semver_${tag}"
+    echo "$out"
+    exit 1
+  fi
+  jq -e --arg v "$expect_ver" \
+     '.recipes.testpkg.latest_version == $v
+      and .recipes.testpkg.status != "untracked"' \
+     _data/upstream.json >/dev/null \
+    && echo "PASS ${case_idx}_prefixed_semver" \
+    || { echo "FAIL ${case_idx}_prefixed_semver"; \
+         echo "  tag=$tag expected_version=$expect_ver"; \
+         jq . _data/upstream.json; exit 1; }
+done
+
 echo "All smoke cases passed."

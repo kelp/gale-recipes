@@ -295,10 +295,23 @@ check_recipe() {
   fi
   local release_url="https://github.com/${repo}/releases/tag/${new_tag}"
 
-  # Strip common prefixes: v, name-.
+  # Strip common version-tag decorations to recover the
+  # underlying semver string. Order matters:
+  #   1. recipe-name prefix (handles multi-word names like
+  #      "git-delta" that the generic [A-Za-z]+ below
+  #      wouldn't fully strip)
+  #   2. generic sub-tag prefix "<word>/" (monorepo tags
+  #      like "gopls/v0.22.0")
+  #   3. generic project prefix "<word>-" (project names
+  #      that differ from the recipe name: "llvmorg-22.1.6"
+  #      for recipe llvm, "openssl-4.0.0" for recipe
+  #      openssl4, "bun-v1.3.14" for recipe bun)
+  #   4. leading "v" (uncovered by any of the above)
   local new_version="$new_tag"
-  new_version="${new_version#v}"
   new_version="${new_version#"${name}-"}"
+  new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*/||')
+  new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*-||')
+  new_version="${new_version#v}"
 
   # GHSA query: published advisories on the upstream repo,
   # matched against current and new versions. Runs once per

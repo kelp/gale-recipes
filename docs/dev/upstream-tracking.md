@@ -40,8 +40,11 @@ long ago that release dropped. Data lives in
   `/repos/{repo}/tags?per_page=100` and pick the highest
   semver-shaped tag (covers upstreams that publish tags
   without releases: git/git, golang/go, python/cpython,
-  etc.). Either way, strip `v` and `<name>-` tag prefixes,
-  compare to `package.version`. Equal → `up_to_date`.
+  etc.). Either way, strip prefixes to recover the
+  underlying version string: recipe-name prefix
+  (`git-delta-`), monorepo sub-tag (`gopls/`), generic
+  project prefix (`llvmorg-`, `openssl-`, `bun-`), and
+  leading `v`. Compare to `package.version`. Equal → `up_to_date`.
   Different → `outdated` (dashboard shows this
   immediately; auto-PR still gates on the 7-day
   first-observation cooldown).
