@@ -1,0 +1,22 @@
+[package]
+name = "ruby-lsp"
+version = "0.26.9"
+description = "An opinionated language server for Ruby"
+license = "MIT"
+homepage = "https://shopify.github.io/ruby-lsp/"
+
+[source]
+repo = "Shopify/ruby-lsp"
+url = "https://github.com/Shopify/ruby-lsp/archive/refs/tags/v0.26.9.tar.gz"
+sha256 = "dce37728a674194f27e5a6565adb298cb10ab7f7bd8bfbed60180fe57d0bc64b"
+released_at = "2026-03-25"
+
+[build]
+system = "ruby"
+steps = [
+  "gem build *.gemspec --force",
+  "gem install --install-dir ${PREFIX}/lib/ruby/gems --bindir ${PREFIX}/bin --ignore-dependencies --force *.gem",
+]
+
+[dependencies]
+build = ["ruby"]
