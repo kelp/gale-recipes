@@ -57,7 +57,7 @@ released_at = "2026-02-14"
 - `repo` enables automatic version updates (daily CI
   check). Use the `owner/repo` format.
 - `released_at` sets a cooldown — auto-update waits
-  3 days after a release before proposing an upgrade
+  7 days after a release before proposing an upgrade
 
 Get the sha256 for a source tarball:
 
@@ -245,8 +245,9 @@ need manual adjustment.
 Recipes with a `repo` field are checked daily for new
 upstream releases. The auto-update agent:
 
-1. Queries the GitHub API for the latest release
-2. Waits 3 days after release (cooldown)
+1. Queries the GitHub API for the latest release (falls
+   back to `/tags` for projects without releases)
+2. Waits 7 days after our first observation (cooldown)
 3. Downloads the new source tarball and computes sha256
 4. Creates a PR updating version, url, sha256, and
    released_at

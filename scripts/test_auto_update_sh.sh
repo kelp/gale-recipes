@@ -63,15 +63,34 @@ write_shim() {
 #   MOCK_GHSA_JSON                    — security-advisories array (raw JSON)
 #   MOCK_TAG_OBJECT_TYPE              — "commit" or "tag"
 #   MOCK_TAG_OBJECT_SHA               — commit sha to return
+#   MOCK_NO_RELEASE                   — set to 1 to make
+#                                       /releases/latest 404
+#   MOCK_TAGS_JSON                    — /repos/.../tags response
+#   MOCK_COMMIT_DATE                  — date returned by
+#                                       /commits/<sha> --jq
 #   PR_LOG                            — file path; pr-create argv recorded
 write_shim gh <<'GH'
 #!/bin/bash
 joined="$*"
 case "$joined" in
   "api /repos/example/testpkg/releases/latest")
+    if [ "${MOCK_NO_RELEASE:-0}" = "1" ]; then
+      echo "HTTP 404: Not Found" >&2
+      exit 1
+    fi
     jq -cn --arg tag "${MOCK_TAG:-v1.0.0}" \
            --arg pub "${MOCK_PUBLISHED_AT:-2026-04-24T00:00:00Z}" \
            '{tag_name: $tag, published_at: $pub}'
+    exit 0
+    ;;
+  "api /repos/example/testpkg/tags?per_page=100")
+    printf '%s' "${MOCK_TAGS_JSON:-[]}"
+    exit 0
+    ;;
+  "api /repos/example/testpkg/commits/"*)
+    # gh's --jq is server-side; mock by emitting the
+    # filter's expected result directly.
+    printf '%s' "${MOCK_COMMIT_DATE:-2026-04-24}"
     exit 0
     ;;
   "api /repos/example/testpkg")
@@ -178,9 +197,11 @@ run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
 
 jq -e '.recipes.testpkg.first_observed_version == "1.1.0"
        and .recipes.testpkg.first_observed_sha256 == "bbbb"
+       and .recipes.testpkg.first_observed_commit_sha == "deadbeef"
        and (.recipes.testpkg.first_observed_at | length > 0)
        and .recipes.testpkg.repo_id == "12345"
        and .recipes.testpkg.owner_id == "67890"
+       and .recipes.testpkg.source_type == "release"
        and .recipes.testpkg.swh_archived == true
        and .recipes.testpkg.swh_revision == "deadbeef"' \
    _data/upstream.json >/dev/null \
@@ -295,6 +316,113 @@ jq -e '.recipes.testpkg.vulnerabilities[0].cve_id == "CVE-2026-1"
    _data/upstream.json >/dev/null \
   && echo "PASS 7b_ghsa_in_json" \
   || { echo "FAIL 7b_ghsa_in_json"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 8. tag fallback — release endpoint 404s, /tags returns
+#    semver tags, script picks the highest and records the
+#    observation (no PR yet — fresh first observation sits
+#    in cooldown).
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+MOCK_NO_RELEASE=1 \
+MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
+MOCK_TAG_OBJECT_SHA=tagsha2 MOCK_COMMIT_DATE="2026-04-24" \
+MOCK_SHA256="eeee" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+MOCK_SWH_CODE=200 \
+run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+  && echo "PASS 8_tag_fallback_observed" \
+  || { echo "FAIL 8_tag_fallback_observed"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "outdated"
+       and .recipes.testpkg.latest_version == "2.0.0"
+       and .recipes.testpkg.source_type == "tag"
+       and .recipes.testpkg.first_observed_commit_sha == "tagsha2"
+       and .recipes.testpkg.latest_released_at == "2026-04-24"' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 8a_tag_fallback_state" \
+  || { echo "FAIL 8a_tag_fallback_state"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 9. tag fallback — /tags returns only non-semver names.
+#    Script records untracked with a tag-specific reason.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+MOCK_NO_RELEASE=1 \
+MOCK_TAGS_JSON='[{"name":"experimental"},{"name":"main-build"}]' \
+MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+run_case 2>&1 | grep -q 'no semver tags on example/testpkg' \
+  && echo "PASS 9_tag_fallback_no_semver" \
+  || { echo "FAIL 9_tag_fallback_no_semver"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "untracked"
+       and (.recipes.testpkg.reason | contains("no semver tags"))' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 9a_state_untracked" \
+  || { echo "FAIL 9a_state_untracked"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 10. tag fallback — highest tag equals the recipe's
+#     current version → up_to_date with source_type=tag.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+# Earlier bump-path tests mutated the recipe via
+# update_recipe.py; reset it so the version we compare
+# against the mocked tag is known.
+cat > recipes/t/testpkg.toml <<'RECIPE'
+[package]
+name = "testpkg"
+version = "1.0.0"
+
+[source]
+repo = "example/testpkg"
+url = "https://github.com/example/testpkg/archive/refs/tags/v1.0.0.tar.gz"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+released_at = "2020-01-01"
+
+[build]
+steps = ["true"]
+RECIPE
+MOCK_NO_RELEASE=1 \
+MOCK_TAGS_JSON='[{"name":"v1.0.0"},{"name":"v0.9.0"}]' \
+MOCK_TAG_OBJECT_SHA=tagsha1 MOCK_COMMIT_DATE="2026-04-24" \
+MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+run_case 2>&1 | grep -q 'OK testpkg' \
+  && echo "PASS 10_tag_up_to_date" \
+  || { echo "FAIL 10_tag_up_to_date"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "up_to_date"
+       and .recipes.testpkg.source_type == "tag"' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 10a_state_up_to_date" \
+  || { echo "FAIL 10a_state_up_to_date"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 11. commit-SHA tamper — same version, same sha256, but
+#     the tag now points at a different commit. Catches a
+#     force-pushed tag whose tarball happens to hash the
+#     same as the prior observation.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+MOCK_TAG="v1.1.0" MOCK_SHA256="ffff" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=cafebabe \
+run_case >/dev/null 2>&1
+MOCK_TAG="v1.1.0" MOCK_SHA256="ffff" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=deadbeef \
+run_case 2>&1 | grep -q 'TAMPERED testpkg: commit SHA changed' \
+  && echo "PASS 11_commit_sha_tamper" \
+  || { echo "FAIL 11_commit_sha_tamper"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "tampered"
+       and (.recipes.testpkg.reason | contains("commit SHA changed"))' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 11a_status_tampered" \
+  || { echo "FAIL 11a_status_tampered"; \
        jq . _data/upstream.json; exit 1; }
 
 echo "All smoke cases passed."

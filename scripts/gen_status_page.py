@@ -105,6 +105,11 @@ class Upstream:
     swh_revision: str | None = None
     repo_id: str | None = None
     owner_id: str | None = None
+    # "release" (default — /releases/latest) or "tag"
+    # (fallback — /repos/{repo}/tags for projects that don't
+    # publish releases). Pre-rollout entries are None.
+    source_type: str | None = None
+    first_observed_commit_sha: str | None = None
 
     @property
     def is_outdated(self) -> bool:
@@ -172,6 +177,12 @@ class Upstream:
             out["swh_archived"] = self.swh_archived
         if self.swh_revision:
             out["swh_revision"] = self.swh_revision
+        if self.source_type:
+            out["source_type"] = self.source_type
+        if self.first_observed_commit_sha:
+            out["first_observed_commit_sha"] = (
+                self.first_observed_commit_sha
+            )
         return out
 
 
@@ -435,6 +446,8 @@ def load_upstream_map(
             swh_revision=_opt("swh_revision"),
             repo_id=_opt("repo_id"),
             owner_id=_opt("owner_id"),
+            source_type=_opt("source_type"),
+            first_observed_commit_sha=_opt("first_observed_commit_sha"),
         )
     return out
 

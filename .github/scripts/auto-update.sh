@@ -4,12 +4,14 @@
 # and (for recipes past the cooldown) opens a PR with the
 # version bump.
 #
-# The 3-day cooldown is *first-observation based*: the clock
+# The 7-day cooldown is *first-observation based*: the clock
 # starts the first time we download the new version's tarball
 # and record its sha256. An upstream re-tag that swaps
 # contents without changing the version string resets the
-# clock AND raises a `tampered` status (sha256 mismatch on
-# the same version).
+# clock AND raises a `tampered` status — either via a sha256
+# mismatch on the same version, or via a commit-SHA mismatch
+# on the same tag (covers tag mutations that don't change
+# the tarball bytes).
 #
 # Optional upstream attestation verification runs via
 # `gh attestation verify`. Outcomes:
@@ -29,7 +31,7 @@
 # `source.repo` field is recorded as status="untracked".
 set -uo pipefail
 
-COOLDOWN_DAYS="${COOLDOWN_DAYS:-3}"
+COOLDOWN_DAYS="${COOLDOWN_DAYS:-7}"
 FILTER="${1:-}"
 
 PRIOR_JSON="_data/upstream.json"
@@ -246,19 +248,51 @@ check_recipe() {
     return
   fi
 
-  # GitHub's /releases/latest endpoint excludes drafts and
-  # pre-releases by default.
-  local release_json
-  release_json=$(gh api "/repos/${repo}/releases/latest" 2>/dev/null) || {
-    echo "SKIP $name: no releases found for $repo"
-    emit_upstream "$name" "untracked" "$version" "" "" "" \
-      "no releases found on ${repo}"
-    return
-  }
-
-  local new_tag published_at
-  new_tag=$(echo "$release_json" | jq -r '.tag_name')
-  published_at=$(echo "$release_json" | jq -r '.published_at[:10]')
+  # Resolve the latest upstream version. Prefer
+  # /releases/latest (excludes drafts and pre-releases by
+  # default); fall back to /tags for projects that publish
+  # tags without releases (git/git, golang/go, python/cpython,
+  # postgres/postgres, sqlite/sqlite, qemu/qemu, ...).
+  local source_type="release"
+  local release_json="" tags_json=""
+  local new_tag="" published_at=""
+  local swh_revision=""
+  if release_json=$(gh api "/repos/${repo}/releases/latest" 2>/dev/null); then
+    new_tag=$(echo "$release_json" | jq -r '.tag_name')
+    published_at=$(echo "$release_json" | jq -r '.published_at[:10]')
+  else
+    source_type="tag"
+    if ! tags_json=$(gh api "/repos/${repo}/tags?per_page=100" 2>/dev/null); then
+      echo "SKIP $name: no releases or tags accessible for $repo"
+      emit_upstream "$name" "untracked" "$version" "" "" "" \
+        "no releases or tags accessible on ${repo}"
+      return
+    fi
+    # Pick the highest semver-shaped tag. Reuses the same
+    # shape rule the post-fetch non-semver filter applies to
+    # release tags, so behaviour is symmetric across sources.
+    new_tag=$(echo "$tags_json" \
+                | jq -r '.[].name' \
+                | grep -E '^v?[0-9]+(\.[0-9]+)*$' \
+                | sort -V \
+                | tail -1)
+    if [ -z "$new_tag" ]; then
+      echo "SKIP $name: no semver tags on $repo"
+      emit_upstream "$name" "untracked" "$version" "" "" "" \
+        "no releases and no semver tags on ${repo}"
+      return
+    fi
+    # Tag-source recipes have no release-publication date.
+    # Use the tag commit's committer date. Resolve via the
+    # existing helper so annotated tags are dereferenced
+    # the same way SWH lookup does it.
+    swh_revision=$(swh_resolve_commit "$repo" "$new_tag")
+    if [ -n "$swh_revision" ]; then
+      published_at=$(gh api "/repos/${repo}/commits/${swh_revision}" \
+                       --jq '.commit.committer.date[:10]' 2>/dev/null \
+                       || echo "")
+    fi
+  fi
   local release_url="https://github.com/${repo}/releases/tag/${new_tag}"
 
   # Strip common prefixes: v, name-.
@@ -280,12 +314,16 @@ check_recipe() {
                   2>/dev/null) || ghsa_json="[]"
   fi
 
-  # Identity fields that ride along on every entry.
+  # Identity fields that ride along on every observation.
+  # source_type distinguishes /releases/latest (the default)
+  # from the /tags fallback used for projects that don't
+  # publish releases.
   local id_extra
   id_extra=$(jq -cn \
     --arg repo "$repo" --arg rid "$repo_id" --arg oid "$owner_id" \
+    --arg src "$source_type" \
     --argjson vulns "$ghsa_json" \
-    '{repo: $repo}
+    '{repo: $repo, source_type: $src}
      + (if $rid != "" then {repo_id: $rid}     else {} end)
      + (if $oid != "" then {owner_id: $oid}    else {} end)
      + (if ($vulns|length) > 0 then {vulnerabilities: $vulns} else {} end)')
@@ -316,6 +354,15 @@ check_recipe() {
     old_tag=$(echo "$url" | sed 's|.*/archive/refs/tags/||' | sed 's|\.tar\.gz$||')
   elif echo "$url" | grep -q '/releases/download/'; then
     old_tag=$(echo "$url" | sed 's|.*/releases/download/||' | sed 's|/.*||')
+  elif echo "$url" | grep -qF -- "$version"; then
+    # No tag pattern, but URL embeds the version literally —
+    # common for mirror URLs that tag-source recipes use
+    # (kernel.org/.../git-2.53.0.tar.xz,
+    # go.dev/dl/go1.26.1.src.tar.gz,
+    # python.org/ftp/python/3.14.4/Python-3.14.4.tgz).
+    # Skip the tag-substitution step; the version-only sed
+    # below does the work.
+    old_tag=""
   else
     echo "ERROR $name: unrecognized URL pattern"
     emit_upstream "$name" "outdated" "$version" "$new_version" \
@@ -323,8 +370,12 @@ check_recipe() {
       "unrecognized URL pattern for auto-rewrite"
     return
   fi
-  new_url=$(echo "$url" | sed "s|${old_tag}|${new_tag}|g")
-  new_url=$(echo "$new_url" | sed "s|${version}|${new_version}|g")
+  if [ -n "$old_tag" ]; then
+    new_url=$(echo "$url" | sed "s|${old_tag}|${new_tag}|g")
+    new_url=$(echo "$new_url" | sed "s|${version}|${new_version}|g")
+  else
+    new_url=$(echo "$url" | sed "s|${version}|${new_version}|g")
+  fi
 
   # Download and hash tarball BEFORE the cooldown decision:
   # the sha256 anchors the first-observation clock and the
@@ -362,24 +413,42 @@ check_recipe() {
   # Software Heritage cross-check. Independent of GitHub's
   # trust chain — every other gate flows through GH. SH
   # crawl lag is real but should clear inside the cooldown
-  # window for popular tags.
-  local swh_revision swh_status
-  swh_revision=$(swh_resolve_commit "$repo" "$new_tag")
+  # window for popular tags. Tag-source path already
+  # resolved swh_revision when looking up the tag's commit
+  # date; release-source path resolves it here.
+  if [ -z "$swh_revision" ]; then
+    swh_revision=$(swh_resolve_commit "$repo" "$new_tag")
+  fi
+  local swh_status
   swh_status=$(swh_check "$swh_revision")
 
   # First-observation clock state.
-  local prior_ver prior_sha prior_first
+  local prior_ver prior_sha prior_first prior_commit
   prior_ver=$(prior_field "$name" first_observed_version)
   prior_sha=$(prior_field "$name" first_observed_sha256)
   prior_first=$(prior_field "$name" first_observed_at)
+  prior_commit=$(prior_field "$name" first_observed_commit_sha)
 
   local first_observed_at="$NOW_ISO"
   local first_observed_sha256="$new_sha256"
   local first_observed_version="$new_version"
+  local first_observed_commit_sha="$swh_revision"
   local tamper_reason=""
   if [ "$prior_ver" = "$new_version" ] && [ -n "$prior_first" ]; then
     if [ "$prior_sha" = "$new_sha256" ]; then
       first_observed_at="$prior_first"
+      # Commit-SHA drift on the same tag is an independent
+      # tamper signal — catches force-pushed tags whose
+      # tarball happens to hash the same (synthesized
+      # release tarballs, mirror snapshot lag). Only fires
+      # when both prior and current SHAs are known;
+      # missing values are treated as "no observation" so
+      # backwards-compat upgrades and transient API
+      # failures don't produce false tamper.
+      if [ -n "$prior_commit" ] && [ -n "$swh_revision" ] \
+           && [ "$prior_commit" != "$swh_revision" ]; then
+        tamper_reason="commit SHA changed on tag ${new_tag}: was ${prior_commit}, now ${swh_revision}"
+      fi
     else
       tamper_reason="sha256 mismatch on ${new_version}: was ${prior_sha}, now ${new_sha256}"
     fi
@@ -390,6 +459,7 @@ check_recipe() {
     --arg fov "$first_observed_version" \
     --arg fos "$first_observed_sha256" \
     --arg foa "$first_observed_at" \
+    --arg foc "$first_observed_commit_sha" \
     --arg att "$attestation" \
     --arg swhs "$swh_status" \
     --arg swhr "$swh_revision" \
@@ -399,6 +469,7 @@ check_recipe() {
       attestation: $att,
       swh_archived: ($swhs == "archived"),
       swh_status: $swhs}
+     + (if $foc  != "" then {first_observed_commit_sha: $foc} else {} end)
      + (if $swhr != "" then {swh_revision: $swhr} else {} end)')
 
   # Merge identity fields (repo_id, owner_id,
@@ -485,6 +556,11 @@ check_recipe() {
   git commit -m "Update ${name} to ${new_version}"
   git push -u origin "$branch"
 
+  local source_line=""
+  if [ "$source_type" = "tag" ]; then
+    source_line="
+- **Source:** git tag (upstream does not publish GitHub Releases)"
+  fi
   local attest_line=""
   case "$attestation" in
     verified)   attest_line="- **Attestation:** verified (\`gh attestation verify\`)" ;;
@@ -543,7 +619,7 @@ merging."
 
 - **Package:** ${name}
 - **Version:** ${version} -> ${new_version}
-- **Upstream:** ${release_url}
+- **Upstream:** ${release_url}${source_line}
 - **First observed:** ${first_observed_at} (${age_days}d ago)
 ${attest_line}
 ${swh_line}

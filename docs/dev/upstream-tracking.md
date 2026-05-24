@@ -35,12 +35,21 @@ long ago that release dropped. Data lives in
 
 - If `source.repo` is missing → `untracked`, reason
   noted.
-- Otherwise → GET `/repos/{repo}/releases/latest`, strip
-  `v` and `<name>-` tag prefixes, compare to
-  `package.version`. Equal → `up_to_date`. Different →
-  `outdated` (dashboard shows this immediately;
-  auto-PR still gates on the 3-day cooldown).
-- API 404 or network error → `untracked`, reason noted.
+- Otherwise → GET `/repos/{repo}/releases/latest`. If
+  the release endpoint 404s, fall back to
+  `/repos/{repo}/tags?per_page=100` and pick the highest
+  semver-shaped tag (covers upstreams that publish tags
+  without releases: git/git, golang/go, python/cpython,
+  etc.). Either way, strip `v` and `<name>-` tag prefixes,
+  compare to `package.version`. Equal → `up_to_date`.
+  Different → `outdated` (dashboard shows this
+  immediately; auto-PR still gates on the 7-day
+  first-observation cooldown).
+- API 404 or network error on both endpoints →
+  `untracked`, reason noted.
+- `source_type` (`"release"` or `"tag"`) is recorded on
+  every entry so reviewers can see which path produced
+  the observation.
 
 Calls are paced at 300–900 ms between recipes and the
 cron starts at 09:17 UTC with a 0–59 s startup jitter,
