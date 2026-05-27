@@ -1,15 +1,15 @@
 [package]
 name = "vibeutils"
-version = "0.9.3"
-revision = 4
+version = "0.10.0"
+revision = 1
 description = "Modern Unix coreutils in Zig — git-aware ls, colored output, Nerd Font icons"
 license = "MIT"
 homepage = "https://github.com/kelp/vibeutils"
 
 [source]
 repo = "kelp/vibeutils"
-url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.9.3.tar.gz"
-sha256 = "afe9e18a1d7be265686e7cb89d17ad638ac4db3b39514c265f1b414bdbf198c4"
+url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.10.0.tar.gz"
+sha256 = "d62566f71772dfdca568c525ccff729aa857085410200e2025a2c1469ef95e80"
 
 [build]
 # -Dcpu=baseline targets the LLVM x86_64 / aarch64 baseline so the
@@ -21,8 +21,6 @@ steps = [
 ]
 
 [dependencies]
-# vibeutils' build.zig.zon pins minimum_zig_version = 0.15.1
-# and source hasn't migrated to 0.16 yet, so use the zig15
-# parallel-install recipe rather than the default zig dep.
-build = ["zig15"]
+# vibeutils' build.zig.zon now pins minimum_zig_version = 0.16.0.
+build = ["zig"]
 runtime = ["mandoc"]
