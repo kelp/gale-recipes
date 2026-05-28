@@ -1,0 +1,46 @@
+name: Binary Drift Check
+
+# Daily watchdog: fails loudly when any recipe ships at a
+# version newer than its .binaries.toml, which is how users
+# end up silently building from source after a missed CI
+# rebuild. The status page already *displays* drift; this
+# workflow makes drift a CI signal so a red X in the Actions
+# tab (and the default-on email notification) surfaces it
+# day-over-day instead of relying on someone visiting the
+# dashboard.
+#
+# Triggered by the neovim 0.12.2 incident — a recipe bumped
+# 2026-05-18 went nine days without prebuilts because the
+# batched push lost its build job and the failed retry was
+# never followed up.
+
+on:
+  schedule:
+    # 10:30 UTC — comfortably after auto-update.yml at 09:17
+    # so any same-day version bumps have a chance to land
+    # before this runs. Off-peak, non-round minute to dodge
+    # top-of-hour API spikes.
+    - cron: '30 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Drift checks are idempotent and cheap; coalesce overlaps
+# so a long-running rebuild doesn't stack runs.
+concurrency:
+  group: drift-check
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: '3.13'
+
+      - name: Check for binary drift
+        run: python3 scripts/check_binary_drift.py --repo-root .
