@@ -1,7 +1,7 @@
 [package]
 name = "neovim"
 version = "0.12.2"
-revision = 2
+revision = 3
 description = "Ambitious Vim-fork focused on extensibility and agility"
 license = "Apache-2.0"
 homepage = "https://neovim.io/"
@@ -22,10 +22,22 @@ sha256 = "ef9f58da7d687ed4d1dad9715542bf0dabdeedbfe8089e2ce17fff21b920a268"
 #
 # Network access is required during phase 1 to download
 # dependency sources.
+#
+# -DCACHE_PRG=CACHE_PRG-NOTFOUND short-circuits the
+# find_program() in cmake/Deps.cmake that auto-wires
+# ccache/sccache as CMAKE_C_COMPILER_LAUNCHER and forwards
+# that launcher into the ExternalProject sub-builds for
+# libuv/unibilium/etc. Once gale started symlinking sccache
+# into the build sandbox (v0.15+), the chained launcher
+# (`cmake -E env ... sccache cc`) failed with bare "no such
+# file or directory" inside the sub-makes. Pre-populating
+# the cache with a *-NOTFOUND sentinel makes find_program a
+# no-op and the if(CACHE_PRG) branch false-y, restoring the
+# pre-v0.15 plain-compiler build path.
 
 [build]
 steps = [
-  "cmake -S cmake.deps -B .deps -DUSE_BUNDLED=ON -DCMAKE_BUILD_TYPE=Release",
+  "cmake -S cmake.deps -B .deps -DUSE_BUNDLED=ON -DCMAKE_BUILD_TYPE=Release -DCACHE_PRG=CACHE_PRG-NOTFOUND",
   "cmake --build .deps -j ${JOBS}",
   "DEP_RPATH=$(echo $LIBRARY_PATH | tr ':' ';') && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} \"-DCMAKE_BUILD_RPATH=${DEP_RPATH}\" \"-DCMAKE_INSTALL_RPATH=${DEP_RPATH}\"",
   "cmake --build build -j ${JOBS}",
