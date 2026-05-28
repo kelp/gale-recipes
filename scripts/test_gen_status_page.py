@@ -360,6 +360,86 @@ class RevisionStaleTests(unittest.TestCase):
         self.assertIn("1.9.0-3", pill)
 
 
+class StalePlatformDisplayTests(unittest.TestCase):
+    """When the recipe drifts past ``.binaries.toml`` the
+    per-platform indicators must stop reading green: every
+    platform's sha is for the old version, so every user
+    falls back to source. Regression for the neovim case
+    where the row was correctly tagged stale but cells
+    still rendered ✓."""
+
+    def _drifted(self, root: Path) -> g.Recipe:
+        _write_recipe(
+            root,
+            "drift",
+            version="2.0.0",
+            revision=3,
+            binaries={
+                "darwin-arm64": "a" * 64,
+                "linux-amd64": "b" * 64,
+                "linux-arm64": "c" * 64,
+            },
+            binaries_version="1.9.0-3",
+        )
+        (r,) = g.load_all_recipes(root)
+        return r
+
+    def test_display_state_is_stale_when_drifted(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._drifted(Path(tmp))
+        for p in g.PLATFORMS:
+            self.assertEqual(r.platforms[p].state, "ok")
+            self.assertEqual(r.platform_display_state(p), "stale")
+
+    def test_drifted_recipe_is_not_all_green(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._drifted(Path(tmp))
+        self.assertFalse(r.all_green)
+
+    def test_platform_cell_renders_stale_class(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._drifted(Path(tmp))
+        cell = g.platform_cell_html(r, "linux-amd64")
+        self.assertIn('class="stale"', cell)
+        self.assertNotIn('class="ok"', cell)
+
+    def test_per_platform_built_count_excludes_stale(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._drifted(Path(tmp))
+        counts = g._per_platform_counts([r])
+        for p in g.PLATFORMS:
+            built, eligible = counts[p]
+            self.assertEqual(built, 0)
+            self.assertEqual(eligible, 1)
+
+    def test_status_json_marks_platforms_stale(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._drifted(Path(tmp))
+        doc = r.to_json()
+        for p in g.PLATFORMS:
+            self.assertEqual(doc["platforms"][p]["state"], "stale")
+
+    def test_fresh_recipe_unaffected(self) -> None:
+        """No drift → display state matches Platform.state and
+        all_green stays true."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "fresh",
+                version="2.0.0",
+                binaries={
+                    "darwin-arm64": "a" * 64,
+                    "linux-amd64": "b" * 64,
+                    "linux-arm64": "c" * 64,
+                },
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertTrue(r.all_green)
+        for p in g.PLATFORMS:
+            self.assertEqual(r.platform_display_state(p), "ok")
+
+
 class StaleByUpstreamAgeTests(unittest.TestCase):
     """A recipe behind upstream becomes stale once the
     upstream release is ``STALE_UPSTREAM_AGE_DAYS`` (7) or

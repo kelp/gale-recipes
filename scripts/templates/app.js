@@ -13,7 +13,7 @@
 
   function rowMatches(row, q) {
     if (failingOnly && failingOnly.checked) {
-      if (!row.querySelector("td.fail")) return false;
+      if (!row.querySelector("td.fail, td.stale")) return false;
     }
     if (outdatedOnly && outdatedOnly.checked) {
       if (row.dataset.outdated !== "true") return false;
@@ -41,8 +41,9 @@
   function cellValue(row, idx) {
     const td = row.cells[idx];
     if (!td) return "";
-    if (td.classList.contains("ok")) return 2;
-    if (td.classList.contains("na")) return 1;
+    if (td.classList.contains("ok")) return 3;
+    if (td.classList.contains("na")) return 2;
+    if (td.classList.contains("stale")) return 1;
     if (td.classList.contains("fail")) return 0;
     return (td.textContent || "").trim().toLowerCase();
   }

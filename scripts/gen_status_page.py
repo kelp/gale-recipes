@@ -205,6 +205,11 @@ class Recipe:
     @property
     def all_green(self) -> bool:
         # n/a counts as fine — design, not failure.
+        # Stale-drift recipes are not green: every platform's sha
+        # is for an older version, so users on every platform
+        # fall back to source.
+        if self.is_stale_drift:
+            return False
         return not any(p.is_failing for p in self.platforms.values())
 
     @property
@@ -252,6 +257,20 @@ class Recipe:
     def failing_platforms(self) -> list[str]:
         return [p for p in PLATFORMS if self.platforms[p].is_failing]
 
+    def platform_display_state(self, p: str) -> str:
+        """State to render in the dashboard. Differs from
+        ``Platform.state`` only when the recipe version has
+        drifted past the binaries.toml version: an otherwise-ok
+        platform reads "stale" because the sha is for an older
+        version, so users still fall back to source until CI
+        rebuilds. "fail" and "na" pass through unchanged — a
+        missing platform stays missing whether or not the rest
+        of the row is stale."""
+        state = self.platforms[p].state
+        if state == "ok" and self.is_stale_drift:
+            return "stale"
+        return state
+
     def to_json(self) -> dict:
         out = {
             "name": self.name,
@@ -265,7 +284,10 @@ class Recipe:
             "stale": self.is_stale,
             "eligible_platforms": list(self.eligible_platforms),
             "platforms": {
-                p: {"state": v.state, "sha256": v.sha256}
+                p: {
+                    "state": self.platform_display_state(p),
+                    "sha256": v.sha256,
+                }
                 for p, v in self.platforms.items()
             },
             "versions_history": [
@@ -603,20 +625,34 @@ def _per_platform_counts(
         eligible = sum(
             1 for r in recipes if not r.platforms[p].is_na
         )
+        # Count via display state so stale-drift recipes drop
+        # out of "built" — users on those platforms fall back
+        # to source until CI rebuilds.
         built = sum(
-            1 for r in recipes if r.platforms[p].state == "ok"
+            1 for r in recipes if r.platform_display_state(p) == "ok"
         )
         out[p] = (built, eligible)
     return out
 
 
-def platform_cell_html(p: Platform) -> str:
-    if p.state == "ok":
+def platform_cell_html(r: Recipe, p: str) -> str:
+    state = r.platform_display_state(p)
+    if state == "ok":
         return '<td class="ok" aria-label="built">✓</td>'
-    if p.state == "na":
+    if state == "na":
         return (
             '<td class="na" aria-label="not applicable" '
             'title="recipe excludes this platform">—</td>'
+        )
+    if state == "stale":
+        title = (
+            f"binary is for {r.binaries_version}; recipe is at "
+            f"{r.expected_binaries_version} — users fall back "
+            f"to source until CI rebuilds"
+        )
+        return (
+            f'<td class="stale" aria-label="stale" '
+            f'title="{html.escape(title)}">⚠</td>'
         )
     return '<td class="fail" aria-label="failed">✗</td>'
 
@@ -659,7 +695,7 @@ def render_index(recipes: list[Recipe]) -> str:
             upstream_cell_html(r),
         ]
         for p in PLATFORMS:
-            cells.append(platform_cell_html(r.platforms[p]))
+            cells.append(platform_cell_html(r, p))
         cells.append("</tr>")
         rows.append("".join(cells))
 
@@ -733,13 +769,20 @@ def render_recipe_page(recipe: Recipe) -> str:
     plat_rows: list[str] = []
     for p in PLATFORMS:
         plat = recipe.platforms[p]
-        if plat.state == "ok":
+        display_state = recipe.platform_display_state(p)
+        if display_state == "ok":
             status = '<span class="ok">✓ built</span>'
-        elif plat.state == "na":
+        elif display_state == "na":
             status = (
                 '<span class="muted" '
                 'title="recipe excludes this platform">'
                 "— n/a</span>"
+            )
+        elif display_state == "stale":
+            status = (
+                '<span class="stale" title="binary is for an '
+                'older recipe version — users fall back to '
+                'source until CI rebuilds">⚠ stale</span>'
             )
         else:
             status = '<span class="fail">✗ failed</span>'

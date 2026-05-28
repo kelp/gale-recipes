@@ -132,7 +132,7 @@ td.upstream.upstream-newer { color: var(--outdated); font-weight: 600; }
 td.upstream.upstream-newer a { color: inherit; }
 td.upstream.upstream-tampered { color: var(--fail); font-weight: 600; }
 
-td.ok, td.fail, td.na {
+td.ok, td.fail, td.na, td.stale {
   text-align: center;
   font-weight: 700;
   width: 7.5em;
@@ -140,6 +140,7 @@ td.ok, td.fail, td.na {
 td.ok { color: var(--ok); background: var(--ok-bg); }
 td.fail { color: var(--fail); background: var(--fail-bg); }
 td.na { color: var(--muted); background: var(--muted-bg); font-weight: 500; }
+td.stale { color: var(--stale); background: var(--stale-bg); }
 
 .row-stale td.name { font-style: italic; }
 
@@ -173,3 +174,4 @@ dd { margin: 0; }
 
 span.ok { color: var(--ok); font-weight: 600; }
 span.fail { color: var(--fail); font-weight: 600; }
+span.stale { color: var(--stale); font-weight: 600; }
