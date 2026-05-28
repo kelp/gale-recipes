@@ -592,11 +592,17 @@ def upstream_cell_html(r: Recipe) -> str:
     return '<td class="upstream muted">—</td>'
 
 
-def vulnerability_pill_html(r: Recipe) -> str:
+def vulnerability_pill_html(r: Recipe, link_target: str = "") -> str:
     """Render a `vulnerable` pill on any recipe whose
     currently-shipped version matches a published GHSA.
     Stacks with the upstream/tampered/stale pills — the
-    signal is independent."""
+    signal is independent.
+
+    ``link_target`` makes the pill clickable so the data
+    source isn't hidden behind a hover-only tooltip. Pass
+    ``"#security"`` on the recipe page itself, or
+    ``f"recipes/{name}.html#security"`` from the index.
+    Empty string falls back to a plain ``<span>``."""
     u = r.upstream
     if u is None or not u.has_current_vulns:
         return ""
@@ -606,10 +612,16 @@ def vulnerability_pill_html(r: Recipe) -> str:
         if "current" in (v.get("applies_to") or [])
     })
     title = "; ".join(cves) if cves else "GHSA match"
+    label = f"vulnerable ({len(cves)})"
+    if link_target:
+        return (
+            f' <a class="pill vulnerable" '
+            f'href="{html.escape(link_target)}" '
+            f'title="{html.escape(title)}">{label}</a>'
+        )
     return (
         f' <span class="pill vulnerable" title="{html.escape(title)}">'
-        f"vulnerable ({len(cves)})"
-        "</span>"
+        f"{label}</span>"
     )
 
 
@@ -690,7 +702,7 @@ def render_index(recipes: list[Recipe]) -> str:
             f"{html.escape(r.name)}</a>"
             f"{stale_pill_html(r)}"
             f"{upstream_pill_html(r)}"
-            f"{vulnerability_pill_html(r)}</td>",
+            f"{vulnerability_pill_html(r, link_target=f'recipes/{r.name}.html#security')}</td>",
             f'<td class="{version_cls}">{html.escape(r.version)}</td>',
             upstream_cell_html(r),
         ]
@@ -868,7 +880,8 @@ def render_recipe_page(recipe: Recipe) -> str:
                 f"<td>{html.escape(applies)}</td></tr>"
             )
         security_section_html = (
-            '<section><h2>security advisories</h2>'
+            '<section id="security">'
+            '<h2>security advisories</h2>'
             '<table><thead><tr>'
             '<th>id</th><th>severity</th>'
             '<th>vulnerable range</th><th>applies to</th>'
@@ -938,7 +951,7 @@ def render_recipe_page(recipe: Recipe) -> str:
 <body>
 <header>
   <p class="crumbs"><a href="../index.html">← all recipes</a></p>
-  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}{upstream_pill_html(recipe)}{vulnerability_pill_html(recipe)}</h1>
+  <h1>{html.escape(recipe.name)}{stale_pill_html(recipe)}{upstream_pill_html(recipe)}{vulnerability_pill_html(recipe, link_target="#security")}</h1>
   <p class="description">{html.escape(recipe.description)}</p>
 </header>
 <main>

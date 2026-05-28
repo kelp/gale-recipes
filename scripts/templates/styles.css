@@ -153,6 +153,8 @@ td.stale { color: var(--stale); background: var(--stale-bg); }
   font-weight: 600;
   vertical-align: middle;
 }
+a.pill { text-decoration: none; }
+a.pill:hover { text-decoration: underline; }
 .pill.stale { color: var(--stale); background: var(--stale-bg); }
 .pill.outdated { color: var(--outdated); background: var(--outdated-bg); }
 .pill.untracked { color: var(--muted); background: var(--muted-bg); }

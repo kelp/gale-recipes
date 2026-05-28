@@ -602,5 +602,97 @@ class UpstreamColumnTests(unittest.TestCase):
         self.assertNotIn("version-behind", row)
 
 
+class VulnerabilityPillLinkTests(unittest.TestCase):
+    """The vulnerability pill needs to be discoverable, not
+    hover-only. Both index and recipe pages should render it
+    as a link to the security advisories table so the data
+    source is one click away. Regression for the live jq page
+    where the pill was a ``<span>`` and the CVE table sat
+    below the fold."""
+
+    def _vuln_recipe(self, root: Path) -> g.Recipe:
+        _write_recipe(
+            root,
+            "leaky",
+            version="1.0.0",
+            binaries={"linux-amd64": "a" * 64},
+        )
+        _write_upstream(root, {
+            "leaky": {
+                "status": "up_to_date",
+                "current_version": "1.0.0",
+                "checked_at": "2026-05-18T10:44:50Z",
+                "latest_version": "1.0.0",
+                "vulnerabilities": [
+                    {
+                        "cve_id": "CVE-2026-12345",
+                        "ghsa_id": "GHSA-aaaa-bbbb-cccc",
+                        "severity": "high",
+                        "range": "<= 1.0.0",
+                        "applies_to": ["current"],
+                        "html_url": (
+                            "https://github.com/example/leaky/"
+                            "security/advisories/"
+                            "GHSA-aaaa-bbbb-cccc"
+                        ),
+                    },
+                ],
+            },
+        })
+        (r,) = g.load_all_recipes(root)
+        return r
+
+    def test_pill_renders_as_anchor_when_target_given(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._vuln_recipe(Path(tmp))
+        pill = g.vulnerability_pill_html(r, link_target="#security")
+        self.assertIn('<a ', pill)
+        self.assertIn('href="#security"', pill)
+        self.assertIn("vulnerable (1)", pill)
+
+    def test_pill_falls_back_to_span_without_target(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._vuln_recipe(Path(tmp))
+        pill = g.vulnerability_pill_html(r)
+        self.assertIn('<span', pill)
+        self.assertNotIn('<a ', pill)
+
+    def test_index_pill_links_to_recipe_security_section(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._vuln_recipe(Path(tmp))
+            html_doc = g.render_index([r])
+        row = _row_for(html_doc, "leaky")
+        self.assertIn('href="recipes/leaky.html#security"', row)
+        self.assertIn("vulnerable (1)", row)
+
+    def test_recipe_page_pill_links_to_local_anchor(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = self._vuln_recipe(Path(tmp))
+            page = g.render_recipe_page(r)
+        # H1 pill points to the same-page anchor.
+        self.assertRegex(page, r'<h1>[^<]*<a class="pill vulnerable" href="#security"')
+        # The target section actually has id="security".
+        self.assertIn('<section id="security">', page)
+
+    def test_clean_recipe_renders_no_pill(self) -> None:
+        """No vulnerabilities → no pill, regardless of target.
+        Pins the "early return" path."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "clean",
+                version="1.0.0",
+                binaries={"linux-amd64": "a" * 64},
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertEqual(
+            g.vulnerability_pill_html(r, link_target="#security"),
+            "",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
