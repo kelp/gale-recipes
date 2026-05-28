@@ -26,11 +26,22 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     outputs:
-      # JSON array of recipe-name arrays, each ≤85 entries.
-      # The build job fans out one reusable-workflow call
-      # per chunk so the per-job matrix (chunk × 3 platforms)
-      # stays under GH Actions' 256-cell ceiling.
+      # JSON array-of-arrays. Each inner array is a list of
+      # {recipe, platform, os} cells dispatched as one
+      # build-chunk.yml reusable-workflow call. Chunk sizing
+      # is derived in scripts/chunk_recipes.py from
+      # GH_MATRIX_CELL_CAP — no magic numbers in this YAML.
       chunks: ${{ steps.list.outputs.chunks }}
+      # Flat sorted list of every recipe name that should
+      # produce metadata. update-recipes uses this to verify
+      # completeness — a recipe that appears here but writes
+      # zero artifacts surfaces as a workflow failure rather
+      # than a silent miss.
+      all_recipes: ${{ steps.list.outputs.all_recipes }}
+      # The build-matrix platform list, echoed back so
+      # build-gale can fromJson it without re-reading
+      # platforms.json itself.
+      platforms: ${{ steps.list.outputs.platforms }}
       gale_version: ${{ steps.gale.outputs.version }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -117,35 +128,33 @@ jobs:
             fi
           fi
 
-          # Chunk the recipe list. GH Actions caps a single
-          # matrix at 256 cells; with 3 platforms that's 85
-          # recipes per chunk. Each chunk fans out into its
-          # own reusable-workflow call (separate matrix
-          # budget). Empty input produces an empty array.
-          CHUNKS=$(printf '%s' "$NAMES_NL" | python3 -c '
-          import json, sys
-          names = [l.strip() for l in sys.stdin if l.strip()]
-          size = 85
-          chunks = [names[i:i+size] for i in range(0, len(names), size)]
-          print(json.dumps(chunks))
-          ')
-          echo "chunks=${CHUNKS}" >> "$GITHUB_OUTPUT"
-          COUNT=$(echo "$NAMES_NL" | grep -c . || true)
-          NCHUNKS=$(echo "$CHUNKS" | jq 'length')
-          echo "Discovered ${COUNT} recipes in ${NCHUNKS} chunk(s)"
+          # Hand the (possibly empty) recipe list to the
+          # chunker. It reads .github/platforms.json itself,
+          # derives the cell budget from GH_MATRIX_CELL_CAP,
+          # and emits a JSON object with chunks, all_recipes,
+          # and platforms. Self-asserts each chunk stays
+          # within the cap. Stderr is the human log line;
+          # stdout is the contract.
+          DOC=$(printf '%s' "$NAMES_NL" \
+            | python3 scripts/chunk_recipes.py)
+
+          # Split the document into the three outputs the
+          # downstream jobs consume. jq -c keeps each line
+          # compact so the GITHUB_OUTPUT shell-pair stays on
+          # one line (multi-line outputs need an EOF marker).
+          echo "chunks=$(echo "$DOC" | jq -c '.chunks')" >> "$GITHUB_OUTPUT"
+          echo "all_recipes=$(echo "$DOC" | jq -c '.all_recipes')" >> "$GITHUB_OUTPUT"
+          echo "platforms=$(echo "$DOC" | jq -c '.platforms')" >> "$GITHUB_OUTPUT"
 
   build-gale:
     needs: discover
     if: needs.discover.outputs.chunks != '[]'
     strategy:
+      # Platforms come from .github/platforms.json via
+      # discover's output — same list build-chunk consumes,
+      # so the two matrices can't drift.
       matrix:
-        target:
-          - os: macos-26
-            platform: darwin-arm64
-          - os: ubuntu-latest
-            platform: linux-amd64
-          - os: ubuntu-24.04-arm
-            platform: linux-arm64
+        target: ${{ fromJson(needs.discover.outputs.platforms) }}
     runs-on: ${{ matrix.target.os }}
     env:
       GALE_VERSION: ${{ needs.discover.outputs.gale_version }}
@@ -179,10 +188,12 @@ jobs:
           path: gale-bin/gale
           retention-days: 1
 
-  # Fan one reusable-workflow call per chunk. Each call
-  # owns its own (recipe × platform) matrix budget of 256
-  # cells, so the total recipe count is bounded only by
-  # 256 × chunk_count. Chunk size is set in discover.
+  # Fan one reusable-workflow call per chunk. Each chunk
+  # carries a flat list of {recipe, platform, os} cells
+  # (already sized to fit GH's per-matrix cell cap by the
+  # discover chunker). build-chunk re-asserts the cap on
+  # entry so a malformed cells_json fails loudly instead
+  # of being silently truncated by GH.
   #
   # `secrets: inherit` so the called workflow gets
   # GITHUB_TOKEN with the same scopes (`packages: write`,
@@ -196,7 +207,7 @@ jobs:
         chunk: ${{ fromJson(needs.discover.outputs.chunks) }}
     uses: ./.github/workflows/build-chunk.yml
     with:
-      recipes_json: ${{ toJson(matrix.chunk) }}
+      cells_json: ${{ toJson(matrix.chunk) }}
     secrets: inherit
 
   update-recipes:
@@ -230,6 +241,50 @@ jobs:
           path: /tmp/metadata
           pattern: metadata-*
           merge-multiple: true
+
+      # End-to-end invariant: every recipe in discover's
+      # all_recipes must produce at least one metadata
+      # artifact. A missing recipe means its build chunk was
+      # silently dropped (GH matrix truncation), the chunk
+      # job died wholesale, or every platform's build failed.
+      # All three are the exact failure mode that lost
+      # neovim for nine days on 2026-05-18; turning them
+      # into a workflow failure surfaces them immediately
+      # instead of waiting for the daily drift watchdog.
+      - name: Verify every requested recipe produced metadata
+        env:
+          ALL_RECIPES: ${{ needs.discover.outputs.all_recipes }}
+        run: |
+          shopt -s nullglob
+          EXPECTED=$(echo "$ALL_RECIPES" | jq -r '.[]' | sort -u)
+          if [ -z "$EXPECTED" ]; then
+            echo "discover requested zero recipes; nothing to verify"
+            exit 0
+          fi
+
+          FOUND=$(for META in /tmp/metadata/*.json; do
+            jq -r '.recipe' "$META"
+          done | sort -u)
+
+          MISSING=$(comm -23 \
+            <(echo "$EXPECTED") \
+            <(echo "$FOUND"))
+
+          if [ -n "$MISSING" ]; then
+            COUNT=$(echo "$MISSING" | wc -l | tr -d ' ')
+            echo "::error::${COUNT} requested recipe(s) produced no build metadata — chunk dropped, build job died, or every platform failed:"
+            echo "$MISSING" | sed 's/^/  - /'
+            {
+              echo "## Missing recipes (${COUNT})"
+              echo
+              echo "These recipes were scheduled by discover but produced no build artifacts. Check the build-chunk job logs for the chunk containing each one."
+              echo
+              echo "$MISSING" | sed 's/^/- `/; s/$/`/'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "All $(echo "$EXPECTED" | wc -l | tr -d ' ') requested recipes produced metadata."
 
       - name: Write .binaries.toml files
         run: |
