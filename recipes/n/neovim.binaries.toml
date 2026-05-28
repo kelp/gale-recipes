@@ -1,10 +1,25 @@
-version = "0.11.7-2"
+version = "0.12.2-4"
 
 [darwin-arm64]
-sha256 = "311d48c22016d5b56d8256cac9d7c37188714cbd70f80984214a2aa03a80fbd4"
+sha256 = "9153ba8a46f0a7bea857c56aed8b231e6ff45967cc127e3a93dbc461c6f7a0ff"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "e835d5e0df12c8ad4008cf6abf909dbcded30a4d5cbc6caa03ead6d66718dd43"
+sha256 = "1666ed2fa389e9bac65c60f969eada1dc63e089f29e64fe15cddede150754e34"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "25343769540e26a356e2f74f476cf1e3f40c61bdbe020e59521756186c4e9cdd"
+sha256 = "0b6169dffe5be91d8a1cdc6ef9cfd562b05e089853391567a4a9c10b343a68b6"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "gettext", version = "1.0", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
