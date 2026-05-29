@@ -1,7 +1,7 @@
-version = "0.23.4-2"
+version = "0.23.4-3"
 
 [darwin-arm64]
-sha256 = "f58b37ee9364d823323870871df97918ab9fb4b448f135961e02f35aecfeca74"
+sha256 = "e2b303a507cb29d34b6951b8a1bb46d8ed25279f9756827a1289ec8d0467f30a"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libgit2", version = "1.9.3", revision = 2 },
@@ -13,7 +13,7 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "2c5ea9ac302ba5bd4714b2b64062abdfa62fde450e39300bfde98b22afaeaf80"
+sha256 = "875937d4ddca7affc99d2d220a9041c392ad1181a87d4463345ad49964acea1e"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libgit2", version = "1.9.3", revision = 2 },
@@ -25,7 +25,7 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "18c8c97bef459fee60f701bdc558005e60d20b5c8c035fd050c4700595140770"
+sha256 = "757536f2e18808300e27b01805f88262e1257aef25b0b1062e2b433f503490d8"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libgit2", version = "1.9.3", revision = 2 },
