@@ -3,7 +3,7 @@
 [package]
 name = "eza"
 version = "0.23.4"
-revision = 2
+revision = 3
 description = "Modern, maintained replacement for ls"
 license = "EUPL-1.2"
 homepage = "https://github.com/eza-community/eza"
