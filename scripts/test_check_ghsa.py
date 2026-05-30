@@ -186,5 +186,66 @@ class MatchAdvisoriesTests(unittest.TestCase):
         self.assertEqual(len(out), 1)
 
 
+# The repo security-advisories endpoint reports the fix in a
+# separate `patched_versions` field instead of as an upper
+# bound inside the range — e.g. mdBook's CVE-2020-26297 comes
+# back as range ">= 0.1.4", patched "0.4.5". Versions past the
+# fix must NOT be flagged even though they satisfy the
+# unbounded lower-bound range.
+ADVISORY_MDBOOK = {
+    "ghsa_id": "GHSA-gx5w-rrhp-f436",
+    "cve_id": "CVE-2020-26297",
+    "severity": "high",
+    "state": "published",
+    "html_url": (
+        "https://github.com/rust-lang/mdBook/security/advisories/"
+        "GHSA-gx5w-rrhp-f436"
+    ),
+    "vulnerabilities": [
+        {
+            "vulnerable_version_range": ">= 0.1.4",
+            "patched_versions": "0.4.5",
+        }
+    ],
+}
+
+
+class PatchedVersionsTests(unittest.TestCase):
+    def test_patched_version_not_flagged(self):
+        # 0.5.3 is years past the 0.4.5 fix — must not match,
+        # despite satisfying the unbounded ">= 0.1.4" range.
+        out = match_advisories(
+            [ADVISORY_MDBOOK],
+            [("upstream", "0.5.3")],
+        )
+        self.assertEqual(out, [])
+
+    def test_exactly_patched_not_flagged(self):
+        out = match_advisories(
+            [ADVISORY_MDBOOK],
+            [("upstream", "0.4.5")],
+        )
+        self.assertEqual(out, [])
+
+    def test_unpatched_version_still_flagged(self):
+        # 0.3.0 is inside [0.1.4, 0.4.5) — still vulnerable.
+        out = match_advisories(
+            [ADVISORY_MDBOOK],
+            [("current", "0.3.0")],
+        )
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["applies_to"], ["current"])
+
+    def test_missing_patched_field_falls_back_to_range(self):
+        # No patched_versions and an unbounded range means we
+        # can only trust the range — still flag it.
+        adv = {
+            **ADVISORY_MDBOOK,
+            "vulnerabilities": [{"vulnerable_version_range": ">= 0.1.4"}],
+        }
+        out = match_advisories([adv], [("upstream", "0.5.3")])
+        self.assertEqual(len(out), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

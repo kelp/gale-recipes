@@ -23,6 +23,13 @@ Range syntax (npm-style, as emitted by the GitHub API):
 A range that fails to parse is treated as "no match" — one
 malformed advisory shouldn't take down the whole run.
 
+The repo ``security-advisories`` endpoint often reports an
+open-ended ``vulnerable_version_range`` (just a lower bound)
+and puts the fix in a separate ``patched_versions`` field.
+A version at or above the patched release is excluded even
+when it satisfies the range — otherwise every release past
+the lower bound stays flagged forever.
+
 CLI:
     check_ghsa.py <advisories.json|-> <label=version>...
 
@@ -76,6 +83,33 @@ def _match_clause(v: tuple[int, ...], clause: str) -> bool:
     if op == '>=':
         return c >= 0
     return False
+
+
+def is_patched(version: str, patched_str: str) -> bool:
+    """True iff ``version`` is at or above a published fix.
+
+    The repo ``security-advisories`` endpoint reports the fix
+    in a separate ``patched_versions`` field rather than as an
+    upper bound inside ``vulnerable_version_range`` (e.g.
+    range ``">= 0.1.4"``, patched ``"0.4.5"``). Without this
+    check every release past the lower bound stays flagged
+    forever. A version at or above the lowest patched release
+    is no longer vulnerable. Empty or unparseable patched data
+    means "no known fix" → False, so the range alone decides.
+    """
+    if not patched_str:
+        return False
+    try:
+        v = _parse_version(version)
+    except ValueError:
+        return False
+    fixes: list[tuple[int, ...]] = []
+    for tok in patched_str.replace(',', ' ').split():
+        if re.fullmatch(r'\d+(?:\.\d+)*', tok):
+            fixes.append(_parse_version(tok))
+    if not fixes:
+        return False
+    return any(_cmp(v, f) >= 0 for f in fixes)
 
 
 def matches_range(version: str, range_str: str) -> bool:
@@ -139,10 +173,12 @@ def match_advisories(
             if not isinstance(vuln, dict):
                 continue
             range_str = vuln.get('vulnerable_version_range') or ''
+            patched_str = vuln.get('patched_versions') or ''
             for label, version in versions:
                 if label in applies:
                     continue
-                if matches_range(version, range_str):
+                if matches_range(version, range_str) \
+                        and not is_patched(version, patched_str):
                     applies.append(label)
                     matched_range = range_str
         if applies:
