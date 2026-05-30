@@ -1,11 +1,13 @@
-version = "4.7.1"
+version = "2.5.4"
 
 [darwin-arm64]
-sha256 = "2f7452d63026614e9697f19ac9d5690d8e192cfcf396ccbbb989da3fa829c5c3"
+sha256 = "1f7e78922d1dda741e256bbfea16ea01b3d759437ab9d1c2ce08b3d6048ce610"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
   { name = "libjpeg-turbo", version = "3.1.4.1", revision = 1 },
+  { name = "libpng", version = "1.6.58", revision = 1 },
+  { name = "libtiff", version = "4.7.1", revision = 1 },
   { name = "openssl", version = "3.6.1", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
