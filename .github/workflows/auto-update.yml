@@ -67,9 +67,16 @@ jobs:
             exit 0
           fi
 
+          # Pass the base64 via --rawfile, not --arg: the
+          # encoded upstream.json exceeds the 128 KB single
+          # argument limit (Linux MAX_ARG_STRLEN) and
+          # `jq --arg "$(base64 ...)"` dies with "Argument
+          # list too long" (exit 126).
+          B64_FILE=$(mktemp)
+          base64 -w0 < _data/upstream.json > "$B64_FILE"
           ADDITIONS=$(jq -n \
             --arg path "_data/upstream.json" \
-            --arg contents "$(base64 -w0 < _data/upstream.json)" \
+            --rawfile contents "$B64_FILE" \
             '[{"path":$path,"contents":$contents}]')
 
           HEAD_OID=$(gh api graphql -f query='
