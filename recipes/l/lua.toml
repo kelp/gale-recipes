@@ -1,7 +1,7 @@
 [package]
 name = "lua"
 version = "5.5.0"
-revision = 2
+revision = 3
 description = "Powerful, lightweight programming language"
 license = "MIT"
 homepage = "https://www.lua.org/"
@@ -10,20 +10,31 @@ homepage = "https://www.lua.org/"
 url = "https://www.lua.org/ftp/lua-5.5.0.tar.gz"
 sha256 = "57ccc32bbbd005cab75bcc52444052535af691789dba2b9016d5c50640d68b3d"
 
+# Upstream's Makefile installs no pkg-config file, so consumers
+# that discover lua via pkg-config (tio's meson, etc.) can't find
+# it. Homebrew generates one; do the same. gale's install-time
+# text-file fixup rewrites the baked build prefix to the user's
+# store path, so the .pc relocates correctly.
 [build.darwin-arm64]
 steps = [
   "make -j${JOBS} PLAT=macosx INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=macosx INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
+  "mkdir -p ${PREFIX}/lib/pkgconfig",
+  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]
 
 [build.linux-amd64]
 steps = [
   "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
+  "mkdir -p ${PREFIX}/lib/pkgconfig",
+  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm -ldl\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]
 
 [build.linux-arm64]
 steps = [
   "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
+  "mkdir -p ${PREFIX}/lib/pkgconfig",
+  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm -ldl\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]

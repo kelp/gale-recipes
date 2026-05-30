@@ -16,15 +16,20 @@ steps = [
   "perl ./Configure --prefix=${PREFIX} --openssldir=${PREFIX}/etc/openssl --libdir=lib no-ssl3 no-ssl3-method no-zlib enable-ec_nistp_64_gcc_128 darwin64-arm64-cc",
   "make -j${JOBS}",
   "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
-  # The provider/engine modules in lib/ossl-modules and
-  # lib/engines-3 link against @rpath/libcrypto.3.dylib, but
-  # `make install` adds no rpath on them resolving back to
-  # ${PREFIX}/lib. Without it dyld aborts loading the module
-  # (check_install.py flags the unresolvable @rpath). From
-  # either subdir, @loader_path/.. is lib/, where
-  # libcrypto.3.dylib lives. Darwin-only; linux builds clean.
-  # Mirrors the same fix in openssl4.toml.
-  "for m in ${PREFIX}/lib/ossl-modules/*.dylib ${PREFIX}/lib/engines-3/*.dylib; do install_name_tool -add_rpath @loader_path/.. \"$m\" 2>/dev/null || true; done",
+  # openssl 3.6.1's `make install` bakes @rpath/libcrypto.3.dylib
+  # install names with no resolving LC_RPATH. Unlike 4.0.0 (whose
+  # absolute install names gale rewrites + rpaths automatically),
+  # 3.x already emits @rpath, so gale finds nothing to rewrite and
+  # adds no rpath — dyld then aborts and check_install.py rejects
+  # the unresolvable @rpath. Bake the resolving rpaths at build
+  # time (verifiable; gale re-signs every Mach-O afterward).
+  # Darwin-only; linux builds clean.
+  #   bin/openssl -> @executable_path/../lib (finds lib/libcrypto)
+  #   lib/*.dylib (libssl) -> @loader_path (sibling libcrypto)
+  #   lib/ossl-modules,engines-3 modules -> @loader_path/.. = lib/
+  "for b in ${PREFIX}/bin/*; do [ -f \"$b\" ] || continue; install_name_tool -add_rpath @executable_path/../lib \"$b\" 2>/dev/null || true; done",
+  "for d in ${PREFIX}/lib/*.dylib; do [ -f \"$d\" ] || continue; install_name_tool -add_rpath @loader_path \"$d\" 2>/dev/null || true; done",
+  "for m in ${PREFIX}/lib/ossl-modules/*.dylib ${PREFIX}/lib/engines-3/*.dylib; do [ -e \"$m\" ] || continue; install_name_tool -add_rpath @loader_path/.. \"$m\" 2>/dev/null || true; done",
 ]
 
 [build.linux-amd64]
