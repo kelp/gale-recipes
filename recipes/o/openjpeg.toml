@@ -1,7 +1,7 @@
 [package]
 name = "openjpeg"
 version = "2.5.4"
-platforms = ["darwin-amd64", "darwin-arm64"]
+platforms = ["darwin-arm64"]
 description = "JPEG 2000 image codec"
 license = "BSD-2-Clause"
 homepage = "https://www.openjpeg.org/"

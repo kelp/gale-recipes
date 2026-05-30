@@ -1,7 +1,7 @@
 [package]
 name = "openssl"
 version = "3.6.1"
-revision = 2
+revision = 3
 description = "Cryptography and SSL/TLS Toolkit"
 license = "Apache-2.0"
 homepage = "https://openssl-library.org"
@@ -16,6 +16,15 @@ steps = [
   "perl ./Configure --prefix=${PREFIX} --openssldir=${PREFIX}/etc/openssl --libdir=lib no-ssl3 no-ssl3-method no-zlib enable-ec_nistp_64_gcc_128 darwin64-arm64-cc",
   "make -j${JOBS}",
   "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
+  # The provider/engine modules in lib/ossl-modules and
+  # lib/engines-3 link against @rpath/libcrypto.3.dylib, but
+  # `make install` adds no rpath on them resolving back to
+  # ${PREFIX}/lib. Without it dyld aborts loading the module
+  # (check_install.py flags the unresolvable @rpath). From
+  # either subdir, @loader_path/.. is lib/, where
+  # libcrypto.3.dylib lives. Darwin-only; linux builds clean.
+  # Mirrors the same fix in openssl4.toml.
+  "for m in ${PREFIX}/lib/ossl-modules/*.dylib ${PREFIX}/lib/engines-3/*.dylib; do install_name_tool -add_rpath @loader_path/.. \"$m\" 2>/dev/null || true; done",
 ]
 
 [build.linux-amd64]
