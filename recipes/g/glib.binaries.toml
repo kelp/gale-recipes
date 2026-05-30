@@ -1,7 +1,7 @@
-version = "2.88.1-6"
+version = "2.88.1-7"
 
 [darwin-arm64]
-sha256 = "49c70ffeff15ed367fb105f8a42cf578ec12ec60497fd7119b30ba4287ec3d7b"
+sha256 = "bfc14bc2f0897ba356363535ed1ef4cf9fefdcbb6b6a2daea5daf6eb4fe2e180"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
   { name = "cmake", version = "4.3.2", revision = 2 },
@@ -21,7 +21,7 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "378c50145c59b0ac82828c87ce982b581014f4583bbee171c50bc27106fab2eb"
+sha256 = "5747b19b84eb0e010421a9cd970a270bd9d90c3faa6b8152cbf0baf8c3a03247"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
   { name = "cmake", version = "4.3.2", revision = 2 },
@@ -41,7 +41,7 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "bcd2b4e8f33602a84e14d9b1eee595e60f4ebca186d8701bb6c0ba990bfc3107"
+sha256 = "75ef5e56defa49959dce3f81bc726991fdf3ac76be3f3d3c654e8573b432fd44"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
   { name = "cmake", version = "4.3.2", revision = 2 },
