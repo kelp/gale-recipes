@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T10:36:28Z",
+  "generated_at": "2026-05-30T04:01:10Z",
   "recipes": {
     "": {
       "status": "untracked",
@@ -174,11 +174,12 @@
     "chezmoi": {
       "status": "outdated",
       "current_version": "2.70.3",
-      "checked_at": "2026-05-26T10:36:28Z",
+      "checked_at": "2026-05-30T04:01:10Z",
       "latest_version": "2.70.4",
       "latest_released_at": "2026-05-19",
       "latest_release_url": "https://github.com/twpayne/chezmoi/releases/tag/v2.70.4",
       "repo": "twpayne/chezmoi",
+      "source_type": "release",
       "repo_id": "157245200",
       "owner_id": "6942",
       "first_observed_version": "2.70.4",
@@ -187,6 +188,7 @@
       "attestation": "unattested",
       "swh_archived": false,
       "swh_status": "not-archived",
+      "first_observed_commit_sha": "64583685c5eb36e10670bad076d5406a08baf751",
       "swh_revision": "64583685c5eb36e10670bad076d5406a08baf751"
     },
     "cloudflared": {
