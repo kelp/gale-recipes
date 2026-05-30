@@ -1,7 +1,7 @@
 version = "4.0.2-3"
 
 [darwin-arm64]
-sha256 = "c55554109b9c8162403b65c568ef92b92c1fa1811ba7f67dfad5818b8edbaf34"
+sha256 = "f6dfffb63d35917bdca0625761cedebd05f251e8199f9e757eeb253672b042c4"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
@@ -14,7 +14,7 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "ecf51781bc840f9a520065e8ff6d0b907383297a99df4c5104666abde153e833"
+sha256 = "e8abc765dd3d7392bb20e1731c8c36323ef50a36b0281370c5b89a928dc05cab"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
@@ -27,7 +27,7 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "64f10a38af735341f566e36b8aa7ff2fd47a754306631794214f7ca7296d4ae4"
+sha256 = "ac2846f7ff43c632a4fe7b173afeff5fd4c1d7689c1749deed6f84627fa6f9ef"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
