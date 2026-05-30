@@ -1,7 +1,7 @@
 version = "1.9.3-2"
 
 [darwin-arm64]
-sha256 = "153724e57edfbb2cb290a4520a607ff855aa435f1c1f86fe81b50bfd33ed727e"
+sha256 = "4a5bc0f50d3d797304bc84c960834f09e4f5b65f0acdfdcf4e1c61779be0c696"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
@@ -11,7 +11,7 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "cd449f08a7ba32de760ae47c83c392aa1a57b427ac9de2623172869600a10ad4"
+sha256 = "524db1739f79314ccc8fa53597f0a820165e6d225d9a79b39355810c5ce4cbdd"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
@@ -21,7 +21,7 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "cfd5c450f063fb234e6f10906736611b302c306212c7c3842c672188daee60d3"
+sha256 = "948e3ab7552f2827fb0e46f852349e2f0f0526d84be1bb4a64e5735740c69e98"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
