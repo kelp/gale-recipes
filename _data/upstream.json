@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T04:01:10Z",
+  "generated_at": "2026-05-30T04:51:03Z",
   "recipes": {
     "": {
       "status": "untracked",
@@ -1298,11 +1298,12 @@
     "mdbook": {
       "status": "outdated",
       "current_version": "0.5.2",
-      "checked_at": "2026-05-26T10:36:28Z",
+      "checked_at": "2026-05-30T04:51:03Z",
       "latest_version": "0.5.3",
       "latest_released_at": "2026-05-19",
       "latest_release_url": "https://github.com/rust-lang/mdBook/releases/tag/v0.5.3",
       "repo": "rust-lang/mdBook",
+      "source_type": "release",
       "repo_id": "38655056",
       "owner_id": "5430905",
       "vulnerabilities": [
@@ -1324,6 +1325,7 @@
       "attestation": "unattested",
       "swh_archived": false,
       "swh_status": "not-archived",
+      "first_observed_commit_sha": "0ea415897758ea9b2904ed47ba9cb4901f9eb089",
       "swh_revision": "0ea415897758ea9b2904ed47ba9cb4901f9eb089"
     },
     "meson": {
