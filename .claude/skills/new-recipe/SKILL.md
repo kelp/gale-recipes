@@ -38,6 +38,32 @@ pattern reference (Cargo, Go, Autotools, cmake).
 - Build variables: `${PREFIX}`, `${VERSION}`, `${JOBS}`,
   `${OS}`, `${ARCH}`, `${PLATFORM}`
 
+## macOS rpath / verifiability
+
+Goal: the installed binary is byte-identical to the
+CI-built, SHA256'd, Sigstore-attested artifact. As of gale
+0.16.3, install does NOT rewrite rpaths — gale bakes the
+dependency-farm rpath at build time, and a package's own
+broken `@rpath` refs are no longer auto-fixed. If a Mach-O
+references `@rpath/lib<self>.dylib` with no resolving
+`LC_RPATH`, dyld aborts and `scripts/check_install.py` fails
+the build. Common in C/C++ recipes where a `bin/` tool (or a
+`lib/<pkg>/` plugin) links a sibling dylib. Prefer, in order:
+
+1. **Static-link to remove the dylib (preferred)** — no rpath
+   to fix, most verifiable. E.g. cmake
+   `-DENABLE_SHARED=OFF -DENABLE_STATIC=ON`, autotools
+   `--disable-shared --enable-static`.
+2. **Bake the rpath in a build step** (only when shared libs
+   must ship), so it lands in the artifact before hashing —
+   build-time, not install-time:
+   `"for b in ${PREFIX}/bin/*; do [ -f \"$b\" ] || continue; file \"$b\" | grep -q Mach-O || continue; install_name_tool -add_rpath @loader_path/../lib \"$b\" 2>/dev/null || true; done"`
+   See `recipes/o/openssl4.toml`, `recipes/p/postgresql.toml`.
+3. **Never** use a post-install hook or rely on gale patching
+   the binary on the user's machine — it breaks verification.
+
+Full rationale: `docs/dev/linking-policy.md`.
+
 ## Batch Mode
 
 To create multiple recipes at once, use the Agent tool
