@@ -67,18 +67,6 @@ jobs:
             exit 0
           fi
 
-          # Pass the base64 via --rawfile, not --arg: the
-          # encoded upstream.json exceeds the 128 KB single
-          # argument limit (Linux MAX_ARG_STRLEN) and
-          # `jq --arg "$(base64 ...)"` dies with "Argument
-          # list too long" (exit 126).
-          B64_FILE=$(mktemp)
-          base64 -w0 < _data/upstream.json > "$B64_FILE"
-          ADDITIONS=$(jq -n \
-            --arg path "_data/upstream.json" \
-            --rawfile contents "$B64_FILE" \
-            '[{"path":$path,"contents":$contents}]')
-
           HEAD_OID=$(gh api graphql -f query='
             query($owner:String!,$name:String!) {
               repository(owner:$owner,name:$name) {
@@ -90,16 +78,28 @@ jobs:
                -f name="${REPO#*/}" \
                --jq '.data.repository.ref.target.oid')
 
+          # Build the whole GraphQL payload in one jq pass that
+          # reads the base64 via --rawfile and write it to a
+          # file for `gh --input`. The encoded upstream.json
+          # exceeds the 128 KB single-argument limit (Linux
+          # MAX_ARG_STRLEN), so it must never ride on argv —
+          # neither as `jq --arg "$(base64 ...)"` nor as a
+          # `--argjson` of an additions blob. Both die with
+          # "Argument list too long" (exit 126/1).
           QUERY='mutation($input:CreateCommitOnBranchInput!) {
             createCommitOnBranch(input:$input) {
               commit { oid url }
             }
           }'
-          gh api graphql --input <(jq -n \
+          B64_FILE=$(mktemp)
+          PAYLOAD=$(mktemp)
+          base64 -w0 < _data/upstream.json > "$B64_FILE"
+          jq -n \
             --arg query "$QUERY" \
             --arg repo "$REPO" \
             --arg oid "$HEAD_OID" \
-            --argjson adds "$ADDITIONS" \
+            --arg path "_data/upstream.json" \
+            --rawfile contents "$B64_FILE" \
             '{
               query: $query,
               variables: {
@@ -112,7 +112,10 @@ jobs:
                     headline: "Update _data/upstream.json from daily check"
                   },
                   expectedHeadOid: $oid,
-                  fileChanges: { additions: $adds }
+                  fileChanges: {
+                    additions: [{ path: $path, contents: $contents }]
+                  }
                 }
               }
-            }')
+            }' > "$PAYLOAD"
+          gh api graphql --input "$PAYLOAD"
