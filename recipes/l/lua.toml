@@ -20,7 +20,7 @@ steps = [
   "make -j${JOBS} PLAT=macosx INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=macosx INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "mkdir -p ${PREFIX}/lib/pkgconfig",
-  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
+  "printf 'Name: Lua\\nDescription: An Extensible Extension Language\\nVersion: ${VERSION}\\nLibs: -L${PREFIX}/lib -llua -lm\\nCflags: -I${PREFIX}/include/lua\\n' > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]
 
 [build.linux-amd64]
@@ -28,7 +28,7 @@ steps = [
   "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "mkdir -p ${PREFIX}/lib/pkgconfig",
-  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm -ldl\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
+  "printf 'Name: Lua\\nDescription: An Extensible Extension Language\\nVersion: ${VERSION}\\nLibs: -L${PREFIX}/lib -llua -lm -ldl\\nCflags: -I${PREFIX}/include/lua\\n' > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]
 
 [build.linux-arm64]
@@ -36,5 +36,5 @@ steps = [
   "make -j${JOBS} PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "make install PLAT=linux MYCFLAGS=-fPIC INSTALL_TOP=${PREFIX} INSTALL_INC=${PREFIX}/include/lua INSTALL_MAN=${PREFIX}/share/man/man1",
   "mkdir -p ${PREFIX}/lib/pkgconfig",
-  "printf 'prefix=%s\\nlibdir=${prefix}/lib\\nincludedir=${prefix}/include/lua\\n\\nName: Lua\\nDescription: An Extensible Extension Language\\nVersion: %s\\nLibs: -L${libdir} -llua -lm -ldl\\nCflags: -I${includedir}\\n' \"${PREFIX}\" \"${VERSION}\" > ${PREFIX}/lib/pkgconfig/lua.pc",
+  "printf 'Name: Lua\\nDescription: An Extensible Extension Language\\nVersion: ${VERSION}\\nLibs: -L${PREFIX}/lib -llua -lm -ldl\\nCflags: -I${PREFIX}/include/lua\\n' > ${PREFIX}/lib/pkgconfig/lua.pc",
 ]
