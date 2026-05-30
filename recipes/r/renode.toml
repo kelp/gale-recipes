@@ -34,6 +34,15 @@ steps = [
   "cp -R /tmp/renode-mount/Renode.app ${PREFIX}/Renode.app",
   "hdiutil detach /tmp/renode-mount",
   "xattr -dr com.apple.quarantine ${PREFIX} 2>/dev/null || true",
+  # Antmicro's bundled dotnet runtime dylibs reference siblings as
+  # @rpath/libcoreclr.dylib etc. but ship no matching LC_RPATH (they
+  # rely on @executable_path at runtime). gale's macOS validator
+  # rejects @rpath references with no resolving rpath entry, so add
+  # @loader_path — every sibling lives in the same MacOS dir, which
+  # makes each @rpath/<lib> resolve to the file next to it. Idempotent
+  # and Mach-O-only via file(1) detection; a pre-existing rpath is not
+  # fatal.
+  "for f in ${PREFIX}/Renode.app/Contents/MacOS/*.dylib ${PREFIX}/Renode.app/Contents/MacOS/renode ${PREFIX}/Renode.app/Contents/MacOS/Renode; do [ -f \"$f\" ] || continue; file \"$f\" | grep -q Mach-O || continue; install_name_tool -add_rpath @loader_path \"$f\" 2>/dev/null || true; done",
   "mkdir -p ${PREFIX}/libexec/renode/site",
   "${DEP_PYTHON}/bin/python3 -m pip install --target ${PREFIX}/libexec/renode/site -r ${PREFIX}/Renode.app/Contents/MacOS/tests/requirements.txt",
   "mkdir -p ${PREFIX}/bin",
@@ -46,6 +55,20 @@ steps = [
 steps = [
   "curl -fsSL -o /tmp/renode.tar.gz https://github.com/renode/renode/releases/download/v${VERSION}/renode-${VERSION}.linux-portable-dotnet.tar.gz",
   "echo '00e113cdbd0f5354cf2f64bbe3f5a070d8958409542fca66e45ac97d982938c0  /tmp/renode.tar.gz' | sha256sum -c",
+  "mkdir -p ${PREFIX}/libexec/renode/dist",
+  "tar -xzf /tmp/renode.tar.gz -C ${PREFIX}/libexec/renode/dist --strip-components=1",
+  "mkdir -p ${PREFIX}/libexec/renode/site",
+  "${DEP_PYTHON}/bin/python3 -m pip install --target ${PREFIX}/libexec/renode/site -r ${PREFIX}/libexec/renode/dist/tests/requirements.txt",
+  "mkdir -p ${PREFIX}/bin",
+  "printf '#!/bin/sh\\nexec \"%s/libexec/renode/dist/renode\" \"$@\"\\n' \"${PREFIX}\" > ${PREFIX}/bin/renode",
+  "printf '#!/bin/sh\\nexport PYTHONPATH=\"%s/libexec/renode/site:${PYTHONPATH:-}\"\\nexec \"%s/libexec/renode/dist/renode-test\" \"$@\"\\n' \"${PREFIX}\" \"${PREFIX}\" > ${PREFIX}/bin/renode-test",
+  "chmod +x ${PREFIX}/bin/renode ${PREFIX}/bin/renode-test",
+]
+
+[build.linux-arm64]
+steps = [
+  "curl -fsSL -o /tmp/renode.tar.gz https://github.com/renode/renode/releases/download/v${VERSION}/renode-${VERSION}.linux-arm64-portable-dotnet.tar.gz",
+  "echo 'fff3a098c96ed0a4ffbdff3f028c9c5fde432db09587c7bd7c99406180f90007  /tmp/renode.tar.gz' | sha256sum -c",
   "mkdir -p ${PREFIX}/libexec/renode/dist",
   "tar -xzf /tmp/renode.tar.gz -C ${PREFIX}/libexec/renode/dist --strip-components=1",
   "mkdir -p ${PREFIX}/libexec/renode/site",

@@ -13,7 +13,7 @@ sha256 = "ecae8008e2cc9ade2f2c1bb9d5e6d4fb73e7c433866a056bd82980741571a022"
 
 [build]
 steps = [
-  "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_STATIC=ON -DENABLE_SHARED=ON -DWITH_JPEG8=ON",
+  "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_STATIC=ON -DENABLE_SHARED=ON -DWITH_JPEG8=ON -DCMAKE_INSTALL_RPATH='@loader_path/../lib' -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON",
   "cmake --build build -j ${JOBS}",
   "cmake --install build",
 ]
