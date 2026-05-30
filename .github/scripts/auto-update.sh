@@ -55,6 +55,62 @@ jitter_sleep() {
   sleep "0.${n}"
 }
 
+# Create a signed commit adding $file onto a NEW branch
+# $branch, forked from main's current tip. Uses the GraphQL
+# createCommitOnBranch path (auto-signed "Verified" with
+# GITHUB_TOKEN) so the commit satisfies the active
+# signed-commit branch ruleset. A plain `git push` of a
+# locally-made commit is unsigned and the ruleset rejects it
+# with GH013 — the same reason build.yml and the
+# upstream.json commit already use this path. createCommitOnBranch
+# needs the branch to exist, so we create the ref first.
+signed_commit_to_branch() {
+  local branch="$1" file="$2" message="$3"
+  local repo="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
+
+  local main_oid
+  main_oid=$(gh api "repos/${repo}/git/ref/heads/main" -q '.object.sha') \
+    || return 1
+
+  # Branch at main's tip; expectedHeadOid then locks it.
+  gh api -X POST "repos/${repo}/git/refs" \
+    -f ref="refs/heads/${branch}" \
+    -f sha="${main_oid}" >/dev/null || return 1
+
+  local additions
+  additions=$(jq -n \
+    --arg path "$file" \
+    --arg contents "$(base64 -w0 < "$file")" \
+    '[{"path":$path,"contents":$contents}]')
+
+  local query='mutation($input:CreateCommitOnBranchInput!) {
+    createCommitOnBranch(input:$input) {
+      commit { oid url }
+    }
+  }'
+  gh api graphql --input <(jq -n \
+    --arg query "$query" \
+    --arg repo "$repo" \
+    --arg branch "$branch" \
+    --arg oid "$main_oid" \
+    --arg headline "$message" \
+    --argjson adds "$additions" \
+    '{
+      query: $query,
+      variables: {
+        input: {
+          branch: {
+            repositoryNameWithOwner: $repo,
+            branchName: $branch
+          },
+          message: { headline: $headline },
+          expectedHeadOid: $oid,
+          fileChanges: { additions: $adds }
+        }
+      }
+    }') >/dev/null || return 1
+}
+
 # Read a field from the prior run's upstream.json entry for
 # a given recipe. Returns empty string if the file, entry,
 # or field is missing.
@@ -563,11 +619,18 @@ check_recipe() {
     return
   fi
 
-  # PR.
-  git checkout -b "$branch"
-  git add "$file"
-  git commit -m "Update ${name} to ${new_version}"
-  git push -u origin "$branch"
+  # PR. Create the branch with a signed commit via GraphQL;
+  # a plain `git push` is unsigned and the branch ruleset
+  # rejects it (GH013).
+  if ! signed_commit_to_branch "$branch" "$file" \
+       "Update ${name} to ${new_version}"; then
+    echo "ERROR $name: signed commit to $branch failed"
+    git checkout -- "$file"
+    return
+  fi
+  # The commit lives on the remote branch now; discard the
+  # local edit so the next recipe starts from a clean main.
+  git checkout -- "$file"
 
   local source_line=""
   if [ "$source_type" = "tag" ]; then
@@ -626,6 +689,7 @@ merging."
   fi
 
   gh pr create ${draft_flag[@]+"${draft_flag[@]}"} \
+    --head "$branch" --base main \
     --title "Update ${name} to ${new_version}" \
     --body "$(cat <<PRBODY
 ## Auto-update
@@ -642,7 +706,6 @@ repopulate them when this PR is merged.${vulns_section}
 PRBODY
 )" \
     --label "auto-update" ${extra_labels[@]+"${extra_labels[@]}"}
-  git checkout main
 
   echo "PR created for $name $new_version"
 }
