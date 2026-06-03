@@ -1,22 +1,22 @@
 version = "0.12.0"
 
 [darwin-arm64]
-sha256 = "550da7199f66afad3a0cd946e59e7a50ef85e41fc09399a65b7591f9209ac3db"
+sha256 = "43a58453fce475cd543cffa63696d765076156f909ae5c87a68a5c54c77da62f"
 deps = [
-  { name = "libusb", version = "1.0.29", revision = 1 },
+  { name = "libusb", version = "1.0.30", revision = 1 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "48e67738386ed872d32194b1412665492dd6493726259d3f631969cb65e85fc3"
+sha256 = "5bef42550daf5f02b18db90b91d1cd1d9e2bbd7ddf526e6596e9d56bbd12cb6e"
 deps = [
-  { name = "libusb", version = "1.0.29", revision = 1 },
+  { name = "libusb", version = "1.0.30", revision = 1 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "394f6df515591fd3b10c6c2591e0781ec95a04dcacb593f4d9d03d13a6d73dd9"
+sha256 = "18c33184d00fdf03c88e87bed9b27c78a77d05b8be17c20546257dcd4a09f120"
 deps = [
-  { name = "libusb", version = "1.0.29", revision = 1 },
+  { name = "libusb", version = "1.0.30", revision = 1 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
