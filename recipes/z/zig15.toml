@@ -1,14 +1,14 @@
 [package]
 name = "zig15"
-version = "0.15.2"
+version = "0.15.1"
 description = "Zig 0.15.x toolchain (parallel install for recipes pinned to 0.15)"
 license = "MIT"
 homepage = "https://ziglang.org"
 
 [source]
 repo = "ziglang/zig"
-url = "https://github.com/ziglang/zig/archive/refs/tags/0.15.2.tar.gz"
-sha256 = "ebe6eb7006f6bbb72e54bd25d0675f2794084909d63a95aa315f2dcf2af5fd99"
+url = "https://github.com/ziglang/zig/archive/refs/tags/0.15.1.tar.gz"
+sha256 = "f7d587087e551a206ad2e1c1a10e8124f5ecaec1f1efc69b0de6df89af80245c"
 
 # Zig distributes prebuilt, statically-linked binaries.
 # Building from source requires an existing zig + LLVM.
