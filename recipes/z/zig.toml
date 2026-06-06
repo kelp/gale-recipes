@@ -1,6 +1,6 @@
 [package]
 name = "zig"
-version = "0.16.0"
+version = "0.15.1"
 revision = 1
 description = "General-purpose programming language and toolchain"
 license = "MIT"
@@ -8,8 +8,8 @@ homepage = "https://ziglang.org"
 
 [source]
 repo = "ziglang/zig"
-url = "https://ziglang.org/download/0.16.0/zig-0.16.0.tar.xz"
-sha256 = "43186959edc87d5c7a1be7b7d2a25efffd22ce5807c7af99067f86f99641bfdf"
+url = "https://ziglang.org/download/0.15.1/zig-0.15.1.tar.xz"
+sha256 = "816c0303ab313f59766ce2097658c9fff7fafd1504f61f80f9507cd11652865f"
 
 # Zig distributes prebuilt, statically-linked binaries.
 # Building from source requires an existing zig + LLVM.
