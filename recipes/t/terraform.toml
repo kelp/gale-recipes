@@ -1,6 +1,6 @@
 [package]
 name = "terraform"
-version = "1.14.8"
+version = "1.15.5"
 revision = 2
 description = "Tool to build, change, and version infrastructure"
 license = "MPL-2.0"
@@ -8,8 +8,8 @@ homepage = "https://www.terraform.io/"
 
 [source]
 repo = "hashicorp/terraform"
-url = "https://github.com/hashicorp/terraform/archive/refs/tags/v1.14.8.tar.gz"
-sha256 = "c71a7db593c6dd540a606e712be21705f4a59b49ee722e6611a756dab6974cf3"
+url = "https://github.com/hashicorp/terraform/archive/refs/tags/v1.15.5.tar.gz"
+sha256 = "9a2e3fc546bac5f970c90810ea963a3066f8ab8b139b0e366943977196e4a701"
 
 [build]
 steps = [
