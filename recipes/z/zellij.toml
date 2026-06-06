@@ -2,7 +2,7 @@
 
 [package]
 name = "zellij"
-version = "0.44.0"
+version = "0.44.3"
 revision = 2
 description = "Pluggable terminal workspace, with terminal multiplexer as the base feature"
 license = "MIT"
@@ -10,9 +10,9 @@ homepage = "https://zellij.dev"
 
 [source]
 repo = "zellij-org/zellij"
-url = "https://github.com/zellij-org/zellij/archive/refs/tags/v0.44.0.tar.gz"
-sha256 = "be413dc49d7bff1be6502a1998664b015b77ad55636d72e0497cfc66d4a4cdf6"
-released_at = "2026-03-23"
+url = "https://github.com/zellij-org/zellij/archive/refs/tags/v0.44.3.tar.gz"
+sha256 = "33ae61fc802b59462fed49b424893596d3aa819646bdce53d5602f714c1264fe"
+released_at = "2026-05-13"
 
 [build]
 steps = [
