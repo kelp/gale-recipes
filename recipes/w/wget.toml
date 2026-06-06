@@ -1,6 +1,6 @@
 [package]
 name = "wget"
-version = "1.25.0"
+version = "1.24.5"
 revision = 2
 description = "Internet file retriever"
 license = "GPL-3.0-or-later"
@@ -8,9 +8,9 @@ homepage = "https://www.gnu.org/software/wget/"
 
 [source]
 repo = "mirror/wget"
-url = "https://ftpmirror.gnu.org/gnu/wget/wget-1.25.0.tar.gz"
-sha256 = "766e48423e79359ea31e41db9e5c289675947a7fcf2efdcedb726ac9d0da3784"
-released_at = "2024-11-10"
+url = "https://ftpmirror.gnu.org/gnu/wget/wget-1.24.5.tar.gz"
+sha256 = "fa2dc35bab5184ecbc46a9ef83def2aaaa3f4c9f3c97d4bd19dcb07d4da637de"
+released_at = "2024-03-10"
 
 [build]
 steps = [
