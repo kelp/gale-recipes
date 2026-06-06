@@ -1,6 +1,6 @@
 [package]
 name = "flarectl"
-version = "0.116.0"
+version = "7.4.0"
 revision = 2
 description = "Cloudflare CLI from cloudflare-go"
 license = "BSD-3-Clause"
@@ -8,9 +8,9 @@ homepage = "https://github.com/cloudflare/cloudflare-go"
 
 [source]
 repo = "cloudflare/cloudflare-go"
-url = "https://github.com/cloudflare/cloudflare-go/archive/refs/tags/v0.116.0.tar.gz"
-sha256 = "d594cdf6730046eae27240324d32a8f43a2affa7f61706459ae912fa9f4d085b"
-released_at = "2025-10-14"
+url = "https://github.com/cloudflare/cloudflare-go/archive/refs/tags/v7.4.0.tar.gz"
+sha256 = "5a02f7103255be6b9102d941c5f2062878a12ff91c474436a50cf2590afafc27"
+released_at = "2026-05-29"
 
 [build]
 system = "go"
