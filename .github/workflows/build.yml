@@ -4,12 +4,32 @@ on:
   push:
     branches: [main]
     paths: ['recipes/**']
-  pull_request:
-    paths: ['recipes/**']
+  # NOTE: there is deliberately NO `pull_request` trigger. This
+  # workflow is PRIVILEGED (packages/id-token/attestations write,
+  # GHCR push). Running it pre-merge on a PR would execute
+  # unreviewed upstream build code with those tokens. Pre-merge
+  # builds run in the UNPRIVILEGED verify.yml instead; the
+  # privileged build runs only after a human applies the
+  # `approved-for-build` label (see promote.yml), which dispatches
+  # this workflow pinned to the reviewed SHA.
   workflow_dispatch:
     inputs:
       recipe:
         description: 'Recipe names, comma-separated (blank = changed only)'
+        required: false
+      head_sha:
+        description: >-
+          Exact commit SHA to build. Empty builds the triggering
+          commit (github.sha). The promote flow passes the
+          reviewed PR head SHA so the build is pinned to exactly
+          what was authorized.
+        required: false
+      target_branch:
+        description: >-
+          Branch the regenerated .binaries.toml/.versions commits
+          land on. Empty means `main` (the post-merge path). The
+          promote flow passes the PR head branch so binaries land
+          ON the PR branch and merge atomically with the recipe.
         required: false
 
 permissions:
@@ -47,6 +67,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 0
+          # Pin to the reviewed SHA when promoting a PR branch;
+          # empty falls back to the triggering commit.
+          ref: ${{ inputs.head_sha }}
 
       # Read the canonical gale version from its own recipe
       # so bumping recipes/g/gale.toml is enough to drag the
@@ -68,10 +91,8 @@ jobs:
         id: list
         env:
           INPUT_RECIPE: ${{ inputs.recipe }}
-          EVENT_NAME: ${{ github.event_name }}
           BEFORE_SHA: ${{ github.event.before }}
           CURRENT_SHA: ${{ github.sha }}
-          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           if [ -n "$INPUT_RECIPE" ]; then
             # Support comma-separated recipe names.
@@ -87,29 +108,25 @@ jobs:
               echo "$name"
             done)
           else
-            # Detect only changed recipes for push/PR.
-            if [ "$EVENT_NAME" = "pull_request" ]; then
-              CHANGED=$(git diff --name-only \
-                "origin/${PR_BASE_REF}...HEAD" \
-                -- 'recipes/**/*.toml' \
-                | grep -v '\.binaries\.toml$' || true)
+            # Detect only changed recipes (push to main). There is
+            # no pull_request trigger on this privileged workflow;
+            # promote dispatches always pass an explicit recipe.
+            NULL_SHA="0000000000000000000000000000000000000000"
+            if [ "$BEFORE_SHA" = "$NULL_SHA" ] || \
+               [ -z "$BEFORE_SHA" ]; then
+              CHANGED=$(find recipes -name '*.toml' \
+                ! -name '*.binaries.toml')
             else
-              NULL_SHA="0000000000000000000000000000000000000000"
-              if [ "$BEFORE_SHA" = "$NULL_SHA" ] || \
-                 [ -z "$BEFORE_SHA" ]; then
+              if ! CHANGED=$(git diff --name-only \
+                "$BEFORE_SHA" "$CURRENT_SHA" \
+                -- 'recipes/**/*.toml' 2>/dev/null); then
                 CHANGED=$(find recipes -name '*.toml' \
                   ! -name '*.binaries.toml')
               else
-                if ! CHANGED=$(git diff --name-only \
-                  "$BEFORE_SHA" "$CURRENT_SHA" \
-                  -- 'recipes/**/*.toml' 2>/dev/null); then
-                  CHANGED=$(find recipes -name '*.toml' \
-                    ! -name '*.binaries.toml')
-                else
-                  CHANGED=$(echo "$CHANGED" \
-                    | grep -v '\.binaries\.toml$' || true)
-                fi
+                CHANGED=$(echo "$CHANGED" \
+                  | grep -v '\.binaries\.toml$' || true)
               fi
+            fi
             fi
 
             if [ -z "$CHANGED" ]; then
@@ -208,33 +225,61 @@ jobs:
     uses: ./.github/workflows/build-chunk.yml
     with:
       cells_json: ${{ toJson(matrix.chunk) }}
+      # Pin the build to the reviewed SHA when promoting a PR
+      # branch; empty builds the triggering commit.
+      ref: ${{ inputs.head_sha }}
     secrets: inherit
 
   update-recipes:
     needs: [discover, build]
     if: >-
       always() && !cancelled()
-      && github.event_name != 'pull_request'
       && needs.discover.outputs.chunks != '[]'
       && needs.build.result != 'skipped'
-    # Serialize across every trigger that can reach this
-    # job (push to main, workflow_dispatch). The per-matrix
-    # `build` concurrency above is unrelated — it scopes to
-    # one recipe+platform and cancels in progress. Here we
-    # must queue, not cancel: dropping a run would lose the
-    # .versions / .binaries.toml writes it was going to do.
-    # The GraphQL commit below already uses expectedHeadOid
-    # as an optimistic lock, but without serialization the
-    # loser's writes (including a non-transactional
-    # `printf >> .versions` in its working tree) are simply
-    # discarded. Group on a fixed key since we only commit
-    # to `main`.
+    # Serialize per target branch. A push-to-main rebuild and a
+    # promote build targeting a PR branch never contend (different
+    # groups); two promotes of the same branch queue rather than
+    # cancel — dropping a run would lose its .versions /
+    # .binaries.toml writes. The GraphQL commits below use
+    # expectedHeadOid as an optimistic lock; serialization keeps
+    # the loser's working-tree writes from being silently
+    # discarded.
     concurrency:
-      group: update-recipes-main
+      group: update-recipes-${{ inputs.target_branch || 'main' }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          # Build artifacts and recipe content must come from the
+          # exact reviewed SHA when promoting a PR branch.
+          ref: ${{ inputs.head_sha }}
+
+      - name: Resolve commit target
+        id: target
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TARGET_BRANCH: ${{ inputs.target_branch }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        run: |
+          # Empty target_branch => post-merge push path => main.
+          BRANCH="${TARGET_BRANCH:-main}"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+
+          # Branch-mode TOCTOU guard: the privileged build was
+          # authorized against HEAD_SHA. If someone pushed to the
+          # PR branch after approval, its tip no longer matches
+          # what was reviewed — refuse to attach binaries built
+          # from the old SHA onto newer code. Re-approval required.
+          if [ "$BRANCH" != "main" ] && [ -n "$HEAD_SHA" ]; then
+            TIP=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" \
+              --jq '.object.sha')
+            if [ "$TIP" != "$HEAD_SHA" ]; then
+              echo "::error::${BRANCH} tip ${TIP} != authorized ${HEAD_SHA}; branch moved since approval — re-apply the label to re-authorize"
+              exit 1
+            fi
+          fi
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
@@ -388,35 +433,137 @@ jobs:
             echo "Wrote ${BINARIES_FILE}"
           done
 
-      # Append `.versions` entries for every build. The entry
-      # key is the bare version for revision 1 and
-      # `<version>-<revision>` for revision > 1, so gale's
-      # registry resolver can find the prebuilt via an explicit
-      # revision request (gale install foo@1.2.3-2). The file
-      # is the canonical history rendered on the status page,
-      # so we append on every version or revision bump.
-      - name: Update .versions with build entries
+      # Commit .binaries.toml and .versions in TWO commits so the
+      # .versions entry can reference the commit that actually
+      # contains the matching binaries.
+      #
+      # The gale client (commit-pin resolution) reads .versions →
+      # latest version → commit C, then fetches recipe@C AND
+      # binaries@C. So C MUST be a commit whose tree holds both.
+      # We can't put C's own SHA inside C (self-reference), so:
+      #   1. commit the .binaries.toml files  -> capture oid C
+      #      (C's tree = recipe carried from the checked-out SHA
+      #      + the new binaries)
+      #   2. commit the .versions files with each entry pointing
+      #      at C
+      # Under the mandated merge-commit, both land on main and C
+      # is reachable, so binaries@C resolve.
+      #
+      # GITHUB_TOKEN commits don't re-trigger workflows (no rebuild
+      # loop). createCommitOnBranch auto-signs "Verified".
+      - name: Commit binaries then versions
+        id: commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ steps.target.outputs.branch }}
         run: |
           shopt -s nullglob
+
+          QUERY='mutation($input:CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input:$input) {
+              commit { oid url }
+            }
+          }'
+
+          # commit_to_branch <headline> <file>...  -> echoes new oid
+          # Re-queries the branch tip on each attempt so a racing
+          # commit (e.g. our own first commit, or an unrelated
+          # push to main) is retried against the fresh oid rather
+          # than failing on a stale optimistic lock.
+          commit_to_branch() {
+            local headline="$1"; shift
+            local additions oid head_oid resp attempt
+            additions="[]"
+            for f in "$@"; do
+              additions=$(jq -n --argjson arr "$additions" \
+                --arg path "$f" \
+                --arg contents "$(base64 -w0 < "$f")" \
+                '$arr + [{"path":$path,"contents":$contents}]')
+            done
+            for attempt in 1 2 3 4 5; do
+              head_oid=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" \
+                --jq '.object.sha' 2>/dev/null) || head_oid=""
+              if [ -n "$head_oid" ] && resp=$(gh api graphql --input <(jq -n \
+                  --arg query "$QUERY" --arg repo "$REPO" --arg branch "$BRANCH" \
+                  --arg oid "$head_oid" --arg headline "$headline" \
+                  --argjson adds "$additions" \
+                  '{query:$query, variables:{input:{
+                     branch:{repositoryNameWithOwner:$repo, branchName:$branch},
+                     message:{headline:$headline},
+                     expectedHeadOid:$oid,
+                     fileChanges:{additions:$adds}}}}') 2>/tmp/gqlerr); then
+                oid=$(echo "$resp" | jq -r '.data.createCommitOnBranch.commit.oid // empty')
+                if [ -n "$oid" ]; then
+                  echo "$oid"
+                  return 0
+                fi
+              fi
+              echo "::warning::commit '$headline' attempt $attempt to ${BRANCH} failed (stale oid?), retrying" >&2
+              cat /tmp/gqlerr >&2 2>/dev/null || true
+              sleep $((attempt * 3))
+            done
+            echo "::error::failed to commit '$headline' to ${BRANCH} after retries" >&2
+            return 1
+          }
+
+          # --- collect changed .binaries.toml ---
+          BIN_CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' || true)
+          BIN_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
+          BIN_FILES=$(printf '%s\n%s' "$BIN_CHANGED" "$BIN_NEW" | sort -u | grep . || true)
+
+          if [ -z "$BIN_FILES" ]; then
+            echo "No binary changes to commit"
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Reproducibility-regression guard (Part 5): on a
+          # post-merge rebuild of main, the binaries are already
+          # committed (via the merged PR branch). A *modification*
+          # to a tracked .binaries.toml here means the rebuild was
+          # not byte-reproducible — committing it would briefly put
+          # main in the mismatched state this whole design exists to
+          # prevent. Fail loudly instead. (New untracked files are
+          # allowed: a legacy direct-to-main build of a fresh recipe.)
+          if [ "$BRANCH" = "main" ]; then
+            if [ -n "$BIN_CHANGED" ]; then
+              echo "::error::reproducibility regression: a main rebuild produced different .binaries.toml than already committed:"
+              echo "$BIN_CHANGED" | sed 's/^/  - /'
+              echo "This recipe is not byte-reproducible, or was changed outside the promote flow. Investigate before any commit lands on main."
+              exit 1
+            fi
+          fi
+
+          # --- commit 1: binaries ---
+          mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
+          BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "${BIN_ARR[@]}") || exit 1
+          echo "Binaries committed as ${BIN_OID}"
+
+          # --- write .versions entries pointing at BIN_OID ---
+          # Entry key is the bare version for revision 1 and
+          # <version>-<revision> otherwise, matching the registry
+          # resolver. The SHA is the binaries commit so the client
+          # can fetch recipe@SHA + binaries@SHA consistently.
           RECIPES=$(for META in /tmp/metadata/*.json; do
             jq -r '.recipe' "$META"
           done | sort -u)
-
           for RECIPE in $RECIPES; do
             LETTER="${RECIPE:0:1}"
             RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
             VERSIONS_FILE="recipes/${LETTER}/${RECIPE}.versions"
 
+            # `|| true`: a recipe with no `revision` line is
+            # revision 1; grep's exit 1 must not abort the step
+            # under `set -o pipefail`.
             VERSION=$(grep '^version' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *"//; s/".*//')
+              head -1 | sed 's/.*= *"//; s/".*//' || true)
             REVISION=$(grep '^revision' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *//; s/[^0-9].*//')
-
+              head -1 | sed 's/.*= *//; s/[^0-9].*//' || true)
             if [ -z "$REVISION" ] || \
                [ "$REVISION" -lt 1 ] 2>/dev/null; then
               REVISION=1
             fi
-
             if [ "$REVISION" -le 1 ]; then
               ENTRY_KEY="${VERSION}"
             else
@@ -428,90 +575,23 @@ jobs:
               echo "${ENTRY_KEY} already in ${VERSIONS_FILE}"
               continue
             fi
-
-            # Ensure the file ends with a newline before
-            # appending so we don't glom onto the last line.
             if [ -f "$VERSIONS_FILE" ] && \
                [ -s "$VERSIONS_FILE" ] && \
                [ -n "$(tail -c1 "$VERSIONS_FILE")" ]; then
               printf '\n' >> "$VERSIONS_FILE"
             fi
-            printf '%s %s\n' "$ENTRY_KEY" "$GITHUB_SHA" \
-              >> "$VERSIONS_FILE"
-            echo "Appended ${ENTRY_KEY} to ${VERSIONS_FILE}"
+            printf '%s %s\n' "$ENTRY_KEY" "$BIN_OID" >> "$VERSIONS_FILE"
+            echo "Appended ${ENTRY_KEY} -> ${BIN_OID} to ${VERSIONS_FILE}"
           done
 
-      # GITHUB_TOKEN commits don't re-trigger workflows.
-      # Switching to a PAT or App token would cause a
-      # rebuild loop — add commit-message filtering first.
-      - name: Commit .binaries.toml files
-        id: commit
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          # Collect new and modified .binaries.toml and .versions
-          # files. .versions is updated in the step above when a
-          # recipe ships at revision > 1.
-          CHANGED=$(git diff --name-only -- 'recipes/**/*.binaries.toml' 'recipes/**/*.versions' || true)
-          UNTRACKED=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' 'recipes/**/*.versions' || true)
-          FILES=$(printf '%s\n%s' "$CHANGED" "$UNTRACKED" | sort -u | grep . || true)
-
-          if [ -z "$FILES" ]; then
-            echo "No changes to commit"
-            echo "committed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          # --- commit 2: versions (on top of the binaries commit) ---
+          VER_CHANGED=$(git diff --name-only -- 'recipes/**/*.versions' || true)
+          VER_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.versions' || true)
+          VER_FILES=$(printf '%s\n%s' "$VER_CHANGED" "$VER_NEW" | sort -u | grep . || true)
+          if [ -n "$VER_FILES" ]; then
+            mapfile -t VER_ARR < <(printf '%s\n' "$VER_FILES")
+            commit_to_branch "Update .versions from build" "${VER_ARR[@]}" >/dev/null || exit 1
           fi
-
-          # Build additions array from changed files.
-          ADDITIONS="[]"
-          while IFS= read -r FILE; do
-            ADDITIONS=$(jq -n \
-              --argjson arr "$ADDITIONS" \
-              --arg path "$FILE" \
-              --arg contents "$(base64 -w0 < "$FILE")" \
-              '$arr + [{"path":$path,"contents":$contents}]')
-          done <<< "$FILES"
-
-          # Get current HEAD for optimistic lock.
-          HEAD_OID=$(gh api graphql -f query='
-            query($owner:String!,$name:String!) {
-              repository(owner:$owner,name:$name) {
-                ref(qualifiedName:"refs/heads/main") {
-                  target { oid }
-                }
-              }
-            }' -f owner="${REPO%/*}" \
-               -f name="${REPO#*/}" \
-               --jq '.data.repository.ref.target.oid')
-
-          # Commit via GraphQL (auto-signed "Verified").
-          QUERY='mutation($input:CreateCommitOnBranchInput!) {
-            createCommitOnBranch(input:$input) {
-              commit { oid url }
-            }
-          }'
-          gh api graphql --input <(jq -n \
-            --arg query "$QUERY" \
-            --arg repo "$REPO" \
-            --arg oid "$HEAD_OID" \
-            --argjson adds "$ADDITIONS" \
-            '{
-              query: $query,
-              variables: {
-                input: {
-                  branch: {
-                    repositoryNameWithOwner: $repo,
-                    branchName: "main"
-                  },
-                  message: {
-                    headline: "Update .binaries.toml and .versions from build"
-                  },
-                  expectedHeadOid: $oid,
-                  fileChanges: { additions: $adds }
-                }
-              }
-            }')
 
           echo "committed=true" >> "$GITHUB_OUTPUT"
 
@@ -524,7 +604,9 @@ jobs:
       # avoid regenerating for no-op runs (no recipes built,
       # or build matrix produced nothing new).
       - name: Regenerate status dashboard
-        if: steps.commit.outputs.committed == 'true'
+        if: >-
+          steps.commit.outputs.committed == 'true'
+          && steps.target.outputs.branch == 'main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run pages.yml --ref main
