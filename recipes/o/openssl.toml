@@ -1,22 +1,22 @@
 [package]
 name = "openssl"
-version = "3.6.1"
-revision = 3
+version = "3.6.2"
+revision = 1
 description = "Cryptography and SSL/TLS Toolkit"
 license = "Apache-2.0"
 homepage = "https://openssl-library.org"
 
 [source]
 repo = "openssl/openssl"
-url = "https://github.com/openssl/openssl/releases/download/openssl-3.6.1/openssl-3.6.1.tar.gz"
-sha256 = "b1bfedcd5b289ff22aee87c9d600f515767ebf45f77168cb6d64f231f518a82e"
+url = "https://github.com/openssl/openssl/releases/download/openssl-3.6.2/openssl-3.6.2.tar.gz"
+sha256 = "aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04f"
 
 [build.darwin-arm64]
 steps = [
   "perl ./Configure --prefix=${PREFIX} --openssldir=${PREFIX}/etc/openssl --libdir=lib no-ssl3 no-ssl3-method no-zlib enable-ec_nistp_64_gcc_128 darwin64-arm64-cc",
   "make -j${JOBS}",
   "make install MANDIR=${PREFIX}/share/man MANSUFFIX=ssl",
-  # openssl 3.6.1's `make install` bakes @rpath/libcrypto.3.dylib
+  # openssl 3.6.2's `make install` bakes @rpath/libcrypto.3.dylib
   # install names with no resolving LC_RPATH. Unlike 4.0.0 (whose
   # absolute install names gale rewrites + rpaths automatically),
   # 3.x already emits @rpath, so gale finds nothing to rewrite and

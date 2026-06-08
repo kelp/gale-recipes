@@ -1,15 +1,15 @@
 [package]
-name = "postgresql"
-version = "18.4"
+name = "postgresql17"
+version = "17.10"
 revision = 1
-description = "Advanced open source relational database"
+description = "Advanced open source relational database (17.x series)"
 license = "PostgreSQL"
 homepage = "https://www.postgresql.org/"
 
 [source]
 repo = "postgres/postgres"
-url = "https://github.com/postgres/postgres/archive/refs/tags/REL_18_4.tar.gz"
-sha256 = "9b4f86dd2ac00b914582e9893d1bad1f54bc9be7108fa794318b8184f921ec08"
+url = "https://github.com/postgres/postgres/archive/refs/tags/REL_17_10.tar.gz"
+sha256 = "bdff4351ed3f5e64295bb11e051fb7a219d6a6a5365a306a81b44ed282ec8bc1"
 released_at = "2026-05-14"
 
 [build]

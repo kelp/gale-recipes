@@ -1,16 +1,16 @@
 [package]
 name = "sqlite"
-version = "3.48.0"
-revision = 2
+version = "3.53.1"
+revision = 1
 description = "Command-line interface for the SQLite database engine"
 license = "Public Domain"
 homepage = "https://www.sqlite.org/"
 
 [source]
 repo = "sqlite/sqlite"
-url = "https://github.com/sqlite/sqlite/archive/refs/tags/version-3.48.0.tar.gz"
-sha256 = "e764585b074d837a949f0dbb683f53350f95df099f70061710329181477c6fe0"
-released_at = "2025-01-15"
+url = "https://github.com/sqlite/sqlite/archive/refs/tags/version-3.53.1.tar.gz"
+sha256 = "71e13e0fa5b925b28a7c5b5515079e8ec21c739b1ddc9cbb87e6524626317c15"
+released_at = "2026-05-05"
 
 [build]
 system = "autotools"
