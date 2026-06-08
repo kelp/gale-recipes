@@ -5,6 +5,10 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- postgresql17 recipe (17.10) — the PostgreSQL 17.x
+  line, split out so the `postgresql` recipe can track
+  the latest major (18.x) while 17.x stays available,
+  mirroring the openssl/openssl4 pattern.
 - dtc recipe (v1.7.2) — Device Tree Compiler and
   libfdt, builds via plain `make` with the
   Python/YAML/Valgrind hooks disabled.
@@ -43,6 +47,13 @@ All notable changes to gale-recipes are documented here.
   pre-0.16 minimum.
 
 ### Changed
+- sqlite (3.48.0 → 3.53.1) and openssl (3.6.1 → 3.6.2)
+  bumped to the latest upstream release older than the
+  7-day cooldown.
+- postgresql now tracks the 18.x line (→ 18.4); the
+  17.x line moved to the new `postgresql17` recipe.
+  Nothing depends on `postgresql`, so the major bump
+  does not ripple.
 - vibeutils: pinned build dep to `zig15` (revision 4).
   `build.zig.zon` declares `minimum_zig_version =
   0.15.1` and the source still uses `std.fs.cwd` etc.,
