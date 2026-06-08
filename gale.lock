@@ -13,8 +13,11 @@
   [packages.gale]
     version = "0.14.0-1"
   [packages.git]
-    version = "2.53.0-2"
-    sha256 = "eaeb56e548f2d0b9e4e5e6162a3d209344c9498721da306094aa022b3d654bab"
+    version = "2.53.0"
+    sha256 = "85bc533639a52c3de25bf7246e46e204faded224467fef941f685c9ee5531546"
+  [packages.git-delta]
+    version = "0.19.2"
+    sha256 = "2dc89e46d8f4de23d6601813b6ec0ecddf06ebbec3d2145d0c560d94190713ef"
   [packages.httpie]
     version = "3.2.4"
     sha256 = "53c2a0f813da39ac22d40220b5e5b6b822727a17425fe50661ba2c6bc635c0d9"
