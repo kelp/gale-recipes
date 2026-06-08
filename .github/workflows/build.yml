@@ -127,7 +127,6 @@ jobs:
                   | grep -v '\.binaries\.toml$' || true)
               fi
             fi
-            fi
 
             if [ -z "$CHANGED" ]; then
               NAMES_NL=""
