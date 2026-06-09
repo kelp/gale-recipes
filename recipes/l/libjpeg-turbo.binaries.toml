@@ -1,0 +1,8 @@
+version = "3.1.4.1"
+
+[darwin-arm64]
+sha256 = "8f2d700c1eada728a5d67445fd27d985e58e5867c1688be5b656ebcd312c4671"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+]
