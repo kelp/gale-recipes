@@ -1,0 +1,41 @@
+name: Script Tests
+
+# Unit tests for repo tooling in scripts/ and
+# .github/scripts/. verify.yml only covers recipes/**, so
+# script-only PRs previously ran no CI at all (the
+# auto-update fixes in #52 shipped with just a bot review).
+#
+# Read-only: no secrets, no GHCR, no recipe builds.
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - '.github/scripts/**'
+      - '.github/workflows/test.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - '.github/scripts/**'
+      - '.github/workflows/test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Python unit tests
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+
+      # PATH-shimmed end-to-end run of check_recipe; mocks
+      # gh/curl/shasum/git, so no network and no token.
+      - name: auto-update.sh smoke tests
+        run: bash scripts/test_auto_update_sh.sh
+
+      - name: attestation-parsing tests
+        run: bash scripts/test_verify_upstream_attestation.sh
