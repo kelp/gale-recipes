@@ -337,6 +337,20 @@ runtimes, or packages that are intended to be linked
 against by other packages. See
 `docs/dev/linking-policy.md`.
 
+**rpath / verifiability (gale 0.16.3+):** install no longer
+rewrites rpaths — the installed binary must equal the
+CI-built, hashed, attested artifact. gale bakes the
+dependency-farm rpath at build time but does NOT auto-fix a
+package's own `@rpath/lib<self>.dylib` refs (e.g. a `bin/`
+tool or `lib/<pkg>/` plugin linking a sibling dylib); an
+unresolved one makes dyld abort and fails
+`scripts/check_install.py`. Fix order: (1) static-link to
+remove the dylib (preferred), (2) bake the rpath in a build
+step with `install_name_tool -add_rpath @loader_path/<rel>/lib`
+(Mach-O-gated, so it no-ops on Linux), (3) never use a
+post-install hook or rely on install-time patching. Examples:
+`recipes/o/openssl4.toml`, `recipes/p/postgresql.toml`.
+
 ## Gotchas
 
 - Recipes imported via `gale import homebrew <name>` carry

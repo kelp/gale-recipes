@@ -16,6 +16,14 @@ steps = [
   "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${PREFIX} -DENABLE_STATIC=ON -DENABLE_SHARED=ON -DWITH_JPEG8=ON",
   "cmake --build build -j ${JOBS}",
   "cmake --install build",
+  # The CLI tools (cjpeg, djpeg, ...) link the shared lib as
+  # @rpath/libjpeg.8.dylib, but libjpeg-turbo's CMake leaves
+  # no LC_RPATH on them resolving to ${PREFIX}/lib, so dyld
+  # aborts at runtime. The -DCMAKE_INSTALL_RPATH configure
+  # flag doesn't stick (upstream clears the tools' install
+  # rpath), so add it explicitly post-install. bin/ -> lib/
+  # is @loader_path/../lib. Darwin-only recipe.
+  "for b in ${PREFIX}/bin/*; do [ -f \"$b\" ] || continue; file \"$b\" | grep -q Mach-O || continue; install_name_tool -add_rpath @loader_path/../lib \"$b\" 2>/dev/null || true; done",
 ]
 
 [dependencies]
