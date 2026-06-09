@@ -1,0 +1,43 @@
+version = "0.26.9"
+
+[darwin-arm64]
+sha256 = "5d0840589cca2c20c14193897a9a8db6d4864de9605346e5708f61fc6009d689"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "libyaml", version = "0.2.5", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
+
+[linux-amd64]
+sha256 = "3638d7c293e6949037c4d085601b723a071cbb4aad3f583a8c0ad1d4fec74684"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "libyaml", version = "0.2.5", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
+
+[linux-arm64]
+sha256 = "3638d7c293e6949037c4d085601b723a071cbb4aad3f583a8c0ad1d4fec74684"
+deps = [
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "libyaml", version = "0.2.5", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]

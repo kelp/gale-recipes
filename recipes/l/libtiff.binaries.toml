@@ -1,7 +1,7 @@
 version = "4.7.1"
 
 [darwin-arm64]
-sha256 = "f416879e93786244304b1114907c99c6aaa9b5d60ef2b04ae389ee09476e98af"
+sha256 = "2f7452d63026614e9697f19ac9d5690d8e192cfcf396ccbbb989da3fa829c5c3"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
