@@ -1,7 +1,7 @@
 [package]
 name = "ruby"
 version = "4.0.5"
-revision = 3
+revision = 1
 description = "Powerful, clean, object-oriented scripting language"
 license = "Ruby"
 homepage = "https://www.ruby-lang.org/"
@@ -20,6 +20,22 @@ sha256 = "7d6149079a63f8ae1d326c9fa65c6019ba2dc3155eae7b39159817911c88958e"
 [build]
 steps = [
   "./configure --prefix=${PREFIX} --enable-shared --enable-load-relative --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --with-baseruby=no",
+  "make -j${JOBS}",
+  "make install",
+]
+
+# darwin override: ruby's ./configure runs a "whether LDFLAGS
+# is valid" try_link and Apple's ld rejects the LDFLAGS gale
+# injects. gale builds the LDFLAGS as one -L/-Wl,-rpath pair per
+# dep (several deps duplicated) plus the farm rpath and a trailing
+# `-Wl,-S -Wl,-headerpad_max_install_names`. We sanitize $LDFLAGS
+# before configure: split into tokens, drop `-Wl,-S` (strip during
+# link, the suspect flag) and empties, then dedupe preserving order.
+# The deduped/filtered value is passed inline so make and the build
+# proper still get the dep search paths and rpaths they need.
+[build.darwin-arm64]
+steps = [
+  "LDFLAGS=\"$(printf '%s\\n' $LDFLAGS | awk '$0!=\"-Wl,-S\" && $0!=\"\" && !seen[$0]++' | tr '\\n' ' ')\" ./configure --prefix=${PREFIX} --enable-shared --enable-load-relative --with-openssl-dir=$(pkg-config --variable=prefix openssl) --disable-install-doc --with-baseruby=no",
   "make -j${JOBS}",
   "make install",
 ]
