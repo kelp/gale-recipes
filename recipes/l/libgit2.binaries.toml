@@ -1,31 +1,31 @@
-version = "1.9.3-2"
+version = "1.9.4-2"
 
 [darwin-arm64]
-sha256 = "153724e57edfbb2cb290a4520a607ff855aa435f1c1f86fe81b50bfd33ed727e"
+sha256 = "5632725c1aa7d7841a3b6c5842447b5fd141790d84d3c0c8571bb5f5f3ce764e"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "cd449f08a7ba32de760ae47c83c392aa1a57b427ac9de2623172869600a10ad4"
+sha256 = "d9833a8ac307bd0d1931f40088ec85a00126ea3a3ebd005148b207974c67b1e1"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "cfd5c450f063fb234e6f10906736611b302c306212c7c3842c672188daee60d3"
+sha256 = "b5607921613f1f1ab480b3b7be6820ae5b6009c441e921f83eaa5142eea2d404"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libssh2", version = "1.11.1", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
