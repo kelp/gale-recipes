@@ -417,33 +417,22 @@ check_recipe() {
     return
   fi
 
-  # Build new URL by rewriting old tag and old version.
-  local old_tag new_url
-  if echo "$url" | grep -q '/archive/refs/tags/'; then
-    old_tag=$(echo "$url" | sed 's|.*/archive/refs/tags/||' | sed 's|\.tar\.gz$||')
-  elif echo "$url" | grep -q '/releases/download/'; then
-    old_tag=$(echo "$url" | sed 's|.*/releases/download/||' | sed 's|/.*||')
-  elif echo "$url" | grep -qF -- "$version"; then
-    # No tag pattern, but URL embeds the version literally —
-    # common for mirror URLs that tag-source recipes use
-    # (kernel.org/.../git-2.53.0.tar.xz,
-    # go.dev/dl/go1.26.1.src.tar.gz,
-    # python.org/ftp/python/3.14.4/Python-3.14.4.tgz).
-    # Skip the tag-substitution step; the version-only sed
-    # below does the work.
-    old_tag=""
-  else
-    echo "ERROR $name: unrecognized URL pattern"
+  # Build the new source URL via update_recipe.py derive-url,
+  # which does pure literal substitution and rejects upstream
+  # tags carrying shell/sed metacharacters. This replaces a
+  # `sed "s|${old_tag}|${new_tag}|g"` pipeline where an upstream
+  # tag containing `|` enabled GNU sed's `e` (execute) command —
+  # arbitrary code execution from a hostile release tag. The
+  # untrusted strings ride argv (never a shell/sed program), so
+  # they cannot be interpreted.
+  local new_url
+  if ! new_url=$(python3 scripts/update_recipe.py derive-url \
+        "$url" "$version" "$new_version" "$new_tag"); then
+    echo "ERROR $name: unrecognized URL pattern or unsafe tag"
     emit_upstream "$name" "outdated" "$version" "$new_version" \
       "$published_at" "$release_url" \
       "unrecognized URL pattern for auto-rewrite"
     return
-  fi
-  if [ -n "$old_tag" ]; then
-    new_url=$(echo "$url" | sed "s|${old_tag}|${new_tag}|g")
-    new_url=$(echo "$new_url" | sed "s|${version}|${new_version}|g")
-  else
-    new_url=$(echo "$url" | sed "s|${version}|${new_version}|g")
   fi
 
   # Download and hash tarball BEFORE the cooldown decision:
@@ -708,6 +697,18 @@ PRBODY
     --label "auto-update" ${extra_labels[@]+"${extra_labels[@]}"}
 
   echo "PR created for $name $new_version"
+
+  # Kick the UNPRIVILEGED verify build on the new branch so a
+  # human sees a build+smoke result before authorizing the
+  # privileged build. The bot PR's own `pull_request` event is
+  # suppressed (its branch commit is GITHUB_TOKEN-authored), so
+  # this explicit dispatch is the only way verify runs for it.
+  # Args derive from our filename-based $name and $branch, never
+  # from upstream tag/url strings — no injection surface. Non-
+  # fatal: a failed dispatch must not abort the loop or undo the
+  # already-created PR.
+  gh workflow run verify.yml --ref "$branch" -f recipe="$name" \
+    || echo "WARN $name: verify dispatch failed (PR still open)"
 }
 
 # Allow tests to source this file for its functions without
