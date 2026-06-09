@@ -1,7 +1,7 @@
-version = "4.0.2-4"
+version = "0.26.9"
 
 [darwin-arm64]
-sha256 = "73b36a19cedc126c1f3187204c1d0b68c3c57c704567b31590321be4d32afd09"
+sha256 = "5d0840589cca2c20c14193897a9a8db6d4864de9605346e5708f61fc6009d689"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
@@ -10,11 +10,12 @@ deps = [
   { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "dd52cb939e2b072bcab64aaf4a6308a12515943936a6d0c1cc76524593384753"
+sha256 = "3638d7c293e6949037c4d085601b723a071cbb4aad3f583a8c0ad1d4fec74684"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
@@ -23,11 +24,12 @@ deps = [
   { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "5cd864a8343202182ec36a1a4f4463fa031f92a5811c2d6ef6f0dbb0e120b88d"
+sha256 = "3638d7c293e6949037c4d085601b723a071cbb4aad3f583a8c0ad1d4fec74684"
 deps = [
   { name = "cmake", version = "4.3.2", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
@@ -36,5 +38,6 @@ deps = [
   { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "readline", version = "8.2", revision = 2 },
+  { name = "ruby", version = "4.0.2", revision = 4 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
