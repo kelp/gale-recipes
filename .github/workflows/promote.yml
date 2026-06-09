@@ -95,7 +95,7 @@ jobs:
           # build.yml runs from main's trusted definition (--ref
           # main); it checks out HEAD_SHA for content and commits
           # binaries onto HEAD_REF (the PR branch).
-          gh workflow run build.yml --ref main \
+          gh workflow run build.yml -R "$REPO" --ref main \
             -f recipe="$RECIPES" \
             -f head_sha="$HEAD_SHA" \
             -f target_branch="$HEAD_REF"
