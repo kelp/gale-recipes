@@ -1,0 +1,46 @@
+version = "1.16.1"
+
+[darwin-arm64]
+sha256 = "5cdd647b239347c107632ea826924df4abeec7d0db43aa5f8d0b7f49201149e6"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
+
+[linux-amd64]
+sha256 = "782d5dc95ea1c25e751d1a930f87cf0b0ee98a8db9a018ffc52e220cd5b0da59"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]
+
+[linux-arm64]
+sha256 = "2f04cd6b032f698ec4f076cf80c6d7644966c99a4767b3ebf3f9b1bb0446abff"
+deps = [
+  { name = "bzip2", version = "1.0.8", revision = 2 },
+  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "libffi", version = "3.5.2", revision = 2 },
+  { name = "ncurses", version = "6.4", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "readline", version = "8.2", revision = 2 },
+  { name = "sqlite", version = "3.48.0", revision = 2 },
+  { name = "xz", version = "5.8.3", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 2 },
+]

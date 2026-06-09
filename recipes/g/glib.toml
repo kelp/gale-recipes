@@ -1,7 +1,7 @@
 [package]
 name = "glib"
 version = "2.88.1"
-revision = 6
+revision = 8
 description = "Core application building blocks for GNOME libraries and applications"
 license = "LGPL-2.1-or-later"
 homepage = "https://docs.gtk.org/glib/"
@@ -16,6 +16,18 @@ steps = [
   "meson setup build --prefix=${PREFIX} --libdir=lib --buildtype=release -Dpkgconfig.relocatable=false -Dtests=false -Dman-pages=disabled -Dinstalled_tests=false",
   "meson compile -C build -j ${JOBS}",
   "meson install -C build",
+  # With -Dpkgconfig.relocatable=false meson emits .pc files whose
+  # libdir is ${exec_prefix}/lib but omits the exec_prefix
+  # definition, so it expands to empty and libdir becomes /lib.
+  # Consumers then look for glibconfig.h in /lib/glib-2.0/include
+  # and fail (tio: "glibconfig.h: No such file or directory";
+  # qemu: "sizeof(size_t) doesn't match GLIB_SIZEOF_SIZE_T" from
+  # picking up a stray system glibconfig.h). Insert the missing
+  # exec_prefix=${prefix} line after the prefix line in every .pc,
+  # matching how every other meson/autotools .pc is shaped. Use awk
+  # (not `sed a`): BSD/macOS sed rejects GNU sed's one-line append
+  # syntax, which silently left darwin .pc files unfixed.
+  "for pc in ${PREFIX}/lib/pkgconfig/*.pc; do grep -q '^exec_prefix=' \"$pc\" && continue; awk '{print} /^prefix=/ && !d {print \"exec_prefix=${prefix}\"; d=1}' \"$pc\" > \"$pc.new\" && mv \"$pc.new\" \"$pc\"; done",
 ]
 
 [dependencies]

@@ -78,6 +78,65 @@ For macOS packages, correctness of install names and
 rpaths matters more than trying to force impossible
 fully static builds.
 
+## rpath, Relocation, and Verifiability
+
+The goal: **the binary a user installs is byte-for-byte the
+artifact CI built, hashed (SHA256), and attested (Sigstore).**
+Anything that rewrites the binary on the user's machine breaks
+that chain — the installed bytes no longer match the attested
+hash.
+
+As of gale 0.16.3, **install no longer rewrites `LC_RPATH`.**
+gale bakes the shared-lib-farm rpath relative
+(`@loader_path`-anchored for dylibs, `@executable_path`-relative
+for executables) **at build time**, so the prebuilt relocates to
+any gale home without local modification. (See gale's
+`docs/dev/relocatable-binaries.md`.)
+
+The consequence for recipe authors: **gale will not silently fix
+a broken rpath for you anymore.** If a Mach-O references
+`@rpath/libfoo.dylib` and no `LC_RPATH` resolves it, dyld aborts
+at runtime, and `scripts/check_install.py` rejects the build in
+CI ("references @rpath/... but no rpath entry resolves to a
+file"). gale's build-time fixup covers **declared dependency**
+dylibs (the shared-lib farm), not a package's **own** dylibs that
+land in a non-standard sublocation (e.g. `bin/` tools linking a
+sibling `lib/` dylib, or `lib/<pkg>/` plugins linking the
+package's main lib).
+
+### Order of preference for self-referential dylib refs
+
+1. **Static-link to remove the dylib entirely (preferred).**
+   The most verifiable binary is one with no rpath to fix. If
+   the package supports it without distorting the build or
+   dropping features, build the tools against a static archive
+   so there is no `@rpath/lib<self>.dylib` reference at all.
+   Examples: `-DENABLE_SHARED=OFF -DENABLE_STATIC=ON` (cmake
+   projects that offer both), `--disable-shared --enable-static`
+   (autotools), or linking the CLI against the `.a`. This is the
+   default the linking policy already pushes for CLI tools — it
+   also makes the rpath problem disappear.
+
+2. **Bake the rpath in a build step (when shared is required).**
+   For libraries and plugin runtimes that must ship `.dylib`s,
+   add the rpath in the recipe's **build steps** with
+   `install_name_tool -add_rpath` so it lands in the artifact
+   *before* it is archived, hashed, and attested. This is a
+   build-time modification (verifiable), NOT an install-time one.
+   Use `@loader_path/<rel>/lib`, computing the relative offset
+   from the binary's own directory to `${PREFIX}/lib`. Gate on
+   `file ... | grep -q Mach-O` so the same step is a no-op on
+   Linux. See `recipes/o/openssl4.toml` (flat `lib/ossl-modules`)
+   and `recipes/p/postgresql.toml` (depth-varying `lib/postgresql`
+   tree) for worked examples.
+
+3. **Never** rely on a post-install hook or expect gale to patch
+   the binary on the user's machine. That path no longer exists,
+   and it would break SHA/attestation verification if it did.
+
+Prefer (1). Reach for (2) only when the package genuinely must
+ship shared libraries.
+
 ## Decision Heuristic
 
 When adding or updating a recipe, ask:
