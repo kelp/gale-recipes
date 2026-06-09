@@ -36,6 +36,7 @@ FILTER="${1:-}"
 
 PRIOR_JSON="_data/upstream.json"
 ATTEST_REQUIRED_FILE=".github/auto-update-attest-required.txt"
+CEILING_FILE=".github/auto-update-ceilings.txt"
 
 # Output accumulator for _data/upstream.json. One JSON
 # object per line, keyed by recipe name; collated after the
@@ -233,6 +234,47 @@ emit_upstream() {
      )}' >> "$NDJSON"
 }
 
+# True iff $1 sorts strictly before $2 in version order.
+version_lt() {
+  [ "$1" != "$2" ] && \
+    [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$1" ]
+}
+
+# Echo the recipe's version ceiling (exclusive upper bound)
+# from CEILING_FILE, or return 1 when none is declared.
+# Format: one "<name> <ceiling>" pair per line; lines
+# starting with # are comments.
+version_ceiling() {
+  local name="$1" c
+  [ -f "$CEILING_FILE" ] || return 1
+  c=$(awk -v n="$name" '$1 == n {print $2; exit}' "$CEILING_FILE")
+  [ -n "$c" ] || return 1
+  printf '%s' "$c"
+}
+
+# From a /tags JSON array, pick the highest-version tag.
+# Echoes "VERSION TAG" or nothing when no tag qualifies.
+# Accepts plain semver-shaped tags (v?X.Y.Z) and tags
+# prefixed with the recipe name (name-X.Y.Z / name-vX.Y.Z,
+# the openssl-3.6.2 style). Other prefixes are rejected:
+# stripping arbitrary words here would let a monorepo's
+# unrelated sub-project tags (gopls/v0.22.0 vs x/tools
+# v0.36.0) cross-contaminate the ranking. An optional
+# ceiling keeps only versions strictly below it.
+select_highest_tag() {
+  local name="$1" tags_json="$2" ceiling="${3:-}"
+  printf '%s' "$tags_json" | jq -r '.[].name' \
+  | while IFS= read -r tag; do
+      local v="${tag#"${name}-"}"
+      v="${v#v}"
+      printf '%s' "$v" | grep -qE '^[0-9]+(\.[0-9]+)*$' || continue
+      if [ -n "$ceiling" ] && ! version_lt "$v" "$ceiling"; then
+        continue
+      fi
+      printf '%s %s\n' "$v" "$tag"
+    done | sort -V -k1,1 | tail -1
+}
+
 # Extract a top-level TOML string field's value. First match
 # at column 0 wins, same heuristic the original script used.
 get_field() {
@@ -309,11 +351,22 @@ check_recipe() {
   # default); fall back to /tags for projects that publish
   # tags without releases (git/git, golang/go, python/cpython,
   # postgres/postgres, sqlite/sqlite, qemu/qemu, ...).
+  #
+  # A recipe with a version ceiling skips /releases/latest
+  # entirely: that endpoint returns a single (newest) release,
+  # which for a pinned line is forever above the ceiling —
+  # openssl.toml must keep receiving 3.6.x updates after 4.0
+  # exists. The full tag list filtered to versions below the
+  # ceiling is the only way to see in-line updates.
+  local ceiling=""
+  ceiling=$(version_ceiling "$name") || ceiling=""
+
   local source_type="release"
   local release_json="" tags_json=""
-  local new_tag="" published_at=""
+  local new_tag="" new_version="" published_at=""
   local swh_revision=""
-  if release_json=$(gh api "/repos/${repo}/releases/latest" 2>/dev/null); then
+  if [ -z "$ceiling" ] \
+       && release_json=$(gh api "/repos/${repo}/releases/latest" 2>/dev/null); then
     new_tag=$(echo "$release_json" | jq -r '.tag_name')
     published_at=$(echo "$release_json" | jq -r '.published_at[:10]')
   else
@@ -324,20 +377,22 @@ check_recipe() {
         "no releases or tags accessible on ${repo}"
       return
     fi
-    # Pick the highest semver-shaped tag. Reuses the same
-    # shape rule the post-fetch non-semver filter applies to
-    # release tags, so behaviour is symmetric across sources.
-    new_tag=$(echo "$tags_json" \
-                | jq -r '.[].name' \
-                | grep -E '^v?[0-9]+(\.[0-9]+)*$' \
-                | sort -V \
-                | tail -1)
-    if [ -z "$new_tag" ]; then
-      echo "SKIP $name: no semver tags on $repo"
-      emit_upstream "$name" "untracked" "$version" "" "" "" \
-        "no releases and no semver tags on ${repo}"
+    local pair
+    pair=$(select_highest_tag "$name" "$tags_json" "$ceiling")
+    if [ -z "$pair" ]; then
+      if [ -n "$ceiling" ]; then
+        echo "SKIP $name: no tags below version ceiling $ceiling on $repo"
+        emit_upstream "$name" "untracked" "$version" "" "" "" \
+          "no tags below version ceiling ${ceiling} on ${repo}"
+      else
+        echo "SKIP $name: no semver tags on $repo"
+        emit_upstream "$name" "untracked" "$version" "" "" "" \
+          "no releases and no semver tags on ${repo}"
+      fi
       return
     fi
+    new_version="${pair%% *}"
+    new_tag="${pair#* }"
     # Tag-source recipes have no release-publication date.
     # Use the tag commit's committer date. Resolve via the
     # existing helper so annotated tags are dereferenced
@@ -363,11 +418,15 @@ check_recipe() {
   #      for recipe llvm, "openssl-4.0.0" for recipe
   #      openssl4, "bun-v1.3.14" for recipe bun)
   #   4. leading "v" (uncovered by any of the above)
-  local new_version="$new_tag"
-  new_version="${new_version#"${name}-"}"
-  new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*/||')
-  new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*-||')
-  new_version="${new_version#v}"
+  # The tag-fallback path already derived new_version during
+  # tag selection; only the release path strips here.
+  if [ -z "$new_version" ]; then
+    new_version="$new_tag"
+    new_version="${new_version#"${name}-"}"
+    new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*/||')
+    new_version=$(printf '%s' "$new_version" | sed -E 's|^[A-Za-z][A-Za-z0-9_]*-||')
+    new_version="${new_version#v}"
+  fi
 
   # GHSA query: published advisories on the upstream repo,
   # matched against current and new versions. Runs once per
@@ -414,6 +473,19 @@ check_recipe() {
     emit_upstream "$name" "untracked" "$version" "$new_version" \
       "$published_at" "$release_url" \
       "non-semver tag: $new_version"
+    return
+  fi
+
+  # Downgrade guard. Upstream's "latest" can sort below the
+  # recipe: a lagging mirror (mirror/wget), a release not
+  # promoted to latest (ziglang/zig 0.16 as tag-only), or a
+  # recipe bumped ahead by hand. A version bump must be an
+  # upgrade; anything else is recorded, never PR'd.
+  if version_lt "$new_version" "$version"; then
+    echo "AHEAD $name: upstream latest $new_version is older than recipe $version"
+    emit_upstream "$name" "up_to_date" "$version" "$new_version" \
+      "$published_at" "$release_url" \
+      "recipe ahead of upstream latest ${new_version}" "$id_extra"
     return
   fi
 
@@ -706,9 +778,28 @@ PRBODY
   # Args derive from our filename-based $name and $branch, never
   # from upstream tag/url strings — no injection surface. Non-
   # fatal: a failed dispatch must not abort the loop or undo the
-  # already-created PR.
-  gh workflow run verify.yml --ref "$branch" -f recipe="$name" \
-    || echo "WARN $name: verify dispatch failed (PR still open)"
+  # already-created PR — but it must not vanish into the log
+  # either (every pre-2026-06-07 branch shipped without CI
+  # because this dispatch failed silently), so retry, then
+  # surface exhaustion in the step summary.
+  local attempt dispatched=0
+  for attempt in 1 2 3; do
+    if gh workflow run verify.yml --ref "$branch" -f recipe="$name"; then
+      dispatched=1
+      break
+    fi
+    echo "WARN $name: verify dispatch attempt ${attempt} failed"
+    [ "$attempt" -lt 3 ] && sleep "${VERIFY_DISPATCH_RETRY_DELAY:-10}"
+  done
+  if [ "$dispatched" -eq 0 ]; then
+    echo "ERROR $name: verify dispatch failed after 3 attempts (PR open, NO CI)"
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+      {
+        echo "- :warning: \`${name}\`: verify.yml dispatch failed for \`${branch}\` — PR is open with no CI." \
+             "Dispatch manually: \`gh workflow run verify.yml --ref ${branch} -f recipe=${name}\`"
+      } >> "$GITHUB_STEP_SUMMARY"
+    fi
+  fi
 }
 
 # Allow tests to source this file for its functions without
