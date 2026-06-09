@@ -50,6 +50,11 @@ SHIM="$WORK/shim"
 mkdir -p "$SHIM"
 export PATH="$SHIM:$PATH"
 
+# signed_commit_to_branch resolves the repo from
+# GITHUB_REPOSITORY; pin it so the gh shim can match its
+# API calls without a `gh repo view` fallback.
+export GITHUB_REPOSITORY="example/origin"
+
 write_shim() {
   local name="$1"
   cat > "$SHIM/$name"
@@ -116,6 +121,29 @@ case "$joined" in
   "pr create"*)
     [ -n "${PR_LOG:-}" ] && printf '%s\n' "$*" > "$PR_LOG"
     echo "https://github.com/example/repo/pull/1"
+    exit 0
+    ;;
+  # signed_commit_to_branch path: main ref lookup, branch
+  # ref creation, GraphQL createCommitOnBranch.
+  "api repos/example/origin/git/ref/heads/main"*)
+    echo "mainsha000"
+    exit 0
+    ;;
+  "api -X POST repos/example/origin/git/refs"*)
+    echo '{}'
+    exit 0
+    ;;
+  "api graphql"*)
+    echo '{}'
+    exit 0
+    ;;
+  # verify.yml dispatch. VERIFY_LOG records attempts; the
+  # first MOCK_VERIFY_FAIL_COUNT attempts fail.
+  "workflow run verify.yml"*)
+    [ -z "${VERIFY_LOG:-}" ] && exit 0
+    printf '%s\n' "$*" >> "$VERIFY_LOG"
+    attempts=$(wc -l < "$VERIFY_LOG")
+    [ "${MOCK_VERIFY_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
     exit 0
     ;;
 esac
