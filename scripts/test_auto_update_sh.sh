@@ -50,6 +50,11 @@ SHIM="$WORK/shim"
 mkdir -p "$SHIM"
 export PATH="$SHIM:$PATH"
 
+# signed_commit_to_branch resolves the repo from
+# GITHUB_REPOSITORY; pin it so the gh shim can match its
+# API calls without a `gh repo view` fallback.
+export GITHUB_REPOSITORY="example/origin"
+
 write_shim() {
   local name="$1"
   cat > "$SHIM/$name"
@@ -116,6 +121,29 @@ case "$joined" in
   "pr create"*)
     [ -n "${PR_LOG:-}" ] && printf '%s\n' "$*" > "$PR_LOG"
     echo "https://github.com/example/repo/pull/1"
+    exit 0
+    ;;
+  # signed_commit_to_branch path: main ref lookup, branch
+  # ref creation, GraphQL createCommitOnBranch.
+  "api repos/example/origin/git/ref/heads/main"*)
+    echo "mainsha000"
+    exit 0
+    ;;
+  "api -X POST repos/example/origin/git/refs"*)
+    echo '{}'
+    exit 0
+    ;;
+  "api graphql"*)
+    echo '{}'
+    exit 0
+    ;;
+  # verify.yml dispatch. VERIFY_LOG records attempts; the
+  # first MOCK_VERIFY_FAIL_COUNT attempts fail.
+  "workflow run verify.yml"*)
+    [ -z "${VERIFY_LOG:-}" ] && exit 0
+    printf '%s\n' "$*" >> "$VERIFY_LOG"
+    attempts=$(wc -l < "$VERIFY_LOG")
+    [ "${MOCK_VERIFY_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
     exit 0
     ;;
 esac
@@ -474,5 +502,199 @@ RECIPE
          echo "  tag=$tag expected_version=$expect_ver"; \
          jq . _data/upstream.json; exit 1; }
 done
+
+# Helper: reset the test recipe to a given version.
+reset_recipe() {
+  local ver="$1"
+  cat > recipes/t/testpkg.toml <<RECIPE
+[package]
+name = "testpkg"
+version = "$ver"
+
+[source]
+repo = "example/testpkg"
+url = "https://github.com/example/testpkg/archive/refs/tags/v${ver}.tar.gz"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+released_at = "2020-01-01"
+
+[build]
+steps = ["true"]
+RECIPE
+}
+
+# ---------------------------------------------------------
+# 13. downgrade guard, release path — upstream's latest
+#     release is OLDER than the recipe (lagging mirror,
+#     un-promoted release). Must not open a downgrade PR;
+#     records up_to_date with an "ahead" reason.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "2.0.0"
+MOCK_TAG="v1.5.0" MOCK_SHA256="aaaa" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 \
+run_case 2>&1 | grep -q 'AHEAD testpkg' \
+  && echo "PASS 13_downgrade_release" \
+  || { echo "FAIL 13_downgrade_release"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "up_to_date"
+       and .recipes.testpkg.latest_version == "1.5.0"
+       and (.recipes.testpkg.reason | contains("ahead"))' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 13a_downgrade_state" \
+  || { echo "FAIL 13a_downgrade_state"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 14. downgrade guard, tag path — highest tag is older
+#     than the recipe (mirror/wget case).
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "2.0.0"
+MOCK_NO_RELEASE=1 \
+MOCK_TAGS_JSON='[{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
+MOCK_TAG_OBJECT_SHA=tagsha3 MOCK_COMMIT_DATE="2026-04-24" \
+MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+run_case 2>&1 | grep -q 'AHEAD testpkg' \
+  && echo "PASS 14_downgrade_tag" \
+  || { echo "FAIL 14_downgrade_tag"; exit 1; }
+
+# ---------------------------------------------------------
+# 15. version ceiling — recipe pinned below 2; upstream
+#     released 2.0.0 but a newer in-line 1.x tag exists.
+#     Resolution must come from the tag list filtered to
+#     versions strictly below the ceiling (the openssl 3.x
+#     case: /releases/latest is 4.x forever, yet 3.6.x
+#     security updates must keep flowing).
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+mkdir -p .github
+printf 'testpkg 2\n' > .github/auto-update-ceilings.txt
+MOCK_TAG="v2.0.0" \
+MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
+MOCK_TAG_OBJECT_SHA=tagsha4 MOCK_COMMIT_DATE="2026-04-24" \
+MOCK_SHA256="abab" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+MOCK_SWH_CODE=200 \
+run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+  && echo "PASS 15_ceiling_in_range_bump" \
+  || { echo "FAIL 15_ceiling_in_range_bump"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "outdated"
+       and .recipes.testpkg.latest_version == "1.5.0"' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 15a_ceiling_state" \
+  || { echo "FAIL 15a_ceiling_state"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 16. version ceiling, exclusive bound — no tag strictly
+#     below the ceiling exists. v1.0.0 itself must NOT
+#     satisfy ceiling 1 (exclusive). Records untracked.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+printf 'testpkg 1\n' > .github/auto-update-ceilings.txt
+MOCK_TAG="v2.0.0" \
+MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.0.0"}]' \
+MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+run_case 2>&1 | grep -q 'no tags below version ceiling' \
+  && echo "PASS 16_ceiling_exclusive" \
+  || { echo "FAIL 16_ceiling_exclusive"; exit 1; }
+
+jq -e '.recipes.testpkg.status == "untracked"
+       and (.recipes.testpkg.reason | contains("ceiling"))' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 16a_ceiling_untracked" \
+  || { echo "FAIL 16a_ceiling_untracked"; \
+       jq . _data/upstream.json; exit 1; }
+rm -f .github/auto-update-ceilings.txt
+
+# ---------------------------------------------------------
+# 17. tag fallback accepts recipe-name-prefixed tags
+#     (openssl-3.6.2 style) and ranks them against plain
+#     v-tags by stripped version.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+MOCK_NO_RELEASE=1 \
+MOCK_TAGS_JSON='[{"name":"testpkg-1.2.0"},{"name":"v1.1.0"}]' \
+MOCK_TAG_OBJECT_SHA=tagsha5 MOCK_COMMIT_DATE="2026-04-24" \
+MOCK_SHA256="cdcd" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
+MOCK_SWH_CODE=200 \
+run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+  && echo "PASS 17_name_prefixed_fallback" \
+  || { echo "FAIL 17_name_prefixed_fallback"; exit 1; }
+
+jq -e '.recipes.testpkg.latest_version == "1.2.0"' \
+   _data/upstream.json >/dev/null \
+  && echo "PASS 17a_name_prefixed_version" \
+  || { echo "FAIL 17a_name_prefixed_version"; \
+       jq . _data/upstream.json; exit 1; }
+
+# ---------------------------------------------------------
+# 18. verify dispatch retry — first two dispatches fail,
+#     third succeeds. PR path must attempt up to 3 times.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+# Prime first observation, then age it past the cooldown.
+MOCK_TAG="v1.3.0" MOCK_SHA256="eeee" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha6 \
+run_case >/dev/null 2>&1
+old_iso3=$(python3 -c "
+from datetime import datetime, timedelta, timezone
+print((datetime.now(timezone.utc) - timedelta(days=30))
+        .strftime('%Y-%m-%dT%H:%M:%SZ'))")
+jq --arg t "$old_iso3" \
+   '.recipes.testpkg.first_observed_at = $t' \
+   _data/upstream.json > _data/upstream.json.new \
+  && mv _data/upstream.json.new _data/upstream.json
+
+VLOG="$WORK/verify.log"
+rm -f "$VLOG"
+MOCK_TAG="v1.3.0" MOCK_SHA256="eeee" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha6 \
+VERIFY_LOG="$VLOG" MOCK_VERIFY_FAIL_COUNT=2 \
+VERIFY_DISPATCH_RETRY_DELAY=0 \
+run_case >/dev/null 2>&1
+
+[ -f "$VLOG" ] && [ "$(wc -l < "$VLOG")" -eq 3 ] \
+  && echo "PASS 18_verify_retry" \
+  || { echo "FAIL 18_verify_retry"; \
+       cat "$VLOG" 2>/dev/null; exit 1; }
+
+# ---------------------------------------------------------
+# 19. verify dispatch exhausted — all attempts fail; the
+#     failure must surface in GITHUB_STEP_SUMMARY instead
+#     of scrolling away as a log line.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+MOCK_TAG="v1.4.0" MOCK_SHA256="abcd" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha7 \
+run_case >/dev/null 2>&1
+jq --arg t "$old_iso3" \
+   '.recipes.testpkg.first_observed_at = $t' \
+   _data/upstream.json > _data/upstream.json.new \
+  && mv _data/upstream.json.new _data/upstream.json
+
+VLOG2="$WORK/verify2.log"
+SUMMARY="$WORK/step_summary.md"
+rm -f "$VLOG2" "$SUMMARY"
+MOCK_TAG="v1.4.0" MOCK_SHA256="abcd" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha7 \
+VERIFY_LOG="$VLOG2" MOCK_VERIFY_FAIL_COUNT=99 \
+VERIFY_DISPATCH_RETRY_DELAY=0 \
+GITHUB_STEP_SUMMARY="$SUMMARY" \
+run_case >/dev/null 2>&1
+
+grep -q 'verify.yml dispatch failed' "$SUMMARY" 2>/dev/null \
+  && echo "PASS 19_verify_failure_summary" \
+  || { echo "FAIL 19_verify_failure_summary"; \
+       cat "$SUMMARY" 2>/dev/null; exit 1; }
 
 echo "All smoke cases passed."
