@@ -189,6 +189,20 @@ GIT
 
 cd "$WORK"
 
+# Run check_recipe and match a fixed substring against its
+# combined output. Pure-bash matching: `run_case 2>&1 |
+# grep -q` is a race — grep -q exits at first match, the
+# still-running script SIGPIPEs on its remaining output,
+# and pipefail turns exit 141 into a test failure. Bites
+# on slower CI runners, rarely locally. LAST_OUT keeps the
+# output for FAIL diagnostics.
+LAST_OUT=""
+expect_case() {
+  local pattern="$1"
+  LAST_OUT=$(run_case 2>&1)
+  [[ "$LAST_OUT" == *"$pattern"* ]]
+}
+
 run_case() {
   bash .github/scripts/auto-update.sh testpkg
 }
@@ -199,16 +213,16 @@ run_case() {
 rm -f _data/upstream.json
 MOCK_TAG="v1.0.0" MOCK_SHA256="aaaa" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'OK testpkg' \
+expect_case 'OK testpkg' \
   && echo "PASS 1_up_to_date" \
-  || { echo "FAIL 1_up_to_date"; exit 1; }
+  || { echo "FAIL 1_up_to_date"; printf '%s\n' "$LAST_OUT"; exit 1; }
 
 # ---------------------------------------------------------
 # 2. non-semver
 # ---------------------------------------------------------
 MOCK_TAG="v1.0.0-rc1" MOCK_SHA256="aaaa" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'non-semver tag 1.0.0-rc1' \
+expect_case 'non-semver tag 1.0.0-rc1' \
   && echo "PASS 2_non_semver" \
   || { echo "FAIL 2_non_semver"; exit 1; }
 
@@ -219,7 +233,7 @@ rm -f _data/upstream.json
 MOCK_TAG="v1.1.0" MOCK_SHA256="bbbb" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
 MOCK_TAG_OBJECT_SHA=deadbeef \
-run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+expect_case 'COOLDOWN testpkg' \
   && echo "PASS 3_cooldown" \
   || { echo "FAIL 3_cooldown"; exit 1; }
 
@@ -243,7 +257,7 @@ jq -e '.recipes.testpkg.first_observed_version == "1.1.0"
 MOCK_TAG="v1.1.0" MOCK_SHA256="cccc" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
 MOCK_TAG_OBJECT_SHA=deadbeef \
-run_case 2>&1 | grep -q 'TAMPERED testpkg: sha256 mismatch' \
+expect_case 'TAMPERED testpkg: sha256 mismatch' \
   && echo "PASS 4_tampered_sha256" \
   || { echo "FAIL 4_tampered_sha256"; exit 1; }
 
@@ -262,7 +276,7 @@ MOCK_OWNER_ID=22222 \
 run_case >/dev/null 2>&1
 MOCK_TAG="v1.0.0" MOCK_SHA256="aaaa" MOCK_REPO_ID=99999 \
 MOCK_OWNER_ID=22222 \
-run_case 2>&1 | grep -q 'TAMPERED testpkg: repo_id changed' \
+expect_case 'TAMPERED testpkg: repo_id changed' \
   && echo "PASS 5_repo_replaced" \
   || { echo "FAIL 5_repo_replaced"; exit 1; }
 
@@ -358,7 +372,7 @@ MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
 MOCK_TAG_OBJECT_SHA=tagsha2 MOCK_COMMIT_DATE="2026-04-24" \
 MOCK_SHA256="eeee" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
 MOCK_SWH_CODE=200 \
-run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+expect_case 'COOLDOWN testpkg' \
   && echo "PASS 8_tag_fallback_observed" \
   || { echo "FAIL 8_tag_fallback_observed"; exit 1; }
 
@@ -380,7 +394,7 @@ rm -f _data/upstream.json
 MOCK_NO_RELEASE=1 \
 MOCK_TAGS_JSON='[{"name":"experimental"},{"name":"main-build"}]' \
 MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'no semver tags on example/testpkg' \
+expect_case 'no semver tags on example/testpkg' \
   && echo "PASS 9_tag_fallback_no_semver" \
   || { echo "FAIL 9_tag_fallback_no_semver"; exit 1; }
 
@@ -417,7 +431,7 @@ MOCK_NO_RELEASE=1 \
 MOCK_TAGS_JSON='[{"name":"v1.0.0"},{"name":"v0.9.0"}]' \
 MOCK_TAG_OBJECT_SHA=tagsha1 MOCK_COMMIT_DATE="2026-04-24" \
 MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'OK testpkg' \
+expect_case 'OK testpkg' \
   && echo "PASS 10_tag_up_to_date" \
   || { echo "FAIL 10_tag_up_to_date"; exit 1; }
 
@@ -442,7 +456,7 @@ run_case >/dev/null 2>&1
 MOCK_TAG="v1.1.0" MOCK_SHA256="ffff" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
 MOCK_TAG_OBJECT_SHA=deadbeef \
-run_case 2>&1 | grep -q 'TAMPERED testpkg: commit SHA changed' \
+expect_case 'TAMPERED testpkg: commit SHA changed' \
   && echo "PASS 11_commit_sha_tamper" \
   || { echo "FAIL 11_commit_sha_tamper"; exit 1; }
 
@@ -532,7 +546,7 @@ rm -f _data/upstream.json
 reset_recipe "2.0.0"
 MOCK_TAG="v1.5.0" MOCK_SHA256="aaaa" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'AHEAD testpkg' \
+expect_case 'AHEAD testpkg' \
   && echo "PASS 13_downgrade_release" \
   || { echo "FAIL 13_downgrade_release"; exit 1; }
 
@@ -554,7 +568,7 @@ MOCK_NO_RELEASE=1 \
 MOCK_TAGS_JSON='[{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
 MOCK_TAG_OBJECT_SHA=tagsha3 MOCK_COMMIT_DATE="2026-04-24" \
 MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'AHEAD testpkg' \
+expect_case 'AHEAD testpkg' \
   && echo "PASS 14_downgrade_tag" \
   || { echo "FAIL 14_downgrade_tag"; exit 1; }
 
@@ -575,7 +589,7 @@ MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.5.0"},{"name":"v1.0.0"}]' \
 MOCK_TAG_OBJECT_SHA=tagsha4 MOCK_COMMIT_DATE="2026-04-24" \
 MOCK_SHA256="abab" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
 MOCK_SWH_CODE=200 \
-run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+expect_case 'COOLDOWN testpkg' \
   && echo "PASS 15_ceiling_in_range_bump" \
   || { echo "FAIL 15_ceiling_in_range_bump"; exit 1; }
 
@@ -597,7 +611,7 @@ printf 'testpkg 1\n' > .github/auto-update-ceilings.txt
 MOCK_TAG="v2.0.0" \
 MOCK_TAGS_JSON='[{"name":"v2.0.0"},{"name":"v1.0.0"}]' \
 MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
-run_case 2>&1 | grep -q 'no tags below version ceiling' \
+expect_case 'no tags below version ceiling' \
   && echo "PASS 16_ceiling_exclusive" \
   || { echo "FAIL 16_ceiling_exclusive"; exit 1; }
 
@@ -621,7 +635,7 @@ MOCK_TAGS_JSON='[{"name":"testpkg-1.2.0"},{"name":"v1.1.0"}]' \
 MOCK_TAG_OBJECT_SHA=tagsha5 MOCK_COMMIT_DATE="2026-04-24" \
 MOCK_SHA256="cdcd" MOCK_REPO_ID=12345 MOCK_OWNER_ID=67890 \
 MOCK_SWH_CODE=200 \
-run_case 2>&1 | grep -q 'COOLDOWN testpkg' \
+expect_case 'COOLDOWN testpkg' \
   && echo "PASS 17_name_prefixed_fallback" \
   || { echo "FAIL 17_name_prefixed_fallback"; exit 1; }
 
