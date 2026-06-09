@@ -1,6 +1,6 @@
 [package]
 name = "doggo"
-version = "1.1.5"
+version = "1.1.7"
 revision = 2
 description = "Command-line DNS Client for Humans"
 license = "GPL-3.0-or-later"
@@ -8,8 +8,8 @@ homepage = "https://doggo.mrkaran.dev/"
 
 [source]
 repo = "mr-karan/doggo"
-url = "https://github.com/mr-karan/doggo/archive/refs/tags/v1.1.5.tar.gz"
-sha256 = "0266fe51cd7c6001011c3424380ff0f48809dcaf631fa65f51bfcbe66e59face"
+url = "https://github.com/mr-karan/doggo/archive/refs/tags/v1.1.7.tar.gz"
+sha256 = "2aca54791810246bcc90380f194c2141392f7596c5f17734a6b20bf85a3d7384"
 
 [build]
 steps = [
