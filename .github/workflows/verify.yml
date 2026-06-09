@@ -1,0 +1,354 @@
+name: Verify Recipe
+
+# UNPRIVILEGED pre-merge build + smoke test.
+#
+# This workflow holds only `contents: read` and is never given
+# `secrets: inherit`, so it structurally CANNOT push to GHCR or
+# mint a Sigstore attestation regardless of step logic. That is
+# the security guarantee: unreviewed upstream build code (and a
+# recipe's [smoke] commands) run here with no write-capable
+# token, before any human has authorized the privileged build.
+#
+# Triggers:
+#   - pull_request: fires natively for HUMAN recipe PRs and
+#     attaches as a PR check.
+#   - workflow_dispatch: auto-update bot PRs cannot fire
+#     pull_request (their branch commit is GITHUB_TOKEN-authored,
+#     which GitHub suppresses), so auto-update.sh dispatches this
+#     explicitly via `gh workflow run verify.yml --ref <branch>`.
+#
+# Hardening against cache-poisoning into later privileged builds:
+#   - sccache's GHA backend is NOT enabled here (no
+#     SCCACHE_GHA_ENABLED), so unreviewed code can't write the
+#     shared compiler cache.
+#   - dependency caches are RESTORE-ONLY (actions/cache/restore),
+#     never saved, so a verify build can't publish a cache entry
+#     a privileged/main build would later restore.
+
+on:
+  pull_request:
+    paths: ['recipes/**']
+  workflow_dispatch:
+    inputs:
+      recipe:
+        description: 'Recipe name (single)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      # JSON array of {recipe, platform, os} cells — one verify
+      # job each. Empty array means nothing to verify.
+      cells: ${{ steps.list.outputs.cells }}
+      gale_version: ${{ steps.gale.outputs.version }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+
+      # Read the canonical gale version from its own recipe so a
+      # bump to recipes/g/gale.toml drags the verify toolchain
+      # forward too — no hand-edited pin to drift.
+      - name: Resolve gale version from recipe
+        id: gale
+        run: |
+          VERSION=$(awk -F'"' '/^version[[:space:]]*=/ {print $2; exit}' \
+            recipes/g/gale.toml)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not parse version from recipes/g/gale.toml" >&2
+            exit 1
+          fi
+          echo "version=v${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: List recipes to verify
+        id: list
+        env:
+          INPUT_RECIPE: ${{ inputs.recipe }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if [ -n "$INPUT_RECIPE" ]; then
+            # Dispatch: a single, repo-controlled recipe name.
+            name="$INPUT_RECIPE"
+            LETTER="${name:0:1}"
+            FILE="recipes/${LETTER}/${name}.toml"
+            if [ ! -f "$FILE" ]; then
+              echo "::error::Recipe not found: $FILE" >&2
+              exit 1
+            fi
+            NAMES="$name"
+          else
+            # pull_request: only changed recipe .toml files.
+            CHANGED=$(git diff --name-only \
+              "origin/${PR_BASE_REF}...HEAD" \
+              -- 'recipes/**/*.toml' \
+              | grep -v '\.binaries\.toml$' || true)
+            NAMES=$(echo "$CHANGED" | while read -r f; do
+              [ -f "$f" ] && basename "$f" .toml
+            done | sort -u)
+          fi
+
+          # Build recipe × platform cells from platforms.json.
+          CELLS=$(NAMES="$NAMES" python3 - <<'PY'
+          import json, os
+          names = os.environ["NAMES"].split()
+          with open(".github/platforms.json") as f:
+              plats = json.load(f)
+          cells = [
+              {"recipe": n, "platform": p["platform"], "os": p["os"]}
+              for n in names for p in plats
+          ]
+          print(json.dumps(cells))
+          PY
+          )
+          echo "cells=${CELLS}" >> "$GITHUB_OUTPUT"
+          echo "Verifying: ${NAMES:-<none>}"
+
+  verify:
+    needs: discover
+    if: needs.discover.outputs.cells != '[]'
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        cell: ${{ fromJson(needs.discover.outputs.cells) }}
+    runs-on: ${{ matrix.cell.os }}
+    env:
+      RECIPE_NAME: ${{ matrix.cell.recipe }}
+      PLATFORM: ${{ matrix.cell.platform }}
+      GALE_VERSION: ${{ needs.discover.outputs.gale_version }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Download gale release binary
+        run: |
+          mkdir -p gale-bin
+          ARCHIVE="gale-${GALE_VERSION}-${PLATFORM}.tar.gz"
+          curl -sL -o "/tmp/${ARCHIVE}" \
+            "https://github.com/kelp/gale/releases/download/${GALE_VERSION}/${ARCHIVE}"
+          tar -xzf "/tmp/${ARCHIVE}" -C gale-bin
+          mv gale-bin/gale-* gale-bin/gale
+          chmod +x gale-bin/gale
+          echo "${GITHUB_WORKSPACE}/gale-bin" >> "$GITHUB_PATH"
+
+      - name: Install patchelf (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y patchelf
+
+      # RESTORE-ONLY: read existing dep caches to stay fast but
+      # never save a cache entry from unreviewed upstream source.
+      - name: Restore build dependencies (read-only)
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: |
+            ~/.gale/pkg
+            ~/.gale/cache
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            ~/.cache/pip
+            ~/Library/Caches/pip
+            ~/.npm
+          key: deps-${{ matrix.cell.platform }}-${{ hashFiles('recipes/**/*.toml') }}
+          restore-keys: |
+            deps-${{ matrix.cell.platform }}-
+
+      - name: Find recipe file
+        id: recipe
+        run: |
+          LETTER="${RECIPE_NAME:0:1}"
+          FILE="recipes/${LETTER}/${RECIPE_NAME}.toml"
+          echo "file=${FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: Build recipe
+        id: build
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          SKIPPED=false
+
+          for attempt in 1 2 3; do
+            OUTPUT=$(gale build "$RECIPE_FILE" \
+              2>&1 | tee /tmp/build.log)
+            ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' \
+              | awk '{print $2}')
+
+            if [ -n "$ARCHIVE" ]; then
+              break
+            fi
+
+            if grep -q 'unsupported platform' /tmp/build.log; then
+              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
+              SKIPPED=true
+              break
+            fi
+
+            echo "::warning::Build attempt $attempt failed, retrying..."
+            sleep $((attempt * 10))
+          done
+
+          echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
+          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
+
+          if [ "$SKIPPED" = true ]; then
+            exit 0
+          fi
+
+          if [ -z "$ARCHIVE" ]; then
+            echo "::error::Build failed after 3 attempts"
+            echo "--- build log ---"
+            cat /tmp/build.log || true
+            exit 1
+          fi
+
+      - name: Verify binary runs
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+        run: |
+          VERIFY_DIR=$(mktemp -d)
+          tar --zstd -xf "${ARCHIVE}" -C "${VERIFY_DIR}"
+
+          BIN=""
+
+          for dir in bin sbin; do
+            if [ -x "${VERIFY_DIR}/${dir}/${RECIPE_NAME}" ]; then
+              BIN="${VERIFY_DIR}/${dir}/${RECIPE_NAME}"
+              break
+            fi
+          done
+
+          if [ -z "$BIN" ]; then
+            for dir in bin sbin; do
+              for f in "${VERIFY_DIR}/${dir}/"*; do
+                if [ -x "$f" ] && [ ! -d "$f" ]; then
+                  BIN="$f"
+                  break 2
+                fi
+              done
+            done
+          fi
+
+          if [ -z "$BIN" ]; then
+            LIB_COUNT=0
+            for dir in lib include; do
+              if [ -d "${VERIFY_DIR}/${dir}" ]; then
+                COUNT=$(find "${VERIFY_DIR}/${dir}" \
+                  -type f 2>/dev/null | wc -l)
+                LIB_COUNT=$((LIB_COUNT + COUNT))
+              fi
+            done
+            if [ "$LIB_COUNT" -gt 0 ]; then
+              echo "Library recipe: ${LIB_COUNT} files" \
+                "in lib/ and/or include/"
+              echo "Verified: library install produced output"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::No executables or library files"
+            ls -laR "$VERIFY_DIR" 2>/dev/null | head -40
+            exit 1
+          fi
+
+          echo "Testing: $(basename "$BIN")"
+
+          export PERL5LIB="${VERIFY_DIR}/share:${PERL5LIB}"
+          for sp in "${VERIFY_DIR}"/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
+          for sp in "${VERIFY_DIR}"/lib/*/lib/python*/site-packages; do
+            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
+          done
+          export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
+          export PATH="${VERIFY_DIR}/bin:${PATH}"
+
+          PROBE_OK=0
+          KILLED_BY_SIGNAL=0
+          for args in --version version --help -V -v; do
+            "$BIN" "$args" && PROBE_OK=1 && break
+            rc=$?
+            [ $rc -ge 128 ] && KILLED_BY_SIGNAL=1
+          done
+
+          if [ "$PROBE_OK" = 0 ] && \
+             [ "$KILLED_BY_SIGNAL" = 1 ]; then
+            echo "::error::$(basename "$BIN") was killed" \
+              "by a signal (likely dyld could not load a" \
+              "required library). Diagnostic:"
+            "$BIN" --version 2>&1 | head -20 || true
+            exit 1
+          fi
+
+          if [ "$PROBE_OK" = 0 ]; then
+            if file "$BIN" | grep -qiE "text|script"; then
+              echo "Script binary, cannot run outside" \
+                "install prefix"
+              echo "Verified: $(basename "$BIN") exists" \
+                "and is executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
+              echo "Binary ran but has no version/help flag"
+              echo "Verified: $(basename "$BIN") is a" \
+                "valid executable"
+              rm -rf "$VERIFY_DIR"
+              exit 0
+            fi
+            echo "::error::Binary failed to run"
+            exit 1
+          fi
+
+          echo "Verified: $(basename "$BIN") runs"
+          rm -rf "$VERIFY_DIR"
+
+      - name: Check install (rpath vs runtime deps)
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          ARCHIVE: ${{ steps.build.outputs.archive }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          CHECK_DIR=$(mktemp -d)
+          tar --zstd -xf "${ARCHIVE}" -C "${CHECK_DIR}"
+          python3 scripts/check_install.py \
+            --recipe "${RECIPE_FILE}" \
+            --prefix "${CHECK_DIR}"
+          rm -rf "${CHECK_DIR}"
+
+      - name: Install and smoke test
+        if: steps.build.outputs.skipped != 'true'
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          HAS_SMOKE=$(python3 -c "
+          import sys, tomllib
+          with open('${RECIPE_FILE}', 'rb') as f:
+              r = tomllib.load(f)
+          sys.exit(0 if r.get('smoke', {}).get('commands') else 1)
+          " && echo yes || echo no)
+
+          if [ "$HAS_SMOKE" != "yes" ]; then
+            echo "No [smoke] section; skipping"
+            exit 0
+          fi
+
+          gale install --global "${RECIPE_NAME}" \
+            --recipe "${RECIPE_FILE}"
+          python3 scripts/run_smoke.py \
+            --recipe "${RECIPE_FILE}"
+
+      - name: Upload build log on failure
+        if: failure() && steps.build.outputs.skipped != 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: verify-log-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}
+          path: /tmp/build.log
+          retention-days: 7

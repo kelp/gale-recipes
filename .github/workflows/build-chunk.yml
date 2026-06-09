@@ -29,6 +29,16 @@ on:
           scripts/chunk_recipes.py.
         required: true
         type: string
+      ref:
+        description: >-
+          Exact git ref/SHA to check out. Empty (the default)
+          checks out the triggering commit (github.sha). The
+          promote flow passes the reviewed PR head SHA so the
+          privileged build is pinned to exactly what a human
+          authorized, closing the post-approval TOCTOU.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -83,6 +93,8 @@ jobs:
       SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          ref: ${{ inputs.ref }}
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
