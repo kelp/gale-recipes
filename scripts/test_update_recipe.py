@@ -19,7 +19,11 @@ from tempfile import TemporaryDirectory
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from update_recipe import set_field, strip_binary_sections  # noqa: E402
+from update_recipe import (  # noqa: E402
+    derive_url,
+    set_field,
+    strip_binary_sections,
+)
 
 
 RECIPE_STANDARD = """\
@@ -166,6 +170,64 @@ class StripBinaryTests(unittest.TestCase):
         p = self._write("r.toml", RECIPE_STANDARD)
         strip_binary_sections(p)
         self.assertNotIn("\n\n\n", p.read_text())
+
+
+class DeriveURLTest(unittest.TestCase):
+    """derive_url replaces the BSD-incompatible, injectable
+    sed pipeline that built the new source URL. It must do
+    pure literal substitution and reject upstream tag strings
+    carrying shell/sed metacharacters."""
+
+    def test_archive_refs_tags(self):
+        old = ("https://github.com/sharkdp/fd/archive/"
+               "refs/tags/v10.4.2.tar.gz")
+        got = derive_url(old, "10.4.2", "10.4.3", "v10.4.3")
+        self.assertEqual(
+            got,
+            "https://github.com/sharkdp/fd/archive/"
+            "refs/tags/v10.4.3.tar.gz",
+        )
+
+    def test_releases_download(self):
+        old = ("https://github.com/twpayne/chezmoi/releases/"
+               "download/v2.70.3/chezmoi-2.70.3.tar.gz")
+        got = derive_url(old, "2.70.3", "2.70.4", "v2.70.4")
+        self.assertEqual(
+            got,
+            "https://github.com/twpayne/chezmoi/releases/"
+            "download/v2.70.4/chezmoi-2.70.4.tar.gz",
+        )
+
+    def test_version_only_url(self):
+        # No tag pattern; version embedded literally (mirror
+        # URLs for tag-source recipes). new_tag is irrelevant.
+        old = "https://go.dev/dl/go1.26.1.src.tar.gz"
+        got = derive_url(old, "1.26.1", "1.26.2", "go1.26.2")
+        self.assertEqual(
+            got, "https://go.dev/dl/go1.26.2.src.tar.gz")
+
+    def test_unrecognized_url_raises(self):
+        with self.assertRaises(ValueError):
+            derive_url("https://example.com/blob", "1.0.0",
+                       "1.0.1", "v1.0.1")
+
+    def test_hostile_tag_pipe_rejected(self):
+        # A tag like this in the old sed pipeline enabled the
+        # GNU sed `e` (execute) command -> RCE. Must be refused.
+        old = ("https://github.com/x/y/archive/"
+               "refs/tags/v1.0.0.tar.gz")
+        with self.assertRaises(ValueError):
+            derive_url(old, "1.0.0", "1.0.1",
+                       "v1.0.1|e touch /tmp/pwned|")
+
+    def test_hostile_tag_command_substitution_rejected(self):
+        old = ("https://github.com/x/y/archive/"
+               "refs/tags/v1.0.0.tar.gz")
+        for bad in ["v1.0.1$(id)", "v1.0.1`id`", "v1.0.1 x",
+                    "v1.0.1;rm -rf /", "../../etc/passwd"]:
+            with self.subTest(tag=bad):
+                with self.assertRaises(ValueError):
+                    derive_url(old, "1.0.0", "1.0.1", bad)
 
 
 if __name__ == "__main__":
