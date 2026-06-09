@@ -64,7 +64,7 @@ jobs:
           # Repo-controlled file paths only — never PR title/body
           # (which can carry upstream-influenced strings). Names are
           # validated against gale's recipe-name charset before use.
-          NAMES=$(gh pr diff "$PR_NUMBER" --name-only \
+          NAMES=$(gh pr diff "$PR_NUMBER" -R "$REPO" --name-only \
             | grep -E '^recipes/[a-z0-9]/[^/]+\.toml$' \
             | grep -v '\.binaries\.toml$' \
             | sed -E 's#^recipes/[a-z0-9]/([^/]+)\.toml$#\1#' \
