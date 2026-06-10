@@ -1,9 +1,9 @@
-version = "4.0.2-4"
+version = "4.0.5"
 
 [darwin-arm64]
-sha256 = "73b36a19cedc126c1f3187204c1d0b68c3c57c704567b31590321be4d32afd09"
+sha256 = "45aec3e1328043039c1d85982ed9f0831b6ac4eb191fb370cf0092b8224b18b6"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "libyaml", version = "0.2.5", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
@@ -14,9 +14,9 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "dd52cb939e2b072bcab64aaf4a6308a12515943936a6d0c1cc76524593384753"
+sha256 = "4001924ca0af1e9534ef3d7b83e568fa1a7c56f21f63f3955d3f4892e21dba86"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "libyaml", version = "0.2.5", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
@@ -27,9 +27,9 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "5cd864a8343202182ec36a1a4f4463fa031f92a5811c2d6ef6f0dbb0e120b88d"
+sha256 = "22f524ca64c258955b74050c8f9ca2d5053163d4d949473593ef300b531b89c5"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "libyaml", version = "0.2.5", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
