@@ -146,9 +146,13 @@ case "$joined" in
     [ "${MOCK_VERIFY_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
     exit 0
     ;;
-  # ledger-check.yml dispatch. LEDGER_LOG records calls.
+  # ledger-check.yml dispatch. LEDGER_LOG records attempts;
+  # the first MOCK_LEDGER_FAIL_COUNT attempts fail.
   "workflow run ledger-check.yml"*)
-    [ -n "${LEDGER_LOG:-}" ] && printf '%s\n' "$*" >> "$LEDGER_LOG"
+    [ -z "${LEDGER_LOG:-}" ] && exit 0
+    printf '%s\n' "$*" >> "$LEDGER_LOG"
+    attempts=$(wc -l < "$LEDGER_LOG")
+    [ "${MOCK_LEDGER_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
     exit 0
     ;;
 esac
@@ -746,5 +750,72 @@ grep -q -- '--ref auto-update/testpkg-1.6.0' "$LLOG" 2>/dev/null \
   && echo "PASS 20_ledger_check_dispatch" \
   || { echo "FAIL 20_ledger_check_dispatch"; \
        cat "$LLOG" 2>/dev/null; exit 1; }
+
+# ---------------------------------------------------------
+# 21. ledger-check dispatch retry — auto-update.yml's
+#     GITHUB_TOKEN dispatches fail transiently (and failed
+#     with HTTP 403 in production before actions: write was
+#     granted). First two attempts fail, the third succeeds;
+#     the PR path must attempt up to 3 times, same as the
+#     verify dispatch.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+MOCK_TAG="v1.7.0" MOCK_SHA256="feed" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha9 \
+run_case >/dev/null 2>&1
+jq --arg t "$old_iso3" \
+   '.recipes.testpkg.first_observed_at = $t' \
+   _data/upstream.json > _data/upstream.json.new \
+  && mv _data/upstream.json.new _data/upstream.json
+
+LLOG2="$WORK/ledger2.log"
+rm -f "$LLOG2"
+MOCK_TAG="v1.7.0" MOCK_SHA256="feed" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha9 \
+LEDGER_LOG="$LLOG2" MOCK_LEDGER_FAIL_COUNT=2 \
+VERIFY_DISPATCH_RETRY_DELAY=0 \
+run_case >/dev/null 2>&1
+
+[ -f "$LLOG2" ] && [ "$(wc -l < "$LLOG2")" -eq 3 ] \
+  && echo "PASS 21_ledger_dispatch_retry" \
+  || { echo "FAIL 21_ledger_dispatch_retry"; \
+       cat "$LLOG2" 2>/dev/null; exit 1; }
+
+# ---------------------------------------------------------
+# 22. ledger-check dispatch exhausted — all attempts fail;
+#     the failure must surface in GITHUB_STEP_SUMMARY (a
+#     required check stuck at "Expected" with no visible
+#     cause is the exact failure mode this dispatch exists
+#     to prevent), not scroll away as a WARN log line.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+MOCK_TAG="v1.8.0" MOCK_SHA256="face" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha10 \
+run_case >/dev/null 2>&1
+jq --arg t "$old_iso3" \
+   '.recipes.testpkg.first_observed_at = $t' \
+   _data/upstream.json > _data/upstream.json.new \
+  && mv _data/upstream.json.new _data/upstream.json
+
+LLOG3="$WORK/ledger3.log"
+LSUMMARY="$WORK/ledger_step_summary.md"
+rm -f "$LLOG3" "$LSUMMARY"
+MOCK_TAG="v1.8.0" MOCK_SHA256="face" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha10 \
+LEDGER_LOG="$LLOG3" MOCK_LEDGER_FAIL_COUNT=99 \
+VERIFY_DISPATCH_RETRY_DELAY=0 \
+GITHUB_STEP_SUMMARY="$LSUMMARY" \
+run_case >/dev/null 2>&1
+
+grep -q 'ledger-check.yml dispatch failed' "$LSUMMARY" 2>/dev/null \
+  && echo "PASS 22_ledger_failure_summary" \
+  || { echo "FAIL 22_ledger_failure_summary"; \
+       cat "$LSUMMARY" 2>/dev/null; exit 1; }
 
 echo "All smoke cases passed."

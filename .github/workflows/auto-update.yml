@@ -18,6 +18,14 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # The script dispatches verify.yml and ledger-check.yml
+  # onto each bot PR branch (GITHUB_TOKEN commits suppress
+  # the branch's own pull_request events). The dispatch
+  # endpoint requires `actions: write`; without it every
+  # `gh workflow run` here fails HTTP 403 ("Resource not
+  # accessible by integration") and bot PRs open with no CI
+  # and a required check stuck at "Expected".
+  actions: write
 
 jobs:
   update:
