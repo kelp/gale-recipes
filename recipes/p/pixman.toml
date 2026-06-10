@@ -1,7 +1,6 @@
 [package]
 name = "pixman"
 version = "0.46.4"
-platforms = ["darwin-amd64", "darwin-arm64"]
 description = "Low-level pixel manipulation library (Cairo's rasterizer)"
 license = "MIT"
 homepage = "https://www.pixman.org/"
