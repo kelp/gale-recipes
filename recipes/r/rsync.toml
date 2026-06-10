@@ -1,6 +1,6 @@
 [package]
 name = "rsync"
-version = "3.4.2"
+version = "3.4.3"
 revision = 2
 description = "Utility that provides fast incremental file transfer"
 license = "GPL-3.0-or-later"
@@ -8,9 +8,9 @@ homepage = "https://rsync.samba.org/"
 
 [source]
 repo = "RsyncProject/rsync"
-url = "https://download.samba.org/pub/rsync/src/rsync-3.4.2.tar.gz"
-sha256 = "ff10aa2c151cd4b2dbbe6135126dbc854046113d2dfb49572a348233267eb315"
-released_at = "2026-04-28"
+url = "https://download.samba.org/pub/rsync/src/rsync-3.4.3.tar.gz"
+sha256 = "c72e63ca3021cbc80ba86ec30102773f4c5631fbc492b52e773b3958f82a53d3"
+released_at = "2026-05-20"
 
 [build]
 steps = [
