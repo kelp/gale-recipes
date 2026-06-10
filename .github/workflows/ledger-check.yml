@@ -21,10 +21,18 @@ name: Ledger Check
 # attaches to the branch-tip SHA — the PR head after promote
 # commits — so it satisfies the required check. No inputs:
 # the run's --ref selects the branch.
+#
+# Deliberately NO `paths:` filter on pull_request. GitHub
+# cannot path-scope a required status check, so a filtered-
+# out run never attaches and the PR sits at "Expected"
+# forever — every workflow/script/docs PR would be
+# unmergeable (and the manual-dispatch workaround cannot
+# target a fork's ref). check_ledger.py exits trivially on
+# PRs touching no recipes; the whole job costs under a
+# minute. Cheap insurance beats a frozen main.
 
 on:
   pull_request:
-    paths: ['recipes/**']
   workflow_dispatch:
 
 permissions:
