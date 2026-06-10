@@ -1,6 +1,6 @@
 [package]
 name = "llvm"
-version = "22.1.1"
+version = "22.1.7"
 revision = 2
 platforms = ["linux-amd64", "linux-arm64"]
 description = "LLVM/Clang toolchain with libc++ and lld"
@@ -9,8 +9,8 @@ homepage = "https://llvm.org"
 
 [source]
 repo = "llvm/llvm-project"
-url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.1/llvm-project-22.1.1.src.tar.xz"
-sha256 = "9c6f37f6f5f68d38f435d25f770fc48c62d92b2412205767a16dac2c942f0c95"
+url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.7/llvm-project-22.1.7.src.tar.xz"
+sha256 = "5cc4a3f12bba50b6bdfb4b61bdc852117a0ff2517807c3902fc13267fb93562e"
 
 # LLVM source builds are expensive and require an existing
 # compiler toolchain. These build steps install the official
