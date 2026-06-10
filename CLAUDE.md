@@ -224,6 +224,36 @@ and appends `.versions` entries, and commits back via
 GraphQL (auto-signed "Verified"). workflow_dispatch
 builds all or a named recipe.
 
+## Bridge invariants
+
+Two named invariants protect deployed gale v0.16.5
+clients while `.versions` files still exist. The
+merge-commit-only setting and the .versions append
+persist for exactly as long as .versions files exist.
+Do not enable squash/rebase merges, and do not stop
+build.yml's two-commit `.binaries.toml`-then-`.versions`
+append, until the cutover PR deletes every `.versions`
+file (deletion is the safe end shape; in-place
+reformatting would hard-fail old clients and is
+forbidden).
+
+Each `.binaries.toml` carries an append-only
+`[[history]]` ledger below the v0.16.5-readable head
+mirror. The required Ledger Check
+(`.github/workflows/ledger-check.yml` →
+`scripts/check_ledger.py`) makes "version changed =>
+ledger entry appended" the sole merge gate, and rejects
+any rewrite of prior history. Expect this on version
+bumps: verify green != mergeable — a version-bump PR's
+Ledger Check stays red until promote publishes and
+commits the ledger; this is the design working, not
+flakiness. The daily registry-coherence audit
+(`scripts/check_registry_coherence.py` via
+drift-check.yml) covers the one gap in-tree checks
+cannot see: external mutation of GHCR content. Its
+"immutable tag conflict" failure ships its recovery:
+bump revision to republish.
+
 ## Auto-update workflow
 
 `.github/workflows/auto-update.yml` runs daily and, for

@@ -2,7 +2,7 @@ name: Auto-Update Recipes
 
 # Daily check against upstream GitHub releases for every
 # recipe. Writes _data/upstream.json for the dashboard, and
-# opens a PR for any recipe past the 3-day cooldown.
+# opens a PR for any recipe past the 7-day cooldown.
 
 on:
   schedule:

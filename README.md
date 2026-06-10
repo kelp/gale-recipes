@@ -17,9 +17,20 @@ binary indexes and version history alongside each recipe.
 recipes/
   j/
     jq.toml             # recipe — human-authored
-    jq.binaries.toml    # binary index — CI-managed
+    jq.binaries.toml    # binary index + ledger — CI-managed
     jq.versions         # version history
 ```
+
+Each `.binaries.toml` has two parts. The head mirror (a
+top-level `version` plus one `[<platform>]` table per
+platform) is what deployed gale clients parse. Below it,
+`[[history]]` blocks form an append-only ledger: one entry
+per published `<version>-<revision>`, recording each
+platform's archive `sha256` and GHCR `manifest_digest`.
+The ledger is unbounded by design — entries are never
+rewritten or dropped, and the required Ledger Check rejects
+any PR that tries. Pruning old entries would be a
+deliberate, ruleset-visible act, not routine maintenance.
 
 ## Recipe Format
 
