@@ -11,13 +11,17 @@ name: Build Chunk
 # the GH cap — no implicit multiplication, no platform-count
 # coupling. Adding a platform changes only platforms.json;
 # this workflow doesn't care how many cells there are as
-# long as len(cells) <= cap.
+# long as len(cells) <= cap. The chunker self-asserts that
+# cap at generation (scripts/chunk_recipes.py), and the
+# update-recipes completeness check in build.yml turns any
+# silently dropped cell into a workflow failure — the
+# neovim 9-day stale incident of 2026-05-18 cannot recur
+# silently.
 #
-# The first job — verify-chunk-size — re-asserts the cap on
-# entry so a malformed cells_json fails loudly instead of
-# being silently truncated by GH's matrix expander. That
-# silent truncation was the root cause of the neovim 9-day
-# stale incident on 2026-05-18.
+# Cells arrive pre-filtered to each recipe's declared
+# [package].platforms, so every cell here is expected to
+# build. A build failure is a failure, full stop — there is
+# no 'unsupported platform' skip path.
 
 on:
   workflow_call:
@@ -47,35 +51,7 @@ permissions:
   attestations: write
 
 jobs:
-  # Cheap pre-flight: assert the chunk is within the cap
-  # before the matrix expander silently truncates. Reading
-  # the cap from chunk_recipes.py ties this assertion to
-  # the same source of truth the chunker used.
-  verify-chunk-size:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - name: Assert cells_json within matrix cap
-        env:
-          CELLS_JSON: ${{ inputs.cells_json }}
-        run: |
-          python3 - <<'PY'
-          import json, os, sys
-          sys.path.insert(0, "scripts")
-          import chunk_recipes
-          cells = json.loads(os.environ["CELLS_JSON"])
-          cap = chunk_recipes.MAX_CELLS_PER_CHUNK
-          if len(cells) > cap:
-              print(f"::error::chunk has {len(cells)} cells "
-                    f"but cap is {cap} (GH matrix would "
-                    f"silently truncate); chunker is broken",
-                    file=sys.stderr)
-              sys.exit(1)
-          print(f"chunk size {len(cells)} within cap {cap}")
-          PY
-
   build:
-    needs: verify-chunk-size
     timeout-minutes: 180
     concurrency:
       group: build-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}-${{ github.ref }}
@@ -148,8 +124,6 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          SKIPPED=false
-
           for attempt in 1 2 3; do
             OUTPUT=$(gale build "$RECIPE_FILE" \
               2>&1 | tee /tmp/build.log)
@@ -162,23 +136,12 @@ jobs:
               break
             fi
 
-            if grep -q 'unsupported platform' /tmp/build.log; then
-              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
-              SKIPPED=true
-              break
-            fi
-
             echo "::warning::Build attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
 
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
-          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
-
-          if [ "$SKIPPED" = true ]; then
-            exit 0
-          fi
 
           if [ -z "$ARCHIVE" ]; then
             echo "::error::Build failed after 3 attempts"
@@ -188,7 +151,6 @@ jobs:
           fi
 
       - name: Verify binary runs
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
@@ -289,7 +251,6 @@ jobs:
           rm -rf "$VERIFY_DIR"
 
       - name: Check install (rpath vs runtime deps)
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -302,7 +263,6 @@ jobs:
           rm -rf "${CHECK_DIR}"
 
       - name: Install and smoke test
-        if: steps.build.outputs.skipped != 'true'
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
@@ -324,7 +284,7 @@ jobs:
             --recipe "${RECIPE_FILE}"
 
       - name: Upload build log on failure
-        if: failure() && steps.build.outputs.skipped != 'true'
+        if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: build-log-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}
@@ -332,16 +292,13 @@ jobs:
           retention-days: 7
 
       - name: Attest build provenance
-        if: steps.build.outputs.skipped != 'true'
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
         with:
           subject-path: ${{ steps.build.outputs.archive }}
 
       - uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3  # v2.0.0
-        if: steps.build.outputs.skipped != 'true'
 
       - name: Login to GHCR
-        if: steps.build.outputs.skipped != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -349,7 +306,6 @@ jobs:
             oras login ghcr.io --password-stdin -u github
 
       - name: Push to GHCR
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -374,7 +330,6 @@ jobs:
           exit 1
 
       - name: Save build metadata
-        if: steps.build.outputs.skipped != 'true'
         env:
           SHA256: ${{ steps.build.outputs.sha256 }}
           ARCHIVE: ${{ steps.build.outputs.archive }}
@@ -410,7 +365,6 @@ jobs:
             > "/tmp/metadata/${RECIPE_NAME}-${PLATFORM}.json"
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
-        if: steps.build.outputs.skipped != 'true'
         with:
           name: metadata-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}
           path: /tmp/metadata/
