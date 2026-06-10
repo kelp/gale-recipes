@@ -1,7 +1,7 @@
 [package]
 name = "colorls"
 version = "1.5.0"
-revision = 2
+revision = 3
 description = "A Ruby CLI gem that beautifies the terminal's ls command, with color and font-awesome icons."
 license = "MIT"
 homepage = "https://github.com/athityakumar/colorls"
