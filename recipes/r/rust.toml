@@ -1,7 +1,7 @@
 [package]
 name = "rust"
 version = "1.96.0"
-revision = 2
+revision = 1
 description = "Systems programming language focused on safety and performance"
 license = "MIT OR Apache-2.0"
 homepage = "https://www.rust-lang.org"
@@ -17,8 +17,8 @@ sha256 = "e90a9eb153b2948afac840dbe9d77b64e376706f2864387ee7717f7450043b44"
 
 [build.darwin-arm64]
 steps = [
-  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.94.0-aarch64-apple-darwin.tar.gz",
-  "echo '94903e93a4334d42bb6d92377a39903349c07f3709c792864bcdf7959f3c8c7d  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
+  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.95.0-aarch64-apple-darwin.tar.gz",
+  "echo 'ec23ad2e0e15a7397d2c3c232356149cc871b7df7f47e25c2acb1070157f5398  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
   "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --release-description=gale --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
@@ -28,8 +28,8 @@ steps = [
 
 [build.linux-amd64]
 steps = [
-  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.94.0-x86_64-unknown-linux-gnu.tar.gz",
-  "echo '3bb1925a0a5ad2c17be731ee6e977e4a68490ab2182086db897bd28be21e965f  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
+  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.95.0-x86_64-unknown-linux-gnu.tar.gz",
+  "echo 'a47ac940abd12399d59ad15c877e7113fa35f2b9ec7e6a8a045d4fd8b9741dea  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
   "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --release-description=gale --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
@@ -39,8 +39,8 @@ steps = [
 
 [build.linux-arm64]
 steps = [
-  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.94.0-aarch64-unknown-linux-gnu.tar.gz",
-  "echo 'a0dc5a65ab337421347533e5be11d3fab11f119683a0dbd257ef3fe968bd2d72  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
+  "curl -sL -o /tmp/rust-bootstrap.tar.gz https://static.rust-lang.org/dist/rust-1.95.0-aarch64-unknown-linux-gnu.tar.gz",
+  "echo '3b9385d3144ac57616befa0ccbac524f857ba1b4ab074226e73a24d43568a98e  /tmp/rust-bootstrap.tar.gz' | shasum -a 256 -c",
   "mkdir -p /tmp/rust-bootstrap-extract && tar -xzf /tmp/rust-bootstrap.tar.gz -C /tmp/rust-bootstrap-extract --strip-components=1",
   "cd /tmp/rust-bootstrap-extract && sh install.sh --prefix=/tmp/rust-bootstrap",
   "./configure --prefix=${PREFIX} --release-channel=stable --enable-cargo-native-static --enable-profiler --set build.cargo=/tmp/rust-bootstrap/bin/cargo --set build.rustc=/tmp/rust-bootstrap/bin/rustc --set llvm.download-ci-llvm=true --set install.sysconfdir=etc --release-description=gale --set rust.lto=thin --set rust.codegen-units=1 --set rust.jemalloc=true",
