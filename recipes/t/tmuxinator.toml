@@ -1,6 +1,6 @@
 [package]
 name = "tmuxinator"
-version = "3.3.8"
+version = "3.4.0"
 revision = 2
 description = "Manage complex tmux sessions easily"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://github.com/tmuxinator/tmuxinator"
 
 [source]
 repo = "tmuxinator/tmuxinator"
-url = "https://github.com/tmuxinator/tmuxinator/archive/refs/tags/v3.3.8.tar.gz"
-sha256 = "1d2b8b888fb5dbc3ddae5d48a47c8a2287ef533b68475132c63e006f4a60eef1"
-released_at = "2025-01-15"
+url = "https://github.com/tmuxinator/tmuxinator/archive/refs/tags/v3.4.0.tar.gz"
+sha256 = "ea043d727660d4a10e0e851c0f44128849ac420b9fba477dad2a436b6f568173"
+released_at = "2026-05-23"
 
 [build]
 system = "ruby"
