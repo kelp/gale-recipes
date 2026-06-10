@@ -1,7 +1,7 @@
 [package]
 name = "bun"
 version = "1.3.14"
-revision = 2
+revision = 1
 description = "Fast JavaScript runtime, package manager, bundler"
 license = "MIT"
 homepage = "https://bun.sh"
@@ -16,8 +16,8 @@ sha256 = "112a5915992807f04b183854d360c2bf87ac7c1587fb5da3c560bdbb75b8c92e"
 
 [build.darwin-arm64]
 steps = [
-  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.11/bun-darwin-aarch64.zip",
-  "echo '6f5a3467ed9caec4795bf78cd476507d9f870c7d57b86c945fcb338126772ffc  /tmp/bun.zip' | shasum -a 256 -c",
+  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-darwin-aarch64.zip",
+  "echo 'd8b96221828ad6f97ac7ac0ab7e95872341af763001e8803e8267652c2652620  /tmp/bun.zip' | shasum -a 256 -c",
   "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/bun-extract/bun-darwin-aarch64/bun ${PREFIX}/bin/",
@@ -25,8 +25,8 @@ steps = [
 
 [build.linux-amd64]
 steps = [
-  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.11/bun-linux-x64.zip",
-  "echo '8611ba935af886f05a6f38740a15160326c15e5d5d07adef966130b4493607ed  /tmp/bun.zip' | shasum -a 256 -c",
+  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-linux-x64.zip",
+  "echo '951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f  /tmp/bun.zip' | shasum -a 256 -c",
   "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/bun-extract/bun-linux-x64/bun ${PREFIX}/bin/",
@@ -34,8 +34,8 @@ steps = [
 
 [build.linux-arm64]
 steps = [
-  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.11/bun-linux-aarch64.zip",
-  "echo 'd13944da12a53ecc74bf6a720bd1d04c4555c038dfe422365356a7be47691fdf  /tmp/bun.zip' | shasum -a 256 -c",
+  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-linux-aarch64.zip",
+  "echo 'a27ffb63a8310375836e0d6f668ae17fa8d8d18b88c37c821c65331973a19a3b  /tmp/bun.zip' | shasum -a 256 -c",
   "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/bun-extract/bun-linux-aarch64/bun ${PREFIX}/bin/",
