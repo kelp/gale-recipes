@@ -388,15 +388,23 @@ jobs:
           BIN_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
           BIN_FILES=$(printf '%s\n%s' "$BIN_CHANGED" "$BIN_NEW" | sort -u | grep . || true)
 
-          if [ -z "$BIN_FILES" ]; then
-            echo "No binary changes to commit"
-            exit 0
-          fi
-
           # --- commit 1: binaries (locked to the reviewed SHA) ---
-          mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
-          BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "$HEAD_SHA" "${BIN_ARR[@]}") || exit 1
-          echo "Binaries committed as ${BIN_OID}"
+          if [ -n "$BIN_FILES" ]; then
+            mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
+            BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "$HEAD_SHA" "${BIN_ARR[@]}") || exit 1
+            echo "Binaries committed as ${BIN_OID}"
+          else
+            # No binary changes — write_binaries.py regenerated
+            # byte-identical files, so HEAD_SHA's tree already
+            # holds binaries matching the metadata. Do NOT exit:
+            # a prior run may have landed commit 1 and died
+            # before commit 2 (crash window), leaving .versions
+            # missing the entry. Run the loop with the
+            # checked-out SHA as the pin; on a normal re-promote
+            # the ENTRY_KEY grep below makes it a no-op.
+            echo "No binary changes; checking .versions entries"
+            BIN_OID="$HEAD_SHA"
+          fi
 
           # --- write .versions entries pointing at BIN_OID ---
           # Entry key is the bare version for revision 1 and
