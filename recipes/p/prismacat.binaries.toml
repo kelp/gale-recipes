@@ -1,15 +1,15 @@
-version = "0.1.0"
+version = "0.2.0"
 
 [darwin-arm64]
-sha256 = "a502a88de6d0ed7477989e1156ac7e519e79b77e295e33df1bd6e6f499a9f73e"
+sha256 = "243a76ca623d88f99f1c5ec470b995d9396e63b56e449e21b43dd0a0f11b07ee"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "curl", version = "8.19.0", revision = 2 },
   { name = "expat", version = "2.7.5", revision = 2 },
-  { name = "git", version = "2.53.0", revision = 2 },
+  { name = "git", version = "2.54.0", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zig", version = "0.16.0", revision = 1 },
@@ -18,15 +18,15 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "407f44b209980681610bef5d3f47f22cf1765a59414b78e127ca79d5758a000f"
+sha256 = "edacbf0acb19269a2290945e7fe410a9958310a9df813bd4895b85f1fe07abf2"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "curl", version = "8.19.0", revision = 2 },
   { name = "expat", version = "2.7.5", revision = 2 },
-  { name = "git", version = "2.53.0", revision = 2 },
+  { name = "git", version = "2.54.0", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zig", version = "0.16.0", revision = 1 },
@@ -35,15 +35,15 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "e3def96415532182f266480bd5185cb75995106a1b59aa4868a6c618612867ec"
+sha256 = "fcce4571cc516e98f551505f7a0ee0d6dba9d3793ec4e17768e4da3796595824"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "curl", version = "8.19.0", revision = 2 },
   { name = "expat", version = "2.7.5", revision = 2 },
-  { name = "git", version = "2.53.0", revision = 2 },
+  { name = "git", version = "2.54.0", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zig", version = "0.16.0", revision = 1 },

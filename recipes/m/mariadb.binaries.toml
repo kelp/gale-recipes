@@ -1,39 +1,39 @@
-version = "12.2.2-2"
+version = "12.3.2-2"
 
 [darwin-arm64]
-sha256 = "f99e7b2a9d10f32c5d373b364377e5c3ec09a3a30dbe3d7f49006e86f520e5ef"
+sha256 = "68f9d491333dda9ef85964867c8b09988e73b25951f6dd7e52842927e5525c8c"
 deps = [
   { name = "bison", version = "3.8.2", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "lz4", version = "1.10.0", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "bfb5d7e034db32c1661cc5ca01b0018a7ec55f765f098b50ce908389cd3a433c"
+sha256 = "5d509dac0d5ab8a106e517367d9a58555031709ca2bc89fabfffcd212a325fa2"
 deps = [
   { name = "bison", version = "3.8.2", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "lz4", version = "1.10.0", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "206334ee7b39b2d1eafaf69b140ee6daf51b09d1a8ba8a63e1533585600ccb66"
+sha256 = "f8b051c84be53cf978fe43cb14494d51c00233a9a982252cdb9f1d2bd948f281"
 deps = [
   { name = "bison", version = "3.8.2", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "lz4", version = "1.10.0", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pcre2", version = "10.47", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },

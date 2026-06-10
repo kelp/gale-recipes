@@ -1,19 +1,19 @@
-version = "4.3.2-2"
+version = "4.3.3-2"
 
 [darwin-arm64]
-sha256 = "4daf739b24a42b9d07f8a518c1c438c45c86c0222d339da8e13f99a058f682f2"
+sha256 = "2509ef964dd834bf6c8d2b23800947e03cba276e8ca7ec6023efd5a8057a0db0"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
 ]
 
 [linux-amd64]
-sha256 = "50fa4d94ef830030818dab97b0d1b6a964fe46e4864c6b01079da75621c4509b"
+sha256 = "a326dc6cca39516da824814eac0d3a3bc9ccae18e3698704cbab773906a36976"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
 ]
 
 [linux-arm64]
-sha256 = "3682f96e878b59b625a78fb775a09f2998a9214d099319401192a4fc2eb02710"
+sha256 = "d4693694c23e75f4be5af490aabdecef402b85e3cb34329f19e3fa3eca4a29a4"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
 ]

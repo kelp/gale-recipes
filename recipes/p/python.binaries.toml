@@ -1,13 +1,13 @@
-version = "3.14.4-3"
+version = "3.14.5-3"
 
 [darwin-arm64]
-sha256 = "008ac804ee9771349426cab655ba72098c8ef286ba700e6f4292e9fd4206f08f"
+sha256 = "811bea4f1de9adb6e5bd54451e1329a775dbbcd5ad2b9bad80c6cae083c2dccc"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
@@ -15,13 +15,13 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "f0d371d096c4b6e0605b9a55c68e2b42a48f367e7857f65a01c7640ef9e600f3"
+sha256 = "8260ef25f53a78533a48bd4b8776309e5fb2134accd3104dd907dfa6c2ec24cc"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
@@ -29,13 +29,13 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "06a50499a797bac1059806016103a8628a37a378288447a110d8682b93ec9413"
+sha256 = "ead66f0d2de1a9b3b71af3f46ace630ef1a899a7480c9b47a7498238de4062f1"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
