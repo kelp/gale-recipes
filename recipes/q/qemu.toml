@@ -5,6 +5,13 @@ description = "Generic machine emulator and virtualizer (ARM/AArch64 only)"
 license = "GPL-2.0-only"
 homepage = "https://www.qemu.org/"
 
+# linux is blocked on the pixman dep (darwin-only recipe):
+# gale fails dep install with "pixman: unsupported platform"
+# on linux runners, so qemu has never built there. Extend
+# platforms once pixman (and any other missing deps) build
+# on linux.
+platforms = ["darwin-arm64"]
+
 [source]
 repo = "qemu/qemu"
 url = "https://download.qemu.org/qemu-11.0.1.tar.xz"
