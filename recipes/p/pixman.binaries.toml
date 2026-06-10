@@ -1,7 +1,7 @@
-version = "0.46.4"
+version = "0.46.4-2"
 
 [darwin-arm64]
-sha256 = "d4488e8d50d346bdd5267c972ebd9fecdf41485eebfcd53b829acafc6ad11318"
+sha256 = "a4bb12908c99932bbb58d3ea89bb9417780c6a0b0661c4e9e369cbe9003e5330"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
   { name = "cmake", version = "4.3.3", revision = 2 },
