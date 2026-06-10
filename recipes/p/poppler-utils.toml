@@ -1,6 +1,7 @@
 [package]
 name = "poppler-utils"
 version = "26.04.0"
+revision = 2
 platforms = ["darwin-amd64", "darwin-arm64"]
 description = "PDF rendering library and command-line utilities (pdftotext, pdftoppm, pdfinfo, pdfimages, pdftocairo, etc.)"
 license = "GPL-2.0-only"

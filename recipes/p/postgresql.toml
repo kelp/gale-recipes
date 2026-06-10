@@ -1,7 +1,7 @@
 [package]
 name = "postgresql"
 version = "17.2"
-revision = 2
+revision = 3
 description = "Advanced open source relational database"
 license = "PostgreSQL"
 homepage = "https://www.postgresql.org/"
