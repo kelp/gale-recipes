@@ -1,7 +1,7 @@
 [package]
 name = "zlib"
 version = "1.3.2"
-revision = 2
+revision = 3
 description = "A massively spiffy yet delicately unobtrusive compression library."
 license = "NOASSERTION"
 homepage = "http://zlib.net/"
