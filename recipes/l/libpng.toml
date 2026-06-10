@@ -1,6 +1,7 @@
 [package]
 name = "libpng"
 version = "1.6.58"
+revision = 2
 platforms = ["darwin-amd64", "darwin-arm64"]
 description = "PNG reference library"
 license = "libpng-2.0"

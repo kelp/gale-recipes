@@ -1,6 +1,7 @@
 [package]
 name = "fontconfig"
 version = "2.17.1"
+revision = 2
 platforms = ["darwin-amd64", "darwin-arm64"]
 description = "Library for configuring and customizing font access"
 license = "MIT"

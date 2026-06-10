@@ -1,6 +1,7 @@
 [package]
 name = "libtiff"
 version = "4.7.1"
+revision = 2
 platforms = ["darwin-amd64", "darwin-arm64"]
 description = "TIFF image format library and utilities"
 license = "libtiff"
