@@ -1,14 +1,21 @@
 [package]
 name = "qemu"
-version = "11.0.0"
+version = "11.0.1"
 description = "Generic machine emulator and virtualizer (ARM/AArch64 only)"
 license = "GPL-2.0-only"
 homepage = "https://www.qemu.org/"
 
+# linux is blocked on the pixman dep (darwin-only recipe):
+# gale fails dep install with "pixman: unsupported platform"
+# on linux runners, so qemu has never built there. Extend
+# platforms once pixman (and any other missing deps) build
+# on linux.
+platforms = ["darwin-arm64"]
+
 [source]
 repo = "qemu/qemu"
-url = "https://download.qemu.org/qemu-11.0.0.tar.xz"
-sha256 = "c04ca36012653f32d11c674d370cf52a710e7d3f18c2d8b63e4932052a4854d6"
+url = "https://download.qemu.org/qemu-11.0.1.tar.xz"
+sha256 = "0d235f5820278d914a3155ec27af8e4258d697ea892895570807d69c0cb8cd64"
 
 # Narrow target list: arm-softmmu + aarch64-softmmu only.
 # Default builds every architecture qemu supports — half
