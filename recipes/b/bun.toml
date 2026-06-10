@@ -3,6 +3,14 @@ name = "bun"
 version = "1.3.14"
 revision = 1
 description = "Fast JavaScript runtime, package manager, bundler"
+# linux-arm64 is disabled: upstream's bun-linux-aarch64
+# binary (both 1.3.11 and 1.3.14) SIGSEGVs at startup on
+# Neoverse/Cobalt CPUs (GitHub ubuntu-24.04-arm runners) —
+# zero output, all flags, before any dyld message. Restore
+# the platform and its [build.linux-arm64] block once an
+# upstream release runs there. CI skips unlisted platforms
+# via gale's "unsupported platform" error.
+platforms = ["darwin-arm64", "linux-amd64"]
 license = "MIT"
 homepage = "https://bun.sh"
 
@@ -30,13 +38,4 @@ steps = [
   "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
   "mkdir -p ${PREFIX}/bin",
   "cp /tmp/bun-extract/bun-linux-x64/bun ${PREFIX}/bin/",
-]
-
-[build.linux-arm64]
-steps = [
-  "curl -sL -o /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-linux-aarch64.zip",
-  "echo 'a27ffb63a8310375836e0d6f668ae17fa8d8d18b88c37c821c65331973a19a3b  /tmp/bun.zip' | shasum -a 256 -c",
-  "unzip -o /tmp/bun.zip -d /tmp/bun-extract",
-  "mkdir -p ${PREFIX}/bin",
-  "cp /tmp/bun-extract/bun-linux-aarch64/bun ${PREFIX}/bin/",
 ]
