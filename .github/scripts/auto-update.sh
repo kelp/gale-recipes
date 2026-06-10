@@ -800,6 +800,17 @@ PRBODY
       } >> "$GITHUB_STEP_SUMMARY"
     fi
   fi
+
+  # Dispatch the required Ledger Check the same way, and for
+  # the same reason: the branch commit is GITHUB_TOKEN-
+  # authored, so the PR's own pull_request event is
+  # suppressed and the required check would sit "Expected"
+  # forever. The dispatched run is RED until promote
+  # publishes and commits the ledger — that visible red (with
+  # its explanatory failure text) is the design working, not
+  # flakiness. Non-fatal, same pattern as the verify dispatch.
+  gh workflow run ledger-check.yml --ref "$branch" \
+    || echo "WARN $name: ledger-check dispatch failed"
 }
 
 # Allow tests to source this file for its functions without

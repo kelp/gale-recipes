@@ -146,6 +146,11 @@ case "$joined" in
     [ "${MOCK_VERIFY_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
     exit 0
     ;;
+  # ledger-check.yml dispatch. LEDGER_LOG records calls.
+  "workflow run ledger-check.yml"*)
+    [ -n "${LEDGER_LOG:-}" ] && printf '%s\n' "$*" >> "$LEDGER_LOG"
+    exit 0
+    ;;
 esac
 echo "unmocked gh call: $*" >&2
 exit 1
@@ -710,5 +715,36 @@ grep -q 'verify.yml dispatch failed' "$SUMMARY" 2>/dev/null \
   && echo "PASS 19_verify_failure_summary" \
   || { echo "FAIL 19_verify_failure_summary"; \
        cat "$SUMMARY" 2>/dev/null; exit 1; }
+
+# ---------------------------------------------------------
+# 20. ledger-check dispatch — the bot PR's branch commit is
+#     GITHUB_TOKEN-authored, so its pull_request event is
+#     suppressed; without an explicit dispatch the required
+#     Ledger Check would sit "Expected" forever. The PR path
+#     must dispatch ledger-check.yml on the new branch.
+# ---------------------------------------------------------
+rm -f _data/upstream.json
+reset_recipe "1.0.0"
+MOCK_TAG="v1.6.0" MOCK_SHA256="beef" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha8 \
+run_case >/dev/null 2>&1
+jq --arg t "$old_iso3" \
+   '.recipes.testpkg.first_observed_at = $t' \
+   _data/upstream.json > _data/upstream.json.new \
+  && mv _data/upstream.json.new _data/upstream.json
+
+LLOG="$WORK/ledger.log"
+rm -f "$LLOG"
+MOCK_TAG="v1.6.0" MOCK_SHA256="beef" MOCK_REPO_ID=12345 \
+MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
+MOCK_TAG_OBJECT_SHA=tagsha8 \
+LEDGER_LOG="$LLOG" VERIFY_DISPATCH_RETRY_DELAY=0 \
+run_case >/dev/null 2>&1
+
+grep -q -- '--ref auto-update/testpkg-1.6.0' "$LLOG" 2>/dev/null \
+  && echo "PASS 20_ledger_check_dispatch" \
+  || { echo "FAIL 20_ledger_check_dispatch"; \
+       cat "$LLOG" 2>/dev/null; exit 1; }
 
 echo "All smoke cases passed."
