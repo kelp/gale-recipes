@@ -34,6 +34,21 @@ Rules enforced against ``merge-base(--base, HEAD)``:
    HEAD's history. Rewriting, dropping, or reordering an
    entry fails: history is append-only.
 
+3. EVERY changed ``*.binaries.toml`` with any ``[[history]]``
+   at HEAD must have its head mirror anchored to the ledger:
+   the mirror's top-level ``version`` must match some entry
+   (bare ``<v>`` anchors ``<v>-1``; ``<v>-<rev>`` anchors
+   itself), and every mirror platform table's ``sha256`` (and
+   ``manifest_digest``, when the mirror declares one — seeded
+   legacy mirrors don't) must equal that entry's values.
+   Deployed v0.16.5 clients install FROM the mirror, so a PR
+   editing only a mirror digest — no recipe change, history
+   untouched — would otherwise silently repoint installs at a
+   different (e.g. older, real, published) blob. Files with
+   no history yet are skipped: bridge-era tolerance until
+   seed_ledger backfills them, and append-only (rule 2)
+   prevents stripping a ledger to reopen the gap.
+
 A PR touching no recipe versions passes trivially. Exit 0
 with a per-recipe summary, 1 on any violation, 2 on usage
 error.
@@ -65,6 +80,11 @@ REMEDY_UNPUBLISHED = (
     "approved-for-build and wait for CI to commit the ledger"
 )
 REMEDY_APPEND_ONLY = "history is append-only"
+REMEDY_MIRROR = (
+    "deployed clients install from the mirror; it must echo "
+    "a published [[history]] entry — republish via promote "
+    "instead of editing mirror digests by hand"
+)
 
 
 class CheckError(Exception):
@@ -291,6 +311,89 @@ def check_append_only(
     return []
 
 
+def check_mirror_anchor(
+    path: str, head_text: str | None
+) -> tuple[list[str], str]:
+    """Rule 3 for one changed .binaries.toml: anchor the head
+    mirror to a [[history]] entry. Returns (errors, note);
+    the note describes the anchor state for the summary."""
+    if head_text is None:
+        return [], "deleted at HEAD; append-only rule governs"
+    name = PurePosixPath(path).name.removesuffix(".binaries.toml")
+    try:
+        doc = tomllib.loads(head_text)
+    except tomllib.TOMLDecodeError as exc:
+        return [f"{name}: {path}@HEAD: invalid TOML: {exc}"], ""
+
+    history = doc.get("history")
+    if not isinstance(history, list) or not history:
+        return [], (
+            "no [[history]] yet (bridge-era file); mirror "
+            "anchor skipped until seed_ledger backfills it"
+        )
+
+    mirror_ver = doc.get("version")
+    if not isinstance(mirror_ver, str) or not mirror_ver:
+        return [
+            f"{name}: {path} head mirror has no top-level "
+            f"version string — {REMEDY_MIRROR}"
+        ], ""
+
+    # Bare "<v>" is how the mirror spells revision 1; history
+    # always uses the full "<v>-<rev>" form.
+    anchors = {mirror_ver, f"{mirror_ver}-1"}
+    matches = [
+        e
+        for e in history
+        if isinstance(e, dict) and e.get("version") in anchors
+    ]
+    if not matches:
+        return [
+            f"{name}: head mirror version {mirror_ver!r} has "
+            f"no anchoring [[history]] entry in {path} — "
+            f"{REMEDY_MIRROR}"
+        ], ""
+    entry = matches[-1]
+    anchor = entry.get("version")
+
+    errors: list[str] = []
+    for platform in sorted(doc):
+        mirror = doc[platform]
+        if platform == "history" or not isinstance(mirror, dict):
+            continue
+        rec = entry.get(platform)
+        if not isinstance(rec, dict):
+            errors.append(
+                f"{name}: [{platform}] mirror table is not "
+                f"recorded in anchoring history entry "
+                f"'{anchor}' — {REMEDY_MIRROR}"
+            )
+            continue
+        if mirror.get("sha256") != rec.get("sha256"):
+            errors.append(
+                f"{name}: [{platform}] mirror sha256 "
+                f"{mirror.get('sha256')!r} does not echo "
+                f"history entry '{anchor}' "
+                f"({rec.get('sha256')!r}) — {REMEDY_MIRROR}"
+            )
+        # Seeded legacy mirrors carry no manifest_digest line
+        # (seed_ledger never rewrites mirror bytes); only
+        # enforce agreement when the mirror declares one. The
+        # sha256 comparison above is the load-bearing one —
+        # it is what clients verify the blob against.
+        if "manifest_digest" in mirror and mirror.get(
+            "manifest_digest"
+        ) != rec.get("manifest_digest"):
+            errors.append(
+                f"{name}: [{platform}] mirror manifest_digest "
+                f"{mirror.get('manifest_digest')!r} does not "
+                f"echo history entry '{anchor}' "
+                f"({rec.get('manifest_digest')!r}) — "
+                f"{REMEDY_MIRROR}"
+            )
+    return errors, f"mirror anchored to history entry '{anchor}'"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
@@ -379,13 +482,20 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     for path in sorted(p for p in changed if p.endswith(".binaries.toml")):
-        append_errors = check_append_only(
-            path, git_show(merge_base, path), git_show("HEAD", path)
+        head_text = git_show("HEAD", path)
+        file_errors = check_append_only(
+            path, git_show(merge_base, path), head_text
         )
-        if append_errors:
-            errors.extend(append_errors)
+        anchor_errors, anchor_note = check_mirror_anchor(
+            path, head_text
+        )
+        file_errors.extend(anchor_errors)
+        if file_errors:
+            errors.extend(file_errors)
         else:
-            summary.append(f"{path}: history append-only OK")
+            summary.append(
+                f"{path}: history append-only OK; {anchor_note}"
+            )
 
     for line in summary:
         print(f"OK {line}")

@@ -430,6 +430,213 @@ class AppendOnlyTests(RepoCase):
         self.assertIn("history is append-only", res.stdout + res.stderr)
 
 
+class MirrorAnchorTests(RepoCase):
+    """Rule 3: the head mirror is what deployed v0.16.5
+    clients install from, so EVERY changed .binaries.toml
+    (recipe changed or not) must have its mirror digests
+    echo a ledgered [[history]] entry. Without this, a PR
+    editing only a platform's mirror sha256 passes the
+    append-only check and silently repoints installs."""
+
+    def test_mirror_only_sha_tamper_fails(self) -> None:
+        """Editing one platform's mirror sha256 without any
+        recipe change must fail, not pass as 'history
+        append-only OK'."""
+        base = self.seed_published_v1()
+        tampered = all_platform_digests()
+        tampered["linux-amd64"] = (SHA_C, MD_A)
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0",
+                tampered,
+                [("1.0.0-1", all_platform_digests())],
+            ),
+        )
+        self.commit("tamper mirror sha256 only")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        combined = res.stdout + res.stderr
+        self.assertIn("linux-amd64", combined)
+        self.assertIn("mirror", combined.lower())
+
+    def test_mirror_only_manifest_digest_tamper_fails(self) -> None:
+        base = self.seed_published_v1()
+        tampered = all_platform_digests()
+        tampered["linux-amd64"] = (SHA_A, MD_C)
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0",
+                tampered,
+                [("1.0.0-1", all_platform_digests())],
+            ),
+        )
+        self.commit("tamper mirror manifest_digest only")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("linux-amd64", res.stdout + res.stderr)
+
+    def test_mirror_downgrade_to_older_entry_fails(self) -> None:
+        """The concrete attack: pin one platform's mirror back
+        to an OLDER published blob (real digests, found in
+        history — just not this version's entry)."""
+        self.write("recipes/t/testpkg.toml", recipe_text("1.0.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0",
+                all_platform_digests(),
+                [
+                    ("0.9.0-1", all_platform_digests(SHA_B, MD_B)),
+                    ("1.0.0-1", all_platform_digests()),
+                ],
+            ),
+        )
+        base = self.commit("base: two published versions")
+        downgraded = all_platform_digests()
+        downgraded["linux-amd64"] = (SHA_B, MD_B)
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0",
+                downgraded,
+                [
+                    ("0.9.0-1", all_platform_digests(SHA_B, MD_B)),
+                    ("1.0.0-1", all_platform_digests()),
+                ],
+            ),
+        )
+        self.commit("downgrade linux-amd64 to 0.9.0 blob")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("linux-amd64", res.stdout + res.stderr)
+
+    def test_mirror_platform_not_in_ledger_fails(self) -> None:
+        """Adding a mirror platform table the anchoring entry
+        never recorded must fail — clients on that platform
+        would install the invented digests."""
+        only = {
+            "darwin-arm64": (SHA_A, MD_A),
+            "linux-amd64": (SHA_A, MD_A),
+        }
+        self.write("recipes/t/testpkg.toml", recipe_text("1.0.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text("1.0.0", only, [("1.0.0-1", only)]),
+        )
+        base = self.commit("base: two-platform publish")
+        grown = dict(only)
+        grown["linux-arm64"] = (SHA_C, MD_C)
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text("1.0.0", grown, [("1.0.0-1", only)]),
+        )
+        self.commit("invent a linux-arm64 mirror table")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("linux-arm64", res.stdout + res.stderr)
+
+    def test_mirror_version_without_entry_fails(self) -> None:
+        """Retargeting the mirror's version string to one no
+        [[history]] entry anchors must fail."""
+        base = self.seed_published_v1()
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "2.0.0",
+                all_platform_digests(),
+                [("1.0.0-1", all_platform_digests())],
+            ),
+        )
+        self.commit("retarget mirror version")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("2.0.0", res.stdout + res.stderr)
+
+    def test_rev2_full_form_mirror_anchor_passes(self) -> None:
+        """A revision-2 mirror ('1.0.0-2') anchors against the
+        full-form entry; a backfill append stays green."""
+        self.write(
+            "recipes/t/testpkg.toml", recipe_text("1.0.0", revision=2)
+        )
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0-2",
+                all_platform_digests(SHA_B, MD_B),
+                [("1.0.0-2", all_platform_digests(SHA_B, MD_B))],
+            ),
+        )
+        base = self.commit("base: rev2 published")
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0-2",
+                all_platform_digests(SHA_B, MD_B),
+                [
+                    ("1.0.0-2", all_platform_digests(SHA_B, MD_B)),
+                    ("1.0.0-1", all_platform_digests()),
+                ],
+            ),
+        )
+        self.commit("seed backfill of rev1")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_seeded_legacy_mirror_passes(self) -> None:
+        """The real backfill shape: a legacy mirror (sha256
+        only — no manifest_digest line; seed_ledger never
+        rewrites mirror bytes) gains a seeded [[history]]
+        entry carrying both digests. Must anchor green."""
+        legacy_mirror = (
+            'version = "1.0.0"\n'
+            "\n[darwin-arm64]\n"
+            f'sha256 = "{SHA_A}"\n'
+            "\n[linux-amd64]\n"
+            f'sha256 = "{SHA_A}"\n'
+        )
+        self.write("recipes/t/testpkg.toml", recipe_text("1.0.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml", legacy_mirror
+        )
+        base = self.commit("legacy pre-ledger file")
+        seeded = legacy_mirror + (
+            "\n[[history]]\n"
+            'version = "1.0.0-1"\n'
+            f'darwin-arm64 = {{ sha256 = "{SHA_A}", '
+            f'manifest_digest = "{MD_A}" }}\n'
+            f'linux-amd64 = {{ sha256 = "{SHA_A}", '
+            f'manifest_digest = "{MD_A}" }}\n'
+        )
+        self.write("recipes/t/testpkg.binaries.toml", seeded)
+        self.commit("seed backfill")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_no_history_bridge_file_skipped(self) -> None:
+        """A pre-backfill .binaries.toml (no [[history]] at
+        base or HEAD) has no anchor; mirror edits pass during
+        the bridge. The blind spot closes when seed_ledger
+        backfills the file — and append-only prevents ever
+        stripping a ledger to reopen it."""
+        self.write("recipes/t/testpkg.toml", recipe_text("1.0.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text("1.0.0", all_platform_digests(), []),
+        )
+        base = self.commit("bridge-era file, no ledger yet")
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0", all_platform_digests(SHA_B, MD_B), []
+            ),
+        )
+        self.commit("mirror edit on unledgered file")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+
 class TrivialPassTests(RepoCase):
     def test_no_recipe_changes_passes(self) -> None:
         base = self.seed_published_v1()
