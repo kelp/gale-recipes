@@ -2,21 +2,21 @@
 
 [package]
 name = "atuin"
-version = "18.13.6"
-revision = 2
+version = "18.16.1"
+revision = 1
 description = "Improved shell history for zsh, bash, fish and nushell"
 license = "MIT"
 homepage = "https://atuin.sh/"
 
 [source]
 repo = "atuinsh/atuin"
-url = "https://github.com/atuinsh/atuin/releases/download/v18.13.6/source.tar.gz"
-sha256 = "89d12e2b5b69a0cf47113a0e9c55edd297ca5393be11e616685d0b6567133acd"
-released_at = "2026-03-27"
+url = "https://github.com/atuinsh/atuin/releases/download/v18.16.1/source.tar.gz"
+sha256 = "aec5c91207f080becc4b13593d5b7edc46685e8d4dbfbaef33d31f8058191bc6"
+released_at = "2026-05-12"
 
 [build]
 steps = [
-  "cargo install --path crates/atuin --root ${PREFIX}",
+  "cargo install --locked --path crates/atuin --root ${PREFIX}",
 ]
 
 [dependencies]
