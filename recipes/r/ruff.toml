@@ -1,6 +1,7 @@
 [package]
 name = "ruff"
 version = "0.15.13"
+revision = 2
 description = "Extremely fast Python linter and code formatter, written in Rust"
 license = "MIT"
 homepage = "https://docs.astral.sh/ruff/"
