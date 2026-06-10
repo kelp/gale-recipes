@@ -3,7 +3,7 @@
 [package]
 name = "atuin"
 version = "18.16.1"
-revision = 2
+revision = 1
 description = "Improved shell history for zsh, bash, fish and nushell"
 license = "MIT"
 homepage = "https://atuin.sh/"
@@ -16,7 +16,7 @@ released_at = "2026-05-12"
 
 [build]
 steps = [
-  "cargo install --path crates/atuin --root ${PREFIX}",
+  "cargo install --locked --path crates/atuin --root ${PREFIX}",
 ]
 
 [dependencies]
