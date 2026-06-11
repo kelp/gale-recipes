@@ -1,18 +1,25 @@
-name: Binary Drift Check
+name: Registry Coherence Audit
 
-# Daily watchdog: fails loudly when any recipe ships at a
-# version newer than its .binaries.toml, which is how users
-# end up silently building from source after a missed CI
-# rebuild. The status page already *displays* drift; this
-# workflow makes drift a CI signal so a red X in the Actions
-# tab (and the default-on email notification) surfaces it
-# day-over-day instead of relying on someone visiting the
-# dashboard.
+# Daily watchdog: audits every ledgered [[history]] entry in
+# recipes/**/*.binaries.toml against the GHCR revisioned-tag
+# descriptors it anchors. This is the ONE thing in-tree
+# checks structurally cannot see — external registry
+# mutation. Everything the old binary-drift check caught
+# (recipe version ahead of .binaries.toml) is now enforced
+# pre-merge by the required Ledger Check; the status page
+# keeps its own drift display for the dashboard.
 #
-# Triggered by the neovim 0.12.2 incident — a recipe bumped
-# 2026-05-18 went nine days without prebuilts because the
-# batched push lost its build job and the failed retry was
-# never followed up.
+# Failure modes and their recovery wording:
+# - "anchor lost": a published tag 404s — external deletion
+#   or GC ate an immutable artifact.
+# - "immutable tag conflict: ... bump revision to
+#   republish": registry content changed externally; the
+#   ledgered digests are what clients pin, so the only
+#   forward path is a revision bump through promote.
+# A 5xx is retried then counted as an audit error, never as
+# absent. Recipes with no history yet are skipped and
+# counted (quiet during the bridge; comprehensive after
+# backfill + republish).
 
 on:
   schedule:
@@ -26,7 +33,7 @@ on:
 permissions:
   contents: read
 
-# Drift checks are idempotent and cheap; coalesce overlaps
+# Audits are idempotent and cheap; coalesce overlaps
 # so a long-running rebuild doesn't stack runs.
 concurrency:
   group: drift-check
@@ -42,5 +49,5 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Check for binary drift
-        run: python3 scripts/check_binary_drift.py --repo-root .
+      - name: Audit ledger against GHCR
+        run: python3 scripts/check_registry_coherence.py --repo-root .

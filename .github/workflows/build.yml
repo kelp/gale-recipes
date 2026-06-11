@@ -45,6 +45,11 @@ permissions:
   packages: write
   id-token: write
   attestations: write
+  # Lets update-recipes dispatch Ledger Check onto the PR
+  # branch — the GraphQL commit cannot fire pull_request
+  # events itself, so without the dispatch the required
+  # check would sit "Expected" forever.
+  actions: write
 
 jobs:
   discover:
@@ -57,10 +62,10 @@ jobs:
       # GH_MATRIX_CELL_CAP — no magic numbers in this YAML.
       chunks: ${{ steps.list.outputs.chunks }}
       # Flat sorted list of every recipe name that should
-      # produce metadata. update-recipes uses this to verify
-      # completeness — a recipe that appears here but writes
-      # zero artifacts surfaces as a workflow failure rather
-      # than a silent miss.
+      # produce metadata. Completeness is enforced by the
+      # required Ledger Check, not here: a dropped chunk
+      # yields a missing [[history]] entry and an
+      # unmergeable PR.
       all_recipes: ${{ steps.list.outputs.all_recipes }}
       # The build-matrix platform list, echoed back so
       # build-gale can fromJson it without re-reading
@@ -242,49 +247,14 @@ jobs:
           pattern: metadata-*
           merge-multiple: true
 
-      # End-to-end invariant: every recipe in discover's
-      # all_recipes must produce at least one metadata
-      # artifact. A missing recipe means its build chunk was
-      # silently dropped (GH matrix truncation), the chunk
-      # job died wholesale, or every platform's build failed.
-      # All three are the exact failure mode that lost
-      # neovim for nine days on 2026-05-18; turning them
-      # into a workflow failure surfaces them immediately
-      # instead of waiting for the daily drift watchdog.
-      - name: Verify every requested recipe produced metadata
-        env:
-          ALL_RECIPES: ${{ needs.discover.outputs.all_recipes }}
-        run: |
-          shopt -s nullglob
-          EXPECTED=$(echo "$ALL_RECIPES" | jq -r '.[]' | sort -u)
-          if [ -z "$EXPECTED" ]; then
-            echo "discover requested zero recipes; nothing to verify"
-            exit 0
-          fi
-
-          FOUND=$(for META in /tmp/metadata/*.json; do
-            jq -r '.recipe' "$META"
-          done | sort -u)
-
-          MISSING=$(comm -23 \
-            <(echo "$EXPECTED") \
-            <(echo "$FOUND"))
-
-          if [ -n "$MISSING" ]; then
-            COUNT=$(echo "$MISSING" | wc -l | tr -d ' ')
-            echo "::error::${COUNT} requested recipe(s) produced no build metadata — chunk dropped, build job died, or every platform failed:"
-            echo "$MISSING" | sed 's/^/  - /'
-            {
-              echo "## Missing recipes (${COUNT})"
-              echo
-              echo "These recipes were scheduled by discover but produced no build artifacts. Check the build-chunk job logs for the chunk containing each one."
-              echo
-              echo "$MISSING" | sed 's/^/- `/; s/$/`/'
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
-
-          echo "All $(echo "$EXPECTED" | wc -l | tr -d ' ') requested recipes produced metadata."
+      # There is deliberately NO metadata-completeness gate
+      # here anymore: a recipe whose chunk was dropped (GH
+      # matrix truncation, dead chunk job, all-platform
+      # failure — the neovim 9-day incident of 2026-05-18)
+      # now surfaces as a missing [[history]] entry, which
+      # the required Ledger Check turns into an unmergeable
+      # PR. The failure moved from this run's log to the
+      # merge button.
 
       # Regenerate each built recipe's .binaries.toml: the
       # v0.16.5-readable head mirror plus the append-only
@@ -317,6 +287,7 @@ jobs:
       # GITHUB_TOKEN commits don't re-trigger workflows (no rebuild
       # loop). createCommitOnBranch auto-signs "Verified".
       - name: Commit binaries then versions
+        id: commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -458,3 +429,47 @@ jobs:
             mapfile -t VER_ARR < <(printf '%s\n' "$VER_FILES")
             commit_to_branch "Update .versions from build" "$BIN_OID" "${VER_ARR[@]}" >/dev/null || exit 1
           fi
+
+          # Explicit did-commit signal for the dispatch step
+          # below. Deliberately true on every successful path,
+          # including the all-no-op re-promote: a no-op
+          # re-promote is the documented recovery for a prior
+          # run that died after committing but before the
+          # dispatch fired, and the dispatched check is
+          # idempotent against an unchanged tip.
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # The GraphQL commits above are GITHUB_TOKEN-authored,
+      # so they cannot fire pull_request events — without
+      # this explicit dispatch the required Ledger Check
+      # would sit "Expected" forever and the promoted PR
+      # would stay unmergeable. The dispatched run attaches
+      # its check to the branch tip, which now includes the
+      # committed ledger. The gate reads `committed`, an
+      # output the commit step above explicitly writes —
+      # never gate this on outputs of steps that may not
+      # exist: GitHub evaluates a missing step output as ''
+      # and skips the dispatch silently.
+      - name: Report ledger check on PR branch
+        if: >-
+          steps.commit.outputs.committed == 'true'
+          && inputs.target_branch != 'main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ inputs.target_branch }}
+        # Same 3-attempt treatment as auto-update.sh's
+        # dispatches: a transient failure here leaves the
+        # required check stuck at "Expected" with no run.
+        # If all attempts fail the step (and job) fail —
+        # recovery is re-running this job, or manually:
+        # gh workflow run ledger-check.yml --ref <branch>
+        run: |
+          for attempt in 1 2 3; do
+            if gh workflow run ledger-check.yml --ref "${BRANCH}"; then
+              exit 0
+            fi
+            echo "::warning::ledger-check dispatch attempt ${attempt} failed"
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          echo "::error::ledger-check dispatch failed after 3 attempts; required check stuck at Expected. Re-run this job or: gh workflow run ledger-check.yml --ref ${BRANCH}"
+          exit 1

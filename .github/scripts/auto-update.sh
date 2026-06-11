@@ -800,6 +800,39 @@ PRBODY
       } >> "$GITHUB_STEP_SUMMARY"
     fi
   fi
+
+  # Dispatch the required Ledger Check the same way, and for
+  # the same reason: the branch commit is GITHUB_TOKEN-
+  # authored, so the PR's own pull_request event is
+  # suppressed and the required check would sit "Expected"
+  # forever. The dispatched run is RED until promote
+  # publishes and commits the ledger — that visible red (with
+  # its explanatory failure text) is the design working, not
+  # flakiness. Same retry + step-summary treatment as the
+  # verify dispatch above: a dispatch failure here leaves the
+  # required check stuck at "Expected" with no visible cause,
+  # which must not vanish as a WARN log line. Needs
+  # `actions: write` on auto-update.yml's GITHUB_TOKEN — the
+  # dispatch endpoint 403s without it (every verify dispatch
+  # did, in production, until the scope was granted).
+  local ledger_dispatched=0
+  for attempt in 1 2 3; do
+    if gh workflow run ledger-check.yml --ref "$branch"; then
+      ledger_dispatched=1
+      break
+    fi
+    echo "WARN $name: ledger-check dispatch attempt ${attempt} failed"
+    [ "$attempt" -lt 3 ] && sleep "${VERIFY_DISPATCH_RETRY_DELAY:-10}"
+  done
+  if [ "$ledger_dispatched" -eq 0 ]; then
+    echo "ERROR $name: ledger-check dispatch failed after 3 attempts (required check stuck at Expected)"
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+      {
+        echo "- :warning: \`${name}\`: ledger-check.yml dispatch failed for \`${branch}\` — the required check sits at Expected with no run." \
+             "Dispatch manually: \`gh workflow run ledger-check.yml --ref ${branch}\`"
+      } >> "$GITHUB_STEP_SUMMARY"
+    fi
+  fi
 }
 
 # Allow tests to source this file for its functions without
