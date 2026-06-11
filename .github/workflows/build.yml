@@ -457,4 +457,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ inputs.target_branch }}
-        run: gh workflow run ledger-check.yml --ref "${BRANCH}"
+        # Same 3-attempt treatment as auto-update.sh's
+        # dispatches: a transient failure here leaves the
+        # required check stuck at "Expected" with no run.
+        # If all attempts fail the step (and job) fail —
+        # recovery is re-running this job, or manually:
+        # gh workflow run ledger-check.yml --ref <branch>
+        run: |
+          for attempt in 1 2 3; do
+            if gh workflow run ledger-check.yml --ref "${BRANCH}"; then
+              exit 0
+            fi
+            echo "::warning::ledger-check dispatch attempt ${attempt} failed"
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          echo "::error::ledger-check dispatch failed after 3 attempts; required check stuck at Expected. Re-run this job or: gh workflow run ledger-check.yml --ref ${BRANCH}"
+          exit 1
