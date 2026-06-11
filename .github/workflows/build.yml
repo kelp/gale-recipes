@@ -390,17 +390,17 @@ jobs:
             RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
             VERSIONS_FILE="recipes/${LETTER}/${RECIPE}.versions"
 
-            # `|| true`: a recipe with no `revision` line is
-            # revision 1; grep's exit 1 must not abort the step
-            # under `set -o pipefail`.
-            VERSION=$(grep '^version' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *"//; s/".*//' || true)
-            REVISION=$(grep '^revision' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *//; s/[^0-9].*//' || true)
-            if [ -z "$REVISION" ] || \
-               [ "$REVISION" -lt 1 ] 2>/dev/null; then
-              REVISION=1
-            fi
+            # One tomllib read for version+revision, same as
+            # build-chunk.yml's Resolve-immutable-tag step —
+            # grep/sed reimplementations drift from TOML
+            # semantics (e.g. any version*-prefixed key).
+            read -r VERSION REVISION < <(python3 - "$RECIPE_FILE" <<'PY'
+          import sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              pkg = tomllib.load(f)["package"]
+          print(pkg["version"], int(pkg.get("revision", 1) or 1))
+          PY
+            )
             if [ "$REVISION" -le 1 ]; then
               ENTRY_KEY="${VERSION}"
             else
