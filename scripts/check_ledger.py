@@ -91,6 +91,14 @@ class CheckError(Exception):
     """Usage-level failure (bad git state); exits 2."""
 
 
+class NotARecipe(Exception):
+    """Decodable TOML with no [package].version — a helper
+    file, not a recipe. Rule 1 skips it: erroring here would
+    make the no-bypass required check brick any PR carrying
+    a non-recipe TOML under recipes/. Undecodable TOML still
+    fails closed via CheckError."""
+
+
 def git(*args: str) -> str:
     proc = subprocess.run(
         ["git", *args], capture_output=True, text=True
@@ -142,7 +150,7 @@ def parse_recipe(text: str, path: str) -> tuple[str, int, list | None]:
     pkg = doc.get("package", {})
     version = pkg.get("version")
     if not isinstance(version, str) or not version:
-        raise CheckError(f"{path}: no [package].version")
+        raise NotARecipe(f"{path}: no [package].version")
     try:
         revision = int(pkg.get("revision", 1) or 1)
     except (TypeError, ValueError):
@@ -443,6 +451,11 @@ def main(argv: list[str] | None = None) -> int:
             version, revision, declared = parse_recipe(
                 head_text, path
             )
+        except NotARecipe:
+            summary.append(
+                f"{name}: no [package].version; not a recipe — skipped"
+            )
+            continue
         except CheckError as exc:
             errors.append(str(exc))
             continue
@@ -453,7 +466,7 @@ def main(argv: list[str] | None = None) -> int:
                 base_version, base_revision, _ = parse_recipe(
                     base_text, f"{path}@base"
                 )
-            except CheckError:
+            except (CheckError, NotARecipe):
                 base_version, base_revision = None, None
             if (version, revision) == (base_version, base_revision):
                 summary.append(

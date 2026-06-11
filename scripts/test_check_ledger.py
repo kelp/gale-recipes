@@ -645,6 +645,27 @@ class TrivialPassTests(RepoCase):
         res = self.run_check(base)
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
 
+    def test_non_recipe_toml_under_recipes_passes(self) -> None:
+        """A decodable TOML under recipes/ with no
+        [package].version is not a recipe. The required check
+        must skip it, not brick the PR (no-bypass ruleset)."""
+        base = self.seed_published_v1()
+        self.write(
+            "recipes/t/_fragment.toml", '[meta]\nkind = "helper"\n'
+        )
+        self.commit("add helper toml")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_invalid_toml_under_recipes_fails(self) -> None:
+        """Undecodable TOML stays fail-closed: the check cannot
+        prove (version, revision) didn't change."""
+        base = self.seed_published_v1()
+        self.write("recipes/t/broken.toml", "version = [unclosed\n")
+        self.commit("broken toml")
+        res = self.run_check(base)
+        self.assertNotEqual(res.returncode, 0)
+
     def test_non_version_recipe_edit_passes(self) -> None:
         """Editing build steps without touching (version,
         revision) requires no ledger entry."""
