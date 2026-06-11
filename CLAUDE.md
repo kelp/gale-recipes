@@ -208,7 +208,7 @@ This is the content repo. The tool lives at `../gale`.
 
 - **gale-recipes** (this repo) — recipe TOML files for
   all packages: system tools, languages, compilers,
-  libraries, CLI utilities. CI builds changed recipes
+  libraries, CLI utilities. CI builds promoted recipes
   on each platform, pushes tar.zst binaries to GHCR
   via ORAS, attests provenance, and writes
   `.binaries.toml` files alongside each recipe.
@@ -216,13 +216,28 @@ This is the content repo. The tool lives at `../gale`.
   binaries from GHCR when available, falls back to
   source builds.
 
-**CI flow**: on push, GitHub Actions detects changed
-recipes via git diff, builds only those on macOS ARM64
-and Linux AMD64 runners, attests provenance via Sigstore,
-pushes tar.zst to GHCR via ORAS, writes `.binaries.toml`
-and appends `.versions` entries, and commits back via
-GraphQL (auto-signed "Verified"). workflow_dispatch
-builds all or a named recipe.
+**CI flow**: one writer. Pre-merge, the unprivileged
+`verify.yml` builds and smoke-tests a PR's changed
+recipes with no write-capable token. A maintainer then
+applies the `approved-for-build` label; `promote.yml`
+dispatches the privileged `build.yml` pinned to the
+reviewed head SHA, which builds every eligible platform
+(declared `[package].platforms` are authoritative — no
+skipped cells), attests provenance via Sigstore, pushes
+tar.zst to GHCR via ORAS, and commits `.binaries.toml`
+(the v0.16.5-readable head mirror plus the append-only
+`[[history]]` ledger) and `.versions` back onto the PR
+branch via GraphQL (auto-signed "Verified",
+expectedHeadOid-locked to the reviewed SHA). Recipe,
+binaries, and ledger merge to main atomically in the
+PR. CI never writes to main; the dashboard republishes
+from the merge push (`pages.yml`). A reconcile is the
+same flow done by hand: branch from main, dispatch
+`build.yml` at that branch, merge the PR. The
+two-commit `.versions` append and the merge-commit-only
+repo setting persist for exactly as long as `.versions`
+files exist — they are the deployed-v0.16.5 client
+bridge.
 
 ## Auto-update workflow
 
@@ -268,9 +283,9 @@ order:
 
 1. **Pre-PR** — first-observation 7-day cooldown,
    attestation verification, non-semver filter.
-2. **CI** — `build.yml` rebuilds the recipe on all
-   platforms and smoke-tests the resulting binary
-   (`--help`/`--version`), same as any other PR.
+2. **CI** — `verify.yml` rebuilds the recipe on all
+   eligible platforms and smoke-tests the resulting
+   binary (`--help`/`--version`), same as any other PR.
 3. **Human** — a reviewer presses merge.
 
 Do not add `--auto-merge` or a merge-bot. The cooldown
@@ -362,13 +377,18 @@ post-install hook or rely on install-time patching. Examples:
 - Cargo workspaces with virtual manifests need
   `--path <crate-dir>` not `--path .`. Check for
   `[workspace]` without `[package]` in root Cargo.toml.
-- CI commits use GITHUB_TOKEN so they don't re-trigger
-  workflows. Switching to a PAT or App token would cause
-  an infinite rebuild loop — add commit-message filtering
-  first.
-- CI's update-recipes job commits binary sections back
-  to main. Always `git pull --rebase` before pushing to
-  avoid rejected pushes.
+- CI commits use GITHUB_TOKEN, which suppresses push,
+  pull_request, and workflow_run events. That is why
+  pages.yml hooks the scheduled Auto-Update run instead
+  of build runs, and why bot PR branches need explicit
+  `gh workflow run verify.yml` dispatch. Keep it that
+  way — a PAT or App token would re-trigger workflows
+  from CI's own commits.
+- build.yml's update-recipes job commits binaries onto
+  the PR branch, never main. After a promote, pull the
+  PR branch before pushing more commits to it; any push
+  after approval moves the tip and requires re-applying
+  `approved-for-build` to re-authorize.
 - Revision bumps cascade: once a recipe's revision
   increments, CI rebuilds it across every platform and
   the rebuild shows up as a pullable update on every

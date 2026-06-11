@@ -92,16 +92,26 @@ jobs:
             done | sort -u)
           fi
 
-          # Build recipe × platform cells from platforms.json.
+          # Build recipe × platform cells through the same
+          # chunker build.yml uses, so verify and build can
+          # never disagree on a recipe's eligible platforms
+          # (declared [package].platforms are authoritative —
+          # ineligible platforms get no cell, so there is no
+          # skip path downstream).
           CELLS=$(NAMES="$NAMES" python3 - <<'PY'
-          import json, os
-          names = os.environ["NAMES"].split()
-          with open(".github/platforms.json") as f:
-              plats = json.load(f)
-          cells = [
-              {"recipe": n, "platform": p["platform"], "os": p["os"]}
-              for n in names for p in plats
-          ]
+          import json, os, sys
+          sys.path.insert(0, "scripts")
+          import chunk_recipes
+          names = sorted(set(os.environ["NAMES"].split()))
+          try:
+              cells = chunk_recipes.build_cells(
+                  names,
+                  chunk_recipes.load_platforms(
+                      chunk_recipes.Path(".github/platforms.json")),
+              )
+          except ValueError as e:
+              print(f"::error::{e}", file=sys.stderr)
+              sys.exit(1)
           print(json.dumps(cells))
           PY
           )
@@ -173,8 +183,6 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          SKIPPED=false
-
           for attempt in 1 2 3; do
             OUTPUT=$(gale build "$RECIPE_FILE" \
               2>&1 | tee /tmp/build.log)
@@ -185,22 +193,11 @@ jobs:
               break
             fi
 
-            if grep -q 'unsupported platform' /tmp/build.log; then
-              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
-              SKIPPED=true
-              break
-            fi
-
             echo "::warning::Build attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
 
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
-          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
-
-          if [ "$SKIPPED" = true ]; then
-            exit 0
-          fi
 
           if [ -z "$ARCHIVE" ]; then
             echo "::error::Build failed after 3 attempts"
@@ -210,7 +207,6 @@ jobs:
           fi
 
       - name: Verify binary runs
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
@@ -311,7 +307,6 @@ jobs:
           rm -rf "$VERIFY_DIR"
 
       - name: Check install (rpath vs runtime deps)
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -324,7 +319,6 @@ jobs:
           rm -rf "${CHECK_DIR}"
 
       - name: Install and smoke test
-        if: steps.build.outputs.skipped != 'true'
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
@@ -346,7 +340,7 @@ jobs:
             --recipe "${RECIPE_FILE}"
 
       - name: Upload build log on failure
-        if: failure() && steps.build.outputs.skipped != 'true'
+        if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: verify-log-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}

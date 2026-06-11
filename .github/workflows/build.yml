@@ -1,46 +1,50 @@
 name: Build Recipes
 
+# THE one writer. This workflow is the only thing that builds,
+# attests, pushes to GHCR, and commits .binaries.toml/.versions
+# — and it only ever commits onto a PR branch, never main.
+#
+# It runs exclusively via workflow_dispatch:
+#   - promote.yml dispatches it after a human applies the
+#     `approved-for-build` label, pinned to the reviewed PR
+#     head SHA with the PR branch as target_branch.
+#   - A reconcile is the same flow done by hand: branch from
+#     main, dispatch here, merge the PR.
+#
+# There is no push-to-main publish path, no build-all, and no
+# post-merge rebuild: recipe + binaries + ledger merge
+# atomically in the PR, so main is never written by CI.
+#
+# NOTE: there is deliberately NO `pull_request` trigger. This
+# workflow is PRIVILEGED (packages/id-token/attestations write,
+# GHCR push). Running it pre-merge on a PR would execute
+# unreviewed upstream build code with those tokens. Pre-merge
+# builds run in the UNPRIVILEGED verify.yml instead.
+
 on:
-  push:
-    branches: [main]
-    paths: ['recipes/**']
-  # NOTE: there is deliberately NO `pull_request` trigger. This
-  # workflow is PRIVILEGED (packages/id-token/attestations write,
-  # GHCR push). Running it pre-merge on a PR would execute
-  # unreviewed upstream build code with those tokens. Pre-merge
-  # builds run in the UNPRIVILEGED verify.yml instead; the
-  # privileged build runs only after a human applies the
-  # `approved-for-build` label (see promote.yml), which dispatches
-  # this workflow pinned to the reviewed SHA.
   workflow_dispatch:
     inputs:
       recipe:
-        description: 'Recipe names, comma-separated (blank = changed only)'
-        required: false
+        description: 'Recipe names, comma-separated'
+        required: true
       head_sha:
         description: >-
-          Exact commit SHA to build. Empty builds the triggering
-          commit (github.sha). The promote flow passes the
-          reviewed PR head SHA so the build is pinned to exactly
-          what was authorized.
-        required: false
+          Exact commit SHA to build. The promote flow passes
+          the reviewed PR head SHA so the build is pinned to
+          exactly what was authorized.
+        required: true
       target_branch:
         description: >-
-          Branch the regenerated .binaries.toml/.versions commits
-          land on. Empty means `main` (the post-merge path). The
-          promote flow passes the PR head branch so binaries land
-          ON the PR branch and merge atomically with the recipe.
-        required: false
+          PR branch the .binaries.toml/.versions commits land
+          on, so binaries merge atomically with the recipe.
+          Never main.
+        required: true
 
 permissions:
   contents: write
   packages: write
   id-token: write
   attestations: write
-  # Lets update-recipes dispatch Publish Pages after a
-  # .binaries.toml commit lands — the GITHUB_TOKEN-authored
-  # commit won't fire workflow_run / push triggers on its own.
-  actions: write
 
 jobs:
   discover:
@@ -64,11 +68,26 @@ jobs:
       platforms: ${{ steps.list.outputs.platforms }}
       gale_version: ${{ steps.gale.outputs.version }}
     steps:
+      # GitHub does not enforce `required: true` on dispatch
+      # inputs sent via the API, so enforce the contract here
+      # before anything privileged runs.
+      - name: Validate dispatch inputs
+        env:
+          INPUT_RECIPE: ${{ inputs.recipe }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          TARGET_BRANCH: ${{ inputs.target_branch }}
+        run: |
+          if [ -z "$INPUT_RECIPE" ] || [ -z "$HEAD_SHA" ] || \
+             [ -z "$TARGET_BRANCH" ] || \
+             [ "$TARGET_BRANCH" = "main" ]; then
+            echo "::error::build.yml is publish-only: it builds the reviewed head_sha and commits binaries+ledger onto target_branch (a PR branch). Pre-merge testing runs in verify.yml. Reconcile = branch from main, dispatch here, merge the PR."
+            exit 1
+          fi
+          echo "Building ${INPUT_RECIPE} @ ${HEAD_SHA} -> ${TARGET_BRANCH}"
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          fetch-depth: 0
-          # Pin to the reviewed SHA when promoting a PR branch;
-          # empty falls back to the triggering commit.
+          # Pin to the reviewed SHA the promote flow authorized.
           ref: ${{ inputs.head_sha }}
 
       # Read the canonical gale version from its own recipe
@@ -91,66 +110,30 @@ jobs:
         id: list
         env:
           INPUT_RECIPE: ${{ inputs.recipe }}
-          BEFORE_SHA: ${{ github.event.before }}
-          CURRENT_SHA: ${{ github.sha }}
         run: |
-          if [ -n "$INPUT_RECIPE" ]; then
-            # Support comma-separated recipe names.
-            IFS=',' read -ra NAMES <<< "$INPUT_RECIPE"
-            NAMES_NL=$(for name in "${NAMES[@]}"; do
-              name="${name## }"; name="${name%% }"
-              LETTER="${name:0:1}"
-              FILE="recipes/${LETTER}/${name}.toml"
-              if [ ! -f "$FILE" ]; then
-                echo "::error::Recipe not found: $FILE" >&2
-                exit 1
-              fi
-              echo "$name"
-            done)
-          else
-            # Detect only changed recipes (push to main). There is
-            # no pull_request trigger on this privileged workflow;
-            # promote dispatches always pass an explicit recipe.
-            NULL_SHA="0000000000000000000000000000000000000000"
-            if [ "$BEFORE_SHA" = "$NULL_SHA" ] || \
-               [ -z "$BEFORE_SHA" ]; then
-              CHANGED=$(find recipes -name '*.toml' \
-                ! -name '*.binaries.toml')
-            else
-              if ! CHANGED=$(git diff --name-only \
-                "$BEFORE_SHA" "$CURRENT_SHA" \
-                -- 'recipes/**/*.toml' 2>/dev/null); then
-                CHANGED=$(find recipes -name '*.toml' \
-                  ! -name '*.binaries.toml')
-              else
-                CHANGED=$(echo "$CHANGED" \
-                  | grep -v '\.binaries\.toml$' || true)
-              fi
+          # Support comma-separated recipe names.
+          IFS=',' read -ra NAMES <<< "$INPUT_RECIPE"
+          NAMES_NL=$(for name in "${NAMES[@]}"; do
+            name="${name## }"; name="${name%% }"
+            LETTER="${name:0:1}"
+            FILE="recipes/${LETTER}/${name}.toml"
+            if [ ! -f "$FILE" ]; then
+              echo "::error::Recipe not found: $FILE" >&2
+              exit 1
             fi
+            echo "$name"
+          done)
 
-            if [ -z "$CHANGED" ]; then
-              NAMES_NL=""
-            else
-              # Names from changed files.
-              NAMES=$(echo "$CHANGED" | while read -r f; do
-                [ -f "$f" ] && basename "$f" .toml
-              done | sort -u)
-              # Expand to include transitive dependents.
-              # A revision bump on X must also rebuild
-              # anything that depends on X, so CI publishes
-              # fresh prebuilts for the whole cascade.
-              NAMES_NL=$(echo "$NAMES" | \
-                python3 scripts/expand_changed.py)
-            fi
-          fi
-
-          # Hand the (possibly empty) recipe list to the
-          # chunker. It reads .github/platforms.json itself,
-          # derives the cell budget from GH_MATRIX_CELL_CAP,
-          # and emits a JSON object with chunks, all_recipes,
-          # and platforms. Self-asserts each chunk stays
-          # within the cap. Stderr is the human log line;
-          # stdout is the contract.
+          # Hand the recipe list to the chunker. It reads
+          # .github/platforms.json itself, filters each
+          # recipe's cells to its declared [package].platforms
+          # (declared platforms are authoritative — ineligible
+          # platforms get no cell), derives the cell budget
+          # from GH_MATRIX_CELL_CAP, and emits a JSON object
+          # with chunks, all_recipes, and platforms.
+          # Self-asserts each chunk stays within the cap.
+          # Stderr is the human log line; stdout is the
+          # contract.
           DOC=$(printf '%s' "$NAMES_NL" \
             | python3 scripts/chunk_recipes.py)
 
@@ -158,9 +141,11 @@ jobs:
           # downstream jobs consume. jq -c keeps each line
           # compact so the GITHUB_OUTPUT shell-pair stays on
           # one line (multi-line outputs need an EOF marker).
-          echo "chunks=$(echo "$DOC" | jq -c '.chunks')" >> "$GITHUB_OUTPUT"
-          echo "all_recipes=$(echo "$DOC" | jq -c '.all_recipes')" >> "$GITHUB_OUTPUT"
-          echo "platforms=$(echo "$DOC" | jq -c '.platforms')" >> "$GITHUB_OUTPUT"
+          {
+            echo "chunks=$(echo "$DOC" | jq -c '.chunks')"
+            echo "all_recipes=$(echo "$DOC" | jq -c '.all_recipes')"
+            echo "platforms=$(echo "$DOC" | jq -c '.platforms')"
+          } >> "$GITHUB_OUTPUT"
 
   build-gale:
     needs: discover
@@ -207,9 +192,8 @@ jobs:
   # Fan one reusable-workflow call per chunk. Each chunk
   # carries a flat list of {recipe, platform, os} cells
   # (already sized to fit GH's per-matrix cell cap by the
-  # discover chunker). build-chunk re-asserts the cap on
-  # entry so a malformed cells_json fails loudly instead
-  # of being silently truncated by GH.
+  # discover chunker, which self-asserts the cap at
+  # generation).
   #
   # `secrets: inherit` so the called workflow gets
   # GITHUB_TOKEN with the same scopes (`packages: write`,
@@ -224,8 +208,8 @@ jobs:
     uses: ./.github/workflows/build-chunk.yml
     with:
       cells_json: ${{ toJson(matrix.chunk) }}
-      # Pin the build to the reviewed SHA when promoting a PR
-      # branch; empty builds the triggering commit.
+      # Pin the build to the reviewed SHA the promote flow
+      # authorized.
       ref: ${{ inputs.head_sha }}
     secrets: inherit
 
@@ -235,50 +219,22 @@ jobs:
       always() && !cancelled()
       && needs.discover.outputs.chunks != '[]'
       && needs.build.result != 'skipped'
-    # Serialize per target branch. A push-to-main rebuild and a
-    # promote build targeting a PR branch never contend (different
-    # groups); two promotes of the same branch queue rather than
-    # cancel — dropping a run would lose its .versions /
-    # .binaries.toml writes. The GraphQL commits below use
-    # expectedHeadOid as an optimistic lock; serialization keeps
-    # the loser's working-tree writes from being silently
-    # discarded.
+    # Serialize per target branch. Two promotes of the same
+    # branch queue rather than cancel — dropping a run would
+    # lose its .versions / .binaries.toml writes. The GraphQL
+    # commits below use expectedHeadOid as an atomic
+    # optimistic lock; serialization keeps the loser's
+    # working-tree writes from being silently discarded.
     concurrency:
-      group: update-recipes-${{ inputs.target_branch || 'main' }}
+      group: update-recipes-${{ inputs.target_branch }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          # Build artifacts and recipe content must come from the
-          # exact reviewed SHA when promoting a PR branch.
+          # Build artifacts and recipe content must come from
+          # the exact reviewed SHA.
           ref: ${{ inputs.head_sha }}
-
-      - name: Resolve commit target
-        id: target
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          TARGET_BRANCH: ${{ inputs.target_branch }}
-          HEAD_SHA: ${{ inputs.head_sha }}
-        run: |
-          # Empty target_branch => post-merge push path => main.
-          BRANCH="${TARGET_BRANCH:-main}"
-          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
-
-          # Branch-mode TOCTOU guard: the privileged build was
-          # authorized against HEAD_SHA. If someone pushed to the
-          # PR branch after approval, its tip no longer matches
-          # what was reviewed — refuse to attach binaries built
-          # from the old SHA onto newer code. Re-approval required.
-          if [ "$BRANCH" != "main" ] && [ -n "$HEAD_SHA" ]; then
-            TIP=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" \
-              --jq '.object.sha')
-            if [ "$TIP" != "$HEAD_SHA" ]; then
-              echo "::error::${BRANCH} tip ${TIP} != authorized ${HEAD_SHA}; branch moved since approval — re-apply the label to re-authorize"
-              exit 1
-            fi
-          fi
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
@@ -330,107 +286,15 @@ jobs:
 
           echo "All $(echo "$EXPECTED" | wc -l | tr -d ' ') requested recipes produced metadata."
 
+      # Regenerate each built recipe's .binaries.toml: the
+      # v0.16.5-readable head mirror plus the append-only
+      # [[history]] ledger. The script enforces the
+      # per-recipe all-eligible-platforms gate, hard-fails on
+      # missing digests, and refuses to rewrite history.
       - name: Write .binaries.toml files
         run: |
-          shopt -s nullglob
-
-          # Matrix has darwin-arm64, linux-amd64, linux-arm64.
-          # A recipe's .binaries.toml is only rewritten when
-          # metadata from every eligible platform landed — a
-          # per-recipe gate, not a batch-level one.
-          # Partial-success cases (one platform fails, others
-          # succeed) would otherwise overwrite the file and
-          # drop the previously-good shas for the platforms
-          # that didn't build this run. Eligible platforms
-          # come from the recipe's [package].platforms
-          # declaration when set (intersected with the CI
-          # matrix), else the full CI matrix — so linux-only
-          # or macOS-only recipes update their .binaries.toml
-          # as soon as every declared target builds.
-
-          # Group metadata by recipe name.
-          declare -A RECIPE_META
-          for META in /tmp/metadata/*.json; do
-            RECIPE=$(jq -r '.recipe' "$META")
-            RECIPE_META[$RECIPE]+=" $META"
-          done
-
-          for RECIPE in $(printf '%s\n' "${!RECIPE_META[@]}" | sort); do
-            LETTER="${RECIPE:0:1}"
-            RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
-            BINARIES_FILE="recipes/${LETTER}/${RECIPE}.binaries.toml"
-
-            # Eligible platforms for this recipe: intersection
-            # of the CI matrix and the recipe's declared
-            # platforms. Falls back to the full matrix when
-            # the recipe declares none.
-            EXPECTED_PLATFORMS=$(python3 - "$RECIPE_FILE" <<'PY'
-          import sys, tomllib
-          CI = {"darwin-arm64", "linux-amd64", "linux-arm64"}
-          with open(sys.argv[1], "rb") as f:
-              data = tomllib.load(f)
-          declared = data.get("package", {}).get("platforms")
-          if isinstance(declared, list):
-              eligible = {p for p in declared if p in CI}
-              print(len(eligible) or len(CI))
-          else:
-              print(len(CI))
-          PY
-          )
-
-            # Count platforms that produced metadata.
-            PLATFORM_COUNT=$(echo "${RECIPE_META[$RECIPE]}" | wc -w | tr -d ' ')
-            if [ "$PLATFORM_COUNT" -lt "$EXPECTED_PLATFORMS" ]; then
-              echo "::warning::Skipping ${RECIPE}: ${PLATFORM_COUNT}/${EXPECTED_PLATFORMS} platforms built; keeping existing ${BINARIES_FILE}"
-              continue
-            fi
-
-            # Get version from recipe.
-            VERSION=$(grep '^version' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *"//' | sed 's/".*//')
-            REVISION=$(grep '^revision' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *//; s/[^0-9].*//')
-
-            if [ -z "$REVISION" ] || \
-               [ "$REVISION" -lt 1 ] 2>/dev/null; then
-              REVISION=1
-            fi
-
-            if [ "$REVISION" -le 1 ]; then
-              INDEX_VERSION="${VERSION}"
-            else
-              INDEX_VERSION="${VERSION}-${REVISION}"
-            fi
-
-            # Build .binaries.toml with version + platform sha256 entries.
-            printf 'version = "%s"\n' "$INDEX_VERSION" > "$BINARIES_FILE"
-
-            for META in ${RECIPE_META[$RECIPE]}; do
-              PLATFORM=$(jq -r '.platform' "$META")
-              SHA256=$(jq -r '.sha256' "$META")
-              printf '\n[%s]\nsha256 = "%s"\n' \
-                "$PLATFORM" "$SHA256" >> "$BINARIES_FILE"
-
-              # C4: surface the resolved dep closure recorded at
-              # build time (captured from the archive's
-              # .gale-deps.toml in "Save build metadata"). Purely
-              # informational at install time — the archive's own
-              # .gale-deps.toml stays authoritative — but baking
-              # the closure into the registry lets `gale info` and
-              # audit tooling inspect it without fetching the
-              # tarball. Empty list is omitted to keep diffs
-              # quiet for zero-dep recipes.
-              DEP_COUNT=$(jq '.deps | length' "$META")
-              if [ "$DEP_COUNT" -gt 0 ]; then
-                printf 'deps = [\n' >> "$BINARIES_FILE"
-                jq -r '.deps[] | "  { name = \"\(.name)\", version = \"\(.version)\", revision = \(.revision) },"' \
-                  "$META" >> "$BINARIES_FILE"
-                printf ']\n' >> "$BINARIES_FILE"
-              fi
-            done
-
-            echo "Wrote ${BINARIES_FILE}"
-          done
+          python3 scripts/write_binaries.py \
+            --metadata-dir /tmp/metadata --repo-root .
 
       # Commit .binaries.toml and .versions in TWO commits so the
       # .versions entry can reference the commit that actually
@@ -446,16 +310,18 @@ jobs:
       #   2. commit the .versions files with each entry pointing
       #      at C
       # Under the mandated merge-commit, both land on main and C
-      # is reachable, so binaries@C resolve.
+      # is reachable, so binaries@C resolve. This two-commit
+      # append and the merge-commit setting persist for exactly
+      # as long as .versions files exist (the v0.16.5 bridge).
       #
       # GITHUB_TOKEN commits don't re-trigger workflows (no rebuild
       # loop). createCommitOnBranch auto-signs "Verified".
       - name: Commit binaries then versions
-        id: commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          BRANCH: ${{ steps.target.outputs.branch }}
+          BRANCH: ${{ inputs.target_branch }}
+          HEAD_SHA: ${{ inputs.head_sha }}
         run: |
           shopt -s nullglob
 
@@ -465,14 +331,21 @@ jobs:
             }
           }'
 
-          # commit_to_branch <headline> <file>...  -> echoes new oid
-          # Re-queries the branch tip on each attempt so a racing
-          # commit (e.g. our own first commit, or an unrelated
-          # push to main) is retried against the fresh oid rather
-          # than failing on a stale optimistic lock.
+          # commit_to_branch <headline> <expected_oid> <file>...
+          #   -> echoes new oid
+          # expectedHeadOid is the atomic optimistic lock: the
+          # mutation only lands if the branch tip still equals
+          # expected_oid. Commit 1 passes the reviewed HEAD_SHA,
+          # so a branch that moved after approval fails the
+          # mutation itself — the TOCTOU guard, atomic instead
+          # of check-then-act. On failure the tip is re-read:
+          # a moved tip is terminal (re-approval required); an
+          # unmoved tip means transient transport error,
+          # retried with backoff.
           commit_to_branch() {
             local headline="$1"; shift
-            local additions oid head_oid resp attempt
+            local expected_oid="$1"; shift
+            local additions oid tip resp attempt
             additions="[]"
             for f in "$@"; do
               additions=$(jq -n --argjson arr "$additions" \
@@ -480,12 +353,10 @@ jobs:
                 --arg contents "$(base64 -w0 < "$f")" \
                 '$arr + [{"path":$path,"contents":$contents}]')
             done
-            for attempt in 1 2 3 4 5; do
-              head_oid=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" \
-                --jq '.object.sha' 2>/dev/null) || head_oid=""
-              if [ -n "$head_oid" ] && resp=$(gh api graphql --input <(jq -n \
+            for attempt in 1 2 3; do
+              if resp=$(gh api graphql --input <(jq -n \
                   --arg query "$QUERY" --arg repo "$REPO" --arg branch "$BRANCH" \
-                  --arg oid "$head_oid" --arg headline "$headline" \
+                  --arg oid "$expected_oid" --arg headline "$headline" \
                   --argjson adds "$additions" \
                   '{query:$query, variables:{input:{
                      branch:{repositoryNameWithOwner:$repo, branchName:$branch},
@@ -498,7 +369,13 @@ jobs:
                   return 0
                 fi
               fi
-              echo "::warning::commit '$headline' attempt $attempt to ${BRANCH} failed (stale oid?), retrying" >&2
+              tip=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" \
+                --jq '.object.sha' 2>/dev/null) || tip=""
+              if [ -n "$tip" ] && [ "$tip" != "$expected_oid" ]; then
+                echo "::error::${BRANCH} tip ${tip} != expected ${expected_oid}; branch moved since approval — re-apply approved-for-build to re-authorize" >&2
+                return 1
+              fi
+              echo "::warning::commit '$headline' attempt $attempt to ${BRANCH} failed (transient), retrying" >&2
               cat /tmp/gqlerr >&2 2>/dev/null || true
               sleep $((attempt * 3))
             done
@@ -511,33 +388,23 @@ jobs:
           BIN_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
           BIN_FILES=$(printf '%s\n%s' "$BIN_CHANGED" "$BIN_NEW" | sort -u | grep . || true)
 
-          if [ -z "$BIN_FILES" ]; then
-            echo "No binary changes to commit"
-            echo "committed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          # --- commit 1: binaries (locked to the reviewed SHA) ---
+          if [ -n "$BIN_FILES" ]; then
+            mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
+            BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "$HEAD_SHA" "${BIN_ARR[@]}") || exit 1
+            echo "Binaries committed as ${BIN_OID}"
+          else
+            # No binary changes — write_binaries.py regenerated
+            # byte-identical files, so HEAD_SHA's tree already
+            # holds binaries matching the metadata. Do NOT exit:
+            # a prior run may have landed commit 1 and died
+            # before commit 2 (crash window), leaving .versions
+            # missing the entry. Run the loop with the
+            # checked-out SHA as the pin; on a normal re-promote
+            # the ENTRY_KEY grep below makes it a no-op.
+            echo "No binary changes; checking .versions entries"
+            BIN_OID="$HEAD_SHA"
           fi
-
-          # Reproducibility-regression guard (Part 5): on a
-          # post-merge rebuild of main, the binaries are already
-          # committed (via the merged PR branch). A *modification*
-          # to a tracked .binaries.toml here means the rebuild was
-          # not byte-reproducible — committing it would briefly put
-          # main in the mismatched state this whole design exists to
-          # prevent. Fail loudly instead. (New untracked files are
-          # allowed: a legacy direct-to-main build of a fresh recipe.)
-          if [ "$BRANCH" = "main" ]; then
-            if [ -n "$BIN_CHANGED" ]; then
-              echo "::error::reproducibility regression: a main rebuild produced different .binaries.toml than already committed:"
-              echo "$BIN_CHANGED" | sed 's/^/  - /'
-              echo "This recipe is not byte-reproducible, or was changed outside the promote flow. Investigate before any commit lands on main."
-              exit 1
-            fi
-          fi
-
-          # --- commit 1: binaries ---
-          mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
-          BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "${BIN_ARR[@]}") || exit 1
-          echo "Binaries committed as ${BIN_OID}"
 
           # --- write .versions entries pointing at BIN_OID ---
           # Entry key is the bare version for revision 1 and
@@ -552,17 +419,17 @@ jobs:
             RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
             VERSIONS_FILE="recipes/${LETTER}/${RECIPE}.versions"
 
-            # `|| true`: a recipe with no `revision` line is
-            # revision 1; grep's exit 1 must not abort the step
-            # under `set -o pipefail`.
-            VERSION=$(grep '^version' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *"//; s/".*//' || true)
-            REVISION=$(grep '^revision' "$RECIPE_FILE" | \
-              head -1 | sed 's/.*= *//; s/[^0-9].*//' || true)
-            if [ -z "$REVISION" ] || \
-               [ "$REVISION" -lt 1 ] 2>/dev/null; then
-              REVISION=1
-            fi
+            # One tomllib read for version+revision, same as
+            # build-chunk.yml's Resolve-immutable-tag step —
+            # grep/sed reimplementations drift from TOML
+            # semantics (e.g. any version*-prefixed key).
+            read -r VERSION REVISION < <(python3 - "$RECIPE_FILE" <<'PY'
+          import sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              pkg = tomllib.load(f)["package"]
+          print(pkg["version"], int(pkg.get("revision", 1) or 1))
+          PY
+            )
             if [ "$REVISION" -le 1 ]; then
               ENTRY_KEY="${VERSION}"
             else
@@ -589,23 +456,5 @@ jobs:
           VER_FILES=$(printf '%s\n%s' "$VER_CHANGED" "$VER_NEW" | sort -u | grep . || true)
           if [ -n "$VER_FILES" ]; then
             mapfile -t VER_ARR < <(printf '%s\n' "$VER_FILES")
-            commit_to_branch "Update .versions from build" "${VER_ARR[@]}" >/dev/null || exit 1
+            commit_to_branch "Update .versions from build" "$BIN_OID" "${VER_ARR[@]}" >/dev/null || exit 1
           fi
-
-          echo "committed=true" >> "$GITHUB_OUTPUT"
-
-      # GitHub's workflow_run trigger is suppressed when the
-      # upstream workflow was dispatched with GITHUB_TOKEN
-      # (anti-loop safety). push triggers on the just-landed
-      # commit are suppressed for the same reason. So Publish
-      # Pages has no way to auto-refresh after a CI commit.
-      # Dispatch it explicitly, gated on an actual commit to
-      # avoid regenerating for no-op runs (no recipes built,
-      # or build matrix produced nothing new).
-      - name: Regenerate status dashboard
-        if: >-
-          steps.commit.outputs.committed == 'true'
-          && steps.target.outputs.branch == 'main'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run pages.yml --ref main
