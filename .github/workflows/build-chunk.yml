@@ -322,7 +322,7 @@ jobs:
           # Pinned: digest capture below depends on
           # `oras push --format`, and the action's floating
           # default could move under us.
-          version: "1.3.2"
+          version: "1.3.1"
 
       - name: Login to GHCR
         env:
