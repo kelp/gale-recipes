@@ -1,7 +1,7 @@
 [package]
 name = "curl"
 version = "8.19.0"
-revision = 2
+revision = 3
 description = "Get a file from an HTTP, HTTPS or FTP server"
 license = "curl"
 homepage = "https://curl.se"
