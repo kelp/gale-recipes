@@ -16,6 +16,14 @@ steps = [
   "meson setup build --prefix=${PREFIX} --buildtype=release -Dxml_docs=disabled -Ddoxygen_docs=disabled -Dsystemd=disabled -Dlaunchd=disabled",
   "meson compile -C build",
   "meson install -C build",
+  # dbus-daemon, dbus-run-session, and the libexec launch
+  # helper link @rpath/libdbus-1.3.dylib (the sibling dylib
+  # this build installs to lib/) but bake no rpath to find it,
+  # so dyld aborts at runtime and check_install fails. Add
+  # @loader_path/../lib per Mach-O file under bin/ and libexec/
+  # (both one level below PREFIX). Mach-O-gated via file(1), so
+  # this is a no-op on Linux. Pattern: recipes/p/postgresql.toml.
+  "find ${PREFIX}/bin ${PREFIX}/libexec -type f 2>/dev/null | while read -r f; do file \"$f\" | grep -q Mach-O || continue; rel=${f#${PREFIX}/}; dir=${rel%/*}; ups=\"\"; IFS=/; for c in $dir; do ups=\"../$ups\"; done; unset IFS; install_name_tool -add_rpath \"@loader_path/${ups}lib\" \"$f\" 2>/dev/null || true; done",
 ]
 
 [dependencies]
