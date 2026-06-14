@@ -53,3 +53,9 @@ deps = [
   { name = "xz", version = "5.8.3", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
+
+[[history]]
+version = "0.46.4-2"
+darwin-arm64 = { sha256 = "a4bb12908c99932bbb58d3ea89bb9417780c6a0b0661c4e9e369cbe9003e5330", manifest_digest = "sha256:e60355b70637d59a600318a6998b589b023c3b717d67567e31abbcabf68d774d" }
+linux-amd64 = { sha256 = "6d596302769abbf8122cc975cd292c938492e62b78d114a1c2b8714fd4b48140", manifest_digest = "sha256:b00f9f0b7fa94c663285a140c4e09ff686e7353bc8835a78ef869d814be5478c" }
+linux-arm64 = { sha256 = "5daf799de7ac87b80f941c6015eb8587d12b30d1f5014e4549b85059aa73d769", manifest_digest = "sha256:c027fe63195f1282c4c3ae44c4c75bb6a8356a23356ef4c198a31833c8a0660d" }

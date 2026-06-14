@@ -17,3 +17,9 @@ sha256 = "d4693694c23e75f4be5af490aabdecef402b85e3cb34329f19e3fa3eca4a29a4"
 deps = [
   { name = "openssl", version = "3.6.1", revision = 3 },
 ]
+
+[[history]]
+version = "4.3.3-2"
+darwin-arm64 = { sha256 = "2509ef964dd834bf6c8d2b23800947e03cba276e8ca7ec6023efd5a8057a0db0", manifest_digest = "sha256:2d314734e610569d3bbe22902658a7213e9036d08192d2731d55875e413edf4b" }
+linux-amd64 = { sha256 = "a326dc6cca39516da824814eac0d3a3bc9ccae18e3698704cbab773906a36976", manifest_digest = "sha256:d5b00a64bbafc79a6a8df944793549459dc74f6c37cf9573d2c7b148dd694355" }
+linux-arm64 = { sha256 = "d4693694c23e75f4be5af490aabdecef402b85e3cb34329f19e3fa3eca4a29a4", manifest_digest = "sha256:ae33aabd1e9cfaa89c7702e2dd395b4d9f6f4544a74112ef1e5a278d8453f88a" }

@@ -38,3 +38,9 @@ deps = [
   { name = "readline", version = "8.2", revision = 2 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
+
+[[history]]
+version = "4.0.5-1"
+darwin-arm64 = { sha256 = "45aec3e1328043039c1d85982ed9f0831b6ac4eb191fb370cf0092b8224b18b6", manifest_digest = "sha256:ffdd4f69b394974aba5323b32fef923086605e45ffedcacdab1861097e1fc8fd" }
+linux-amd64 = { sha256 = "4001924ca0af1e9534ef3d7b83e568fa1a7c56f21f63f3955d3f4892e21dba86", manifest_digest = "sha256:a497ad491cfb9ebc3adb11e7357213454d430586ed07533b7bcdffeefb8cb247" }
+linux-arm64 = { sha256 = "22f524ca64c258955b74050c8f9ca2d5053163d4d949473593ef300b531b89c5", manifest_digest = "sha256:661cb1c3ac48dde1a4db15274778a2cef2228c3b14a765a1e213fbf75b94448e" }
