@@ -17,3 +17,9 @@ sha256 = "e9ca9545c59a0c3cbce827e27526702bb6fa4edef4de98e6a9a1af2b856e1b2b"
 deps = [
   { name = "ncurses", version = "6.4", revision = 2 },
 ]
+
+[[history]]
+version = "3.5.1-2"
+darwin-arm64 = { sha256 = "3f10ef5c5940002143554ed714724d94b1ebd9ae2a12bdf03dcd454e14ef5886", manifest_digest = "sha256:80fea7c3941ca3589ab11e9854314cb580b3f1fb43ef127f6540e311abc0c9db" }
+linux-amd64 = { sha256 = "75130916a8a8a0b5913ac05ee16a3d317294c6cbf594146b749f1edab37f019f", manifest_digest = "sha256:2687f7e4e911757938cb412bd7bb8385009d60114419f9b715890e91e12b8092" }
+linux-arm64 = { sha256 = "e9ca9545c59a0c3cbce827e27526702bb6fa4edef4de98e6a9a1af2b856e1b2b", manifest_digest = "sha256:7a6d780fe1e883062b8ab3883342fdc63780d097b1553d28ba90fa61b174286d" }

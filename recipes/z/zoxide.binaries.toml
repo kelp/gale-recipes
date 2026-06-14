@@ -17,3 +17,9 @@ sha256 = "27fc6584f1d7562a17e83706f5143b885e191a2a1e452601a8effdf34155f6ea"
 deps = [
   { name = "rust", version = "1.95.0", revision = 2 },
 ]
+
+[[history]]
+version = "0.9.9-2"
+darwin-arm64 = { sha256 = "899896808384f27324e81e7159c15cf9c8a1d3ac5395d6479bb7ae56c9b68ff4", manifest_digest = "sha256:9da1377c0a4409db7ea761938cbe383833d1e8699375e3a6fa7b284f2156f9c3" }
+linux-amd64 = { sha256 = "5e5f8064176471e59ef1cf53cc48bb008ef4b5e90e43562f9b6fe04be90cf87a", manifest_digest = "sha256:852e3c031c050a19d3f93c6e351b84986c84391eb508f415d119b42d4d43b696" }
+linux-arm64 = { sha256 = "27fc6584f1d7562a17e83706f5143b885e191a2a1e452601a8effdf34155f6ea", manifest_digest = "sha256:ab7ab6bed871c45a5ebcfc4c122a00d81be9124b7be9108583a87e76954d52b4" }

@@ -17,3 +17,9 @@ sha256 = "23c2ab76b407a73474f994c05a3c3f94f5e5ae94a5148bbff8ca0f0d59ded6d3"
 deps = [
   { name = "zig", version = "0.16.0", revision = 1 },
 ]
+
+[[history]]
+version = "0.16.0-3"
+darwin-arm64 = { sha256 = "85fb291cb745348b33ccc993513f90660f0db8bcb6d6d2f42150833426ca093f", manifest_digest = "sha256:d280148c8af00a3ba5bc42dd036b4eff77dfd045038576991dc999e45f79dbb3" }
+linux-amd64 = { sha256 = "d2ec7ef7c09c10f04e25cd3e7269da5ffe8b48ff49996e8372a3f61b3e622ff7", manifest_digest = "sha256:d285efee112099ca2f47f9b122bebd1a79696ff889202b16a364f62523990d03" }
+linux-arm64 = { sha256 = "23c2ab76b407a73474f994c05a3c3f94f5e5ae94a5148bbff8ca0f0d59ded6d3", manifest_digest = "sha256:3a61a7614ca7b35c2cfdf1515a5d26abcfbb6f059355a2b1f8eab1ff78a7283d" }

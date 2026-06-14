@@ -26,3 +26,9 @@ deps = [
   { name = "rust", version = "1.96.0", revision = 1 },
   { name = "zlib", version = "1.3.2", revision = 2 },
 ]
+
+[[history]]
+version = "0.44.3-2"
+darwin-arm64 = { sha256 = "c36656aeedf79499a6b313088de099f3b83a1f9c6789aaf4ff05f1168539225c", manifest_digest = "sha256:2d9bd8d80cdc24820b85a0dbadcdafd052a52c392793f4d878ec13c07d6bdf7d" }
+linux-amd64 = { sha256 = "62049efeccda3b4aa7db82e8bff09113707282455b444dbfb2c0cf7ed4e05ab4", manifest_digest = "sha256:dbf08110b33a2d00a73f4c146d2f217799f83bcd6c3199f183cdc00e180eb1cb" }
+linux-arm64 = { sha256 = "5dbcb263c568191e15902c0a0b336be721adfd7991e55982c82cd33f9a46fb6b", manifest_digest = "sha256:909f299ca843192a5258bb317c3d563d10b9cb8062a9bd9d9389521bcecc8b86" }

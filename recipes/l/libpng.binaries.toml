@@ -1,11 +1,16 @@
-version = "1.6.58"
+version = "1.6.58-2"
 
 [darwin-arm64]
-sha256 = "9cf12fa62474a988921b019b77e5d15cfd6a692532fd89459e3c1cb67aa61c19"
+sha256 = "ffbafffd1fc6a537382d25f3b015d3cdbf41125a44f0ed2ca8937faaefc37812"
+manifest_digest = "sha256:d2798278531b1eda7287387230b4e5c33c7778875290fdcb1941aa954322faa9"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "gnumake", version = "4.4.1", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
+
+[[history]]
+version = "1.6.58-2"
+darwin-arm64 = { sha256 = "ffbafffd1fc6a537382d25f3b015d3cdbf41125a44f0ed2ca8937faaefc37812", manifest_digest = "sha256:d2798278531b1eda7287387230b4e5c33c7778875290fdcb1941aa954322faa9" }
