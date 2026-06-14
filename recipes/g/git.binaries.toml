@@ -44,3 +44,9 @@ deps = [
   { name = "zlib", version = "1.3.2", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
+
+[[history]]
+version = "2.54.0-2"
+darwin-arm64 = { sha256 = "5e05ba2cbab4a41c9ec0f666d3f1c8300bafafa99ae88ef6a1b6a0a93b6f0bc1", manifest_digest = "sha256:8767a4235460909791ddadbe5ad459a327400cf1aa89b73fb1b4a46fce46f32f" }
+linux-amd64 = { sha256 = "2914dc572a5f8b210700863520b7ce0d0b89a42c34c6fcfef893437a11bf3a52", manifest_digest = "sha256:f577fb21cfc9830f70edeaf44e090a002e2d6946f2ea5feb027a61650365bb3d" }
+linux-arm64 = { sha256 = "7154b4c78d7c52c96e962aed45e6026a8d29f0c6a881d8619b6070b65540b2dc", manifest_digest = "sha256:6ccca9cce62d03e40cecf04ed080181437c11b668401c496eb06e68364d3d481" }

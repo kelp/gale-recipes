@@ -17,3 +17,9 @@ sha256 = "041f605a5c63fb104ce2b74366add502e559285d4f45975ee3acd0d5ae4e8457"
 deps = [
   { name = "go", version = "1.26.1", revision = 2 },
 ]
+
+[[history]]
+version = "1.160.0-2"
+darwin-arm64 = { sha256 = "2a2219c7fac03097432dd593f1f9329d7abced2c3723389fa19f3dec96d9223d", manifest_digest = "sha256:5528efc9ff6ced7db3ceb1cdcc41670dcf33388e7ab70f2e804d26db799829d2" }
+linux-amd64 = { sha256 = "6f6b20c4b3b99637b7553c41e717de03b6faf95415b1729904bbb6e33125b6a6", manifest_digest = "sha256:459e1b2c21b9f16e046522742c9011cec9a6adc7218c1c52861b3db40e177035" }
+linux-arm64 = { sha256 = "041f605a5c63fb104ce2b74366add502e559285d4f45975ee3acd0d5ae4e8457", manifest_digest = "sha256:642f4218610b04b2d5639958f881c4c817472c2aa19eaf161945a95ce461ad92" }

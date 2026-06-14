@@ -23,3 +23,9 @@ deps = [
   { name = "openssl", version = "3.6.1", revision = 3 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
+
+[[history]]
+version = "2.63.1-2"
+darwin-arm64 = { sha256 = "a21887d6754ffd40a9d847027b09c16b5b6678ee4a339284953ab70fe294451c", manifest_digest = "sha256:8cc2a12900b99280076b3116e8bc3f55f9e60527cb8296a0ec2ff7c23d93663f" }
+linux-amd64 = { sha256 = "18a796c94873814a4cb7e301f1411954c5cebe5ec84774f67959d375621ac667", manifest_digest = "sha256:efb79f808582068ffe1abf24adff9112abe5ed6a37edb7736b9889865cac85a9" }
+linux-arm64 = { sha256 = "4348fe3af400d1c0a7ef850499b655596ed09a9e8e010c32a4e108ccdad7b5bd", manifest_digest = "sha256:32cf912ef93bde9e203de4098eae8af23f3451b9699116a22d3fb7de0517074f" }

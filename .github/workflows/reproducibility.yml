@@ -74,17 +74,38 @@ jobs:
           fi
           echo "file=${FILE}" >> "$GITHUB_OUTPUT"
 
+      # Manual-only workflow keeps its skip semantics, but the
+      # decision comes from the recipe's [package].platforms
+      # declaration, not from grepping build-log text.
+      - name: Check platform eligibility
+        id: eligible
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          SKIP=$(python3 - "$RECIPE_FILE" <<'PY'
+          import os, sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              data = tomllib.load(f)
+          declared = data.get("package", {}).get("platforms")
+          platform = os.environ["PLATFORM"]
+          ineligible = (
+              isinstance(declared, list) and platform not in declared
+          )
+          print("true" if ineligible else "false")
+          PY
+          )
+          if [ "$SKIP" = "true" ]; then
+            echo "::notice::Recipe ${RECIPE_NAME} doesn't declare ${PLATFORM}; skipping"
+          fi
+          echo "skipped=${SKIP}" >> "$GITHUB_OUTPUT"
+
       - name: Build recipe (first run)
+        if: steps.eligible.outputs.skipped != 'true'
         id: build1
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
           OUTPUT=$(gale build "$RECIPE_FILE" 2>&1 | tee /tmp/build1.log)
-          if grep -q 'unsupported platform' /tmp/build1.log; then
-            echo "::notice::Recipe ${RECIPE_NAME} doesn't support ${PLATFORM}; skipping"
-            echo "skipped=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
           ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' | awk '{print $2}')
           SHA=$(echo "$OUTPUT" | grep '^sha256:' | awk '{print $2}')
           if [ -z "$ARCHIVE" ] || [ -z "$SHA" ]; then
@@ -94,11 +115,10 @@ jobs:
           fi
           cp "$ARCHIVE" /tmp/build1.tar.zst
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
-          echo "skipped=false" >> "$GITHUB_OUTPUT"
           echo "First build sha256: ${SHA}"
 
       - name: Reset transient build state
-        if: steps.build1.outputs.skipped != 'true'
+        if: steps.eligible.outputs.skipped != 'true'
         run: |
           # Wipe the produced archive and any per-build tmpdirs
           # so the second run rebuilds from scratch. Source-tarball
@@ -107,7 +127,7 @@ jobs:
           rm -rf ~/.gale/tmp || true
 
       - name: Build recipe (second run)
-        if: steps.build1.outputs.skipped != 'true'
+        if: steps.eligible.outputs.skipped != 'true'
         id: build2
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -125,7 +145,7 @@ jobs:
           echo "Second build sha256: ${SHA}"
 
       - name: Compare archives
-        if: steps.build1.outputs.skipped != 'true'
+        if: steps.eligible.outputs.skipped != 'true'
         env:
           SHA1: ${{ steps.build1.outputs.sha256 }}
           SHA2: ${{ steps.build2.outputs.sha256 }}
@@ -145,7 +165,7 @@ jobs:
           exit 1
 
       - name: Upload archives on mismatch
-        if: failure() && steps.build1.outputs.skipped != 'true'
+        if: failure() && steps.eligible.outputs.skipped != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: archives-${{ matrix.target.platform }}

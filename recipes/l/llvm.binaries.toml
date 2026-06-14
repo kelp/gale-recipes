@@ -5,3 +5,8 @@ sha256 = "5cfbe4aacd5689934a65fbb252da9031888c4795ef36e8d108b322e705d94805"
 
 [linux-arm64]
 sha256 = "de58a9d3bd5b58b8736a1defbdcc90f9d7ce8709070ec2d14a33eace04c285a7"
+
+[[history]]
+version = "22.1.1-2"
+linux-amd64 = { sha256 = "5cfbe4aacd5689934a65fbb252da9031888c4795ef36e8d108b322e705d94805", manifest_digest = "sha256:a99c096bc15d0d0578262e2b5143bae959353030f576a4dec4e356cbc60e55b1" }
+linux-arm64 = { sha256 = "de58a9d3bd5b58b8736a1defbdcc90f9d7ce8709070ec2d14a33eace04c285a7", manifest_digest = "sha256:ebb54f655424111bc5773d233f252f402c647a96f93124cdd11bbab6600cb82f" }

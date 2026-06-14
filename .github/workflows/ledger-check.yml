@@ -1,0 +1,61 @@
+name: Ledger Check
+
+# The single REQUIRED status check on main (job id
+# `ledger-check` — that exact name goes in the Protect-main
+# ruleset). A PR that changes a recipe's (version, revision)
+# must carry a matching, platform-complete [[history]] entry
+# whose digests the head mirror echoes, and history must be
+# append-only. PRs touching no recipe versions pass
+# trivially. Pure tomllib + git; ZERO registry calls.
+#
+# Expected lifecycle on a version-bump PR: this check is RED
+# (with an explanatory message) until a maintainer applies
+# `approved-for-build` and promote's build commits the
+# ledger onto the PR branch. verify green != mergeable —
+# that red is the design working, not flakiness.
+#
+# workflow_dispatch exists because promote's GITHUB_TOKEN
+# GraphQL commits suppress pull_request events: build.yml
+# (and auto-update.sh for bot PRs) dispatch this workflow on
+# the PR branch explicitly. The dispatched run's check
+# attaches to the branch-tip SHA — the PR head after promote
+# commits — so it satisfies the required check. No inputs:
+# the run's --ref selects the branch.
+#
+# Deliberately NO `paths:` filter on pull_request. GitHub
+# cannot path-scope a required status check, so a filtered-
+# out run never attaches and the PR sits at "Expected"
+# forever — every workflow/script/docs PR would be
+# unmergeable (and the manual-dispatch workaround cannot
+# target a fork's ref). check_ledger.py exits trivially on
+# PRs touching no recipes; the whole job costs under a
+# minute. Cheap insurance beats a frozen main.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ledger-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          # check_ledger diffs against merge-base(origin/main,
+          # HEAD); full history keeps that resolvable on any
+          # branch shape.
+          fetch-depth: 0
+
+      # The script tests gate exactly the PRs where the
+      # scripts are load-bearing — every recipe PR runs them
+      # here before the check that depends on them.
+      - name: Script unit tests
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+
+      - name: Check ledger
+        run: |
+          python3 scripts/check_ledger.py \
+            --base "origin/${{ github.base_ref || 'main' }}"
