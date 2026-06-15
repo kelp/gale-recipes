@@ -1,28 +1,37 @@
-version = "1.25.0-2"
+version = "1.25.0-3"
 
 [darwin-arm64]
-sha256 = "ea22d02e2dd49ccff6793d2821048c746c678e2893992533b2b30d72f4199ad7"
+sha256 = "22087ac42c04ebe5a758529fec4d0e662d8c9013598341e6056b2f18f2a74cdf"
+manifest_digest = "sha256:c2dc695874fba7300d9f3584f74e94cfeb7d9dd8df16cb8544bf7c1b600e33c2"
 deps = [
   { name = "gettext", version = "1.0", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "5f2ffbfd6932e92303b8ffbc86f700dd3f60cf21c041d9b1e3ee2369a52756b4"
+sha256 = "0800e25e03df1afe301fe2576dd05595b5589f0de2f75086270c51b93585bce4"
+manifest_digest = "sha256:06ef4e387d3eadd763d1ed3e0d05741ec3706ccb29d748ee11ccd38556392f55"
 deps = [
   { name = "gettext", version = "1.0", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "98d21a44846e0052064870d4676b9466a4d21d9c2cc2ac0885d9c75c053f5efc"
+sha256 = "da3a5a5f7994ad014ef7cf4ab25a2ca5fd49a61adccf1230f00b574605576d0a"
+manifest_digest = "sha256:af2a807cbe5878ffc8599eb44b1c28e1a5d805f1aedde2ff45db598ca06f8c48"
 deps = [
   { name = "gettext", version = "1.0", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
+
+[[history]]
+version = "1.25.0-3"
+darwin-arm64 = { sha256 = "22087ac42c04ebe5a758529fec4d0e662d8c9013598341e6056b2f18f2a74cdf", manifest_digest = "sha256:c2dc695874fba7300d9f3584f74e94cfeb7d9dd8df16cb8544bf7c1b600e33c2" }
+linux-amd64 = { sha256 = "0800e25e03df1afe301fe2576dd05595b5589f0de2f75086270c51b93585bce4", manifest_digest = "sha256:06ef4e387d3eadd763d1ed3e0d05741ec3706ccb29d748ee11ccd38556392f55" }
+linux-arm64 = { sha256 = "da3a5a5f7994ad014ef7cf4ab25a2ca5fd49a61adccf1230f00b574605576d0a", manifest_digest = "sha256:af2a807cbe5878ffc8599eb44b1c28e1a5d805f1aedde2ff45db598ca06f8c48" }
