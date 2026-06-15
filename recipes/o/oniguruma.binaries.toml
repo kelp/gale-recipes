@@ -8,3 +8,9 @@ sha256 = "1412cd8694955e720a3f0ce9e0225ffa59c32ed6ce5deaff474d6640efd2f38e"
 
 [linux-arm64]
 sha256 = "968670c085481f8e9dddb8441fab69b94fa14fc4a76438d39412b0697ca3b1be"
+
+[[history]]
+version = "6.9.10-2"
+darwin-arm64 = { sha256 = "1d676ab17c72536c412bfd5565e0e564bc1c0c7f137d516cbc37d3877f34a7a6", manifest_digest = "sha256:12418d43e7ba56d11167c56bb6a95532418e84fb49af02da95ebad16545080ea" }
+linux-amd64 = { sha256 = "1412cd8694955e720a3f0ce9e0225ffa59c32ed6ce5deaff474d6640efd2f38e", manifest_digest = "sha256:a0b7401d57978ae503ec90b70346384da2ddec7151eca12e06ae30505b2bb2d6" }
+linux-arm64 = { sha256 = "968670c085481f8e9dddb8441fab69b94fa14fc4a76438d39412b0697ca3b1be", manifest_digest = "sha256:3cadb70ab4ce4b5410a116a42182cfd52c32ca34c012ceead80ed451a4d31db4" }

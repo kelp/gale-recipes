@@ -20,3 +20,9 @@ deps = [
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "rust", version = "1.95.0", revision = 2 },
 ]
+
+[[history]]
+version = "0.11.2-2"
+darwin-arm64 = { sha256 = "3c7e3dade43e85a9f85200960e41c0484913a4c3a83e8a075a657fea7236ed42", manifest_digest = "sha256:a58b1225eed45f73714ec826388a4aed06fd18dce49d38cf1fc5d58e4aa9bc47" }
+linux-amd64 = { sha256 = "9d560ad01b4a5d6707b5d58f89485d3d438ab17c82f18d417bcc324d373a6ac0", manifest_digest = "sha256:b40303da816f3d554f92023f988b4534436d493b74c404912b9eed75b76fb8cf" }
+linux-arm64 = { sha256 = "771f6d0971c6b35c328027af92c17bd587b70602ea6ec88cfdcb7686fd592ea2", manifest_digest = "sha256:81088d1bcfa9743e229953c68b249ccd668b23d6e119ed7dcbffbfa2471ef994" }

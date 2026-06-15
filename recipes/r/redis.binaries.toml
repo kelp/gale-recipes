@@ -20,3 +20,9 @@ deps = [
   { name = "gnumake", version = "4.4.1", revision = 2 },
   { name = "openssl", version = "3.6.1", revision = 3 },
 ]
+
+[[history]]
+version = "8.8.0-2"
+darwin-arm64 = { sha256 = "3a1115256516616edfc1e89012d58e7225a840fd3bdcd901005e897b79502fae", manifest_digest = "sha256:bfcdb34139212270474b1d7f680eac4a6688959d9c89aede872745401dcde346" }
+linux-amd64 = { sha256 = "96dc27a7e709c58e64a86c131432944a114ebe96b559cf7a66d6a5e211c84131", manifest_digest = "sha256:e33583c1ad23e22f6f9a82f0669828315ffcf90a7de2f6a78e233a1892665b01" }
+linux-arm64 = { sha256 = "b78bac981cd18f416bed6917d45b32564f4d12399ded2e691309f36c88805a8a", manifest_digest = "sha256:e292001fe1fe0512f81796993d5cfc16187c5804fd3b6de998a8aa26234d3e37" }

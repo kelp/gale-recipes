@@ -26,3 +26,9 @@ deps = [
   { name = "pkgconf", version = "2.5.1", revision = 2 },
   { name = "zstd", version = "1.5.7", revision = 2 },
 ]
+
+[[history]]
+version = "3.4.3-2"
+darwin-arm64 = { sha256 = "b46077f86cd234dacc617076cccba156652f4316e362dc34cee94d3e4a22013a", manifest_digest = "sha256:3f5c4b4a66374f70de52046584f9bb5858df8bf4f4212464aa8aada1f718bf5c" }
+linux-amd64 = { sha256 = "bcc2d0ee2f752c8fc54fa4772e9aec25f41d2ed21d9ba7346d576c9f0d9332ed", manifest_digest = "sha256:802304e562814407f9512941ce5c21633c32c3d24e9efa8606d7bbf619048a9d" }
+linux-arm64 = { sha256 = "bf4807f6a6302b9ed5a91a4383ac3462be1c06cb79d56686a0b77ae63658c196", manifest_digest = "sha256:222712fa6ea4a4aee798eff4cc000b76a07e153645690013bb4d1716ae8a9a20" }

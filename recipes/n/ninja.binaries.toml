@@ -1,46 +1,55 @@
-version = "1.13.2-2"
+version = "1.13.2-3"
 
 [darwin-arm64]
-sha256 = "421f3500dc227d43cb0ca81e2a4c6271753b9d28c01e0168978d76fa687f3fd8"
+sha256 = "a4d98a156e0ba8fd301b3aae49ae7b3c85554d26adb969c44b63e62ae86680f0"
+manifest_digest = "sha256:41dabfe52baa1744e3b9df5f324824f9105d983ebd7b2760a8b3a3e87891c8ca"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
-  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "python", version = "3.14.5", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-amd64]
-sha256 = "157e93e7ee1867932fa09634dc76ed8ee17ff22e0376d09a431b857acb2f5c57"
+sha256 = "e58055f708332d505173499354ff28f25b74f5f64130a74350144012f27cf68d"
+manifest_digest = "sha256:34c02ecf50a90330f96bb04bd5bc3cba9cd04c98f9f966bacf538375bcf303a3"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
-  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "python", version = "3.14.5", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-arm64]
-sha256 = "f9a95004c9ad158bfe12ca3f952b860316a256a68d5e12eac7dfa9a49fbf7b16"
+sha256 = "e2d8b5962ef06e49f86ec0681c9d40cfdc4e3d2b884174c9f67608a59b52c747"
+manifest_digest = "sha256:e62284b2791fd679bbc955db02cd140d9902203093282ae7259acb1478d389ae"
 deps = [
   { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libffi", version = "3.5.2", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
-  { name = "python", version = "3.14.4", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "python", version = "3.14.5", revision = 3 },
   { name = "readline", version = "8.2", revision = 2 },
   { name = "sqlite", version = "3.48.0", revision = 2 },
   { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
+
+[[history]]
+version = "1.13.2-3"
+darwin-arm64 = { sha256 = "a4d98a156e0ba8fd301b3aae49ae7b3c85554d26adb969c44b63e62ae86680f0", manifest_digest = "sha256:41dabfe52baa1744e3b9df5f324824f9105d983ebd7b2760a8b3a3e87891c8ca" }
+linux-amd64 = { sha256 = "e58055f708332d505173499354ff28f25b74f5f64130a74350144012f27cf68d", manifest_digest = "sha256:34c02ecf50a90330f96bb04bd5bc3cba9cd04c98f9f966bacf538375bcf303a3" }
+linux-arm64 = { sha256 = "e2d8b5962ef06e49f86ec0681c9d40cfdc4e3d2b884174c9f67608a59b52c747", manifest_digest = "sha256:e62284b2791fd679bbc955db02cd140d9902203093282ae7259acb1478d389ae" }

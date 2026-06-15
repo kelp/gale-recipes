@@ -11,13 +11,36 @@ name: Build Chunk
 # the GH cap — no implicit multiplication, no platform-count
 # coupling. Adding a platform changes only platforms.json;
 # this workflow doesn't care how many cells there are as
-# long as len(cells) <= cap.
+# long as len(cells) <= cap. The chunker self-asserts that
+# cap at generation (scripts/chunk_recipes.py), and the
+# update-recipes completeness check in build.yml turns any
+# silently dropped cell into a workflow failure — the
+# neovim 9-day stale incident of 2026-05-18 cannot recur
+# silently.
 #
-# The first job — verify-chunk-size — re-asserts the cap on
-# entry so a malformed cells_json fails loudly instead of
-# being silently truncated by GH's matrix expander. That
-# silent truncation was the root cause of the neovim 9-day
-# stale incident on 2026-05-18.
+# Cells arrive pre-filtered to each recipe's declared
+# [package].platforms, so every cell here is expected to
+# build. A build failure is a failure, full stop — there is
+# no 'unsupported platform' skip path.
+#
+# Registry semantics (write-once GHCR):
+# - Every artifact publishes under the IMMUTABLE revisioned
+#   tag <version>-<revision>-<platform>, exactly once. Tags
+#   are never pushed twice, moved, or deleted.
+# - Adopt-or-push: if the tag already exists, the job ADOPTS
+#   the registry artifact's digests into build metadata —
+#   after still building and smoke-testing locally; adoption
+#   never skips testing. A content mismatch between the local
+#   rebuild and the registry artifact is a logged ::warning
+#   (the darwin non-byte-reproducibility metric), never an
+#   overwrite: the registry artifact is what clients pin.
+# - Only a confirmed HTTP 404 from the manifest endpoint
+#   permits a push. Any other failure retries and then fails
+#   the job — a transient registry error must never be
+#   treated as an absent tag.
+# - Legacy bare <version>-<platform> tags are GC anchors for
+#   installs already pinned to them. They are never pushed,
+#   moved, or deleted again.
 
 on:
   workflow_call:
@@ -47,38 +70,17 @@ permissions:
   attestations: write
 
 jobs:
-  # Cheap pre-flight: assert the chunk is within the cap
-  # before the matrix expander silently truncates. Reading
-  # the cap from chunk_recipes.py ties this assertion to
-  # the same source of truth the chunker used.
-  verify-chunk-size:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - name: Assert cells_json within matrix cap
-        env:
-          CELLS_JSON: ${{ inputs.cells_json }}
-        run: |
-          python3 - <<'PY'
-          import json, os, sys
-          sys.path.insert(0, "scripts")
-          import chunk_recipes
-          cells = json.loads(os.environ["CELLS_JSON"])
-          cap = chunk_recipes.MAX_CELLS_PER_CHUNK
-          if len(cells) > cap:
-              print(f"::error::chunk has {len(cells)} cells "
-                    f"but cap is {cap} (GH matrix would "
-                    f"silently truncate); chunker is broken",
-                    file=sys.stderr)
-              sys.exit(1)
-          print(f"chunk size {len(cells)} within cap {cap}")
-          PY
-
   build:
-    needs: verify-chunk-size
     timeout-minutes: 180
     concurrency:
-      group: build-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}-${{ github.ref }}
+      # Keyed by the build ref, not github.ref alone: promote
+      # dispatches all run at github.ref == main, so two
+      # promoted PRs touching the same recipe/platform would
+      # cancel each other. inputs.ref carries the per-PR
+      # reviewed head_sha and keys them apart; same-SHA
+      # re-labels share a group and cancel the stale run,
+      # which is correct.
+      group: build-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}-${{ inputs.ref || github.ref }}
       cancel-in-progress: true
     strategy:
       fail-fast: false
@@ -148,8 +150,6 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          SKIPPED=false
-
           for attempt in 1 2 3; do
             OUTPUT=$(gale build "$RECIPE_FILE" \
               2>&1 | tee /tmp/build.log)
@@ -162,23 +162,12 @@ jobs:
               break
             fi
 
-            if grep -q 'unsupported platform' /tmp/build.log; then
-              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
-              SKIPPED=true
-              break
-            fi
-
             echo "::warning::Build attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
 
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
-          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
-
-          if [ "$SKIPPED" = true ]; then
-            exit 0
-          fi
 
           if [ -z "$ARCHIVE" ]; then
             echo "::error::Build failed after 3 attempts"
@@ -188,7 +177,6 @@ jobs:
           fi
 
       - name: Verify binary runs
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
@@ -289,7 +277,6 @@ jobs:
           rm -rf "$VERIFY_DIR"
 
       - name: Check install (rpath vs runtime deps)
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -302,7 +289,6 @@ jobs:
           rm -rf "${CHECK_DIR}"
 
       - name: Install and smoke test
-        if: steps.build.outputs.skipped != 'true'
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
@@ -324,63 +310,223 @@ jobs:
             --recipe "${RECIPE_FILE}"
 
       - name: Upload build log on failure
-        if: failure() && steps.build.outputs.skipped != 'true'
+        if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: build-log-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}
           path: /tmp/build.log
           retention-days: 7
 
-      - name: Attest build provenance
-        if: steps.build.outputs.skipped != 'true'
-        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
-        with:
-          subject-path: ${{ steps.build.outputs.archive }}
-
       - uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3  # v2.0.0
-        if: steps.build.outputs.skipped != 'true'
+        with:
+          # Pinned: digest capture below depends on
+          # `oras push --format`, and the action's floating
+          # default could move under us.
+          version: "1.3.1"
 
       - name: Login to GHCR
-        if: steps.build.outputs.skipped != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "$GH_TOKEN" | \
             oras login ghcr.io --password-stdin -u github
 
+      # Digest capture must never silently degrade: a metadata
+      # JSON without a manifest_digest is worse than a failed
+      # job, so refuse to continue with an oras that can't
+      # report the pushed manifest digest.
+      - name: Assert oras supports digest capture
+        run: |
+          oras version
+          if ! oras push --help | grep -q -- '--format'; then
+            echo "::error::oras too old for digest capture"
+            exit 1
+          fi
+
+      # Adopt-or-push decision for the immutable revisioned
+      # tag <version>-<revision>-<platform>:
+      #   HTTP 200 -> tag exists; ADOPT the registry
+      #     artifact's digests (the local build above was
+      #     still tested in full — adoption never skips
+      #     testing). A content mismatch is a ::warning,
+      #     never an overwrite: the registry artifact is
+      #     what clients pin.
+      #   HTTP 404 -> confirmed absent; push is permitted.
+      #     Covers both MANIFEST_UNKNOWN and NAME_UNKNOWN
+      #     (first-ever publish of this package).
+      #   anything else -> retry, then hard-fail. Only a
+      #     confirmed 404 may permit a push.
+      - name: Resolve immutable tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_REPO: ${{ github.repository }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+          LOCAL_SHA256: ${{ steps.build.outputs.sha256 }}
+        run: |
+          # One tomllib read for version+revision — grep/sed
+          # reimplementations drift from TOML semantics.
+          read -r VERSION REVISION < <(python3 - "$RECIPE_FILE" <<'PY'
+          import sys, tomllib
+          with open(sys.argv[1], "rb") as f:
+              pkg = tomllib.load(f)["package"]
+          print(pkg["version"], int(pkg.get("revision", 1) or 1))
+          PY
+          )
+          TAG="${VERSION}-${REVISION}-${PLATFORM}"
+          echo "Resolving ${OWNER_REPO}/${RECIPE_NAME}:${TAG}"
+
+          # Authenticated pull token: an anonymous probe of a
+          # private or never-published package returns an auth
+          # error that masquerades as absence.
+          TOKEN=$(curl -fsS -u "github:${GH_TOKEN}" \
+            "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER_REPO}/${RECIPE_NAME}:pull" \
+            | jq -r '.token // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "::error::could not obtain GHCR pull token for ${OWNER_REPO}/${RECIPE_NAME}"
+            exit 1
+          fi
+
+          EXISTS=""
+          CODE="000"
+          for attempt in 1 2 3; do
+            CODE=$(curl -sS -D /tmp/mhdr -o /tmp/manifest.json \
+              -w '%{http_code}' \
+              -H "Authorization: Bearer ${TOKEN}" \
+              -H "Accept: application/vnd.oci.image.manifest.v1+json" \
+              "https://ghcr.io/v2/${OWNER_REPO}/${RECIPE_NAME}/manifests/${TAG}") \
+              || CODE="000"
+            if [ "$CODE" = "200" ]; then
+              EXISTS=true
+              break
+            fi
+            if [ "$CODE" = "404" ]; then
+              EXISTS=false
+              break
+            fi
+            echo "::warning::GHCR manifest probe for ${TAG} returned HTTP ${CODE} (attempt ${attempt})"
+            sleep $((attempt * 10))
+          done
+
+          # SAFETY-CRITICAL: a transient error treated as
+          # "absent" would re-push over an immutable tag.
+          if [ -z "$EXISTS" ]; then
+            echo "::error::cannot determine whether ${TAG} exists (last HTTP ${CODE}); refusing to guess — a transient error must never be treated as an absent tag"
+            exit 1
+          fi
+
+          MANIFEST_DIGEST=""
+          OUT_SHA="${LOCAL_SHA256}"
+          if [ "$EXISTS" = "true" ]; then
+            HDR_DIGEST=$(grep -i '^docker-content-digest:' /tmp/mhdr \
+              | head -1 | awk '{print $2}' | tr -d '\r')
+            CALC_DIGEST="sha256:$(python3 -c "import hashlib; print(hashlib.sha256(open('/tmp/manifest.json','rb').read()).hexdigest())")"
+            if [ -n "$HDR_DIGEST" ] && \
+               [ "$HDR_DIGEST" != "$CALC_DIGEST" ]; then
+              echo "::error::Docker-Content-Digest ${HDR_DIGEST} disagrees with sha256 of the served manifest ${CALC_DIGEST} for ${TAG}"
+              exit 1
+            fi
+            MANIFEST_DIGEST="${HDR_DIGEST:-$CALC_DIGEST}"
+            REG_SHA=$(jq -r '.layers[0].digest // empty' /tmp/manifest.json)
+            REG_SHA="${REG_SHA#sha256:}"
+            if ! printf '%s' "$MANIFEST_DIGEST" | grep -qE '^sha256:[0-9a-f]{64}$'; then
+              echo "::error::malformed manifest digest '${MANIFEST_DIGEST}' for ${TAG}"
+              exit 1
+            fi
+            if ! printf '%s' "$REG_SHA" | grep -qE '^[0-9a-f]{64}$'; then
+              echo "::error::malformed layer digest in registry manifest for ${TAG}"
+              exit 1
+            fi
+            if [ "$REG_SHA" != "$LOCAL_SHA256" ]; then
+              echo "::warning::immutable tag ${TAG} already published with different content (registry layer ${REG_SHA} != local build ${LOCAL_SHA256}); adopting the registry artifact — it is what clients pin. If you intended to ship new bytes, bump [package].revision."
+            else
+              echo "Registry artifact matches local build (${REG_SHA})"
+            fi
+            OUT_SHA="${REG_SHA}"
+            echo "Adopting existing ${TAG} (manifest ${MANIFEST_DIGEST})"
+          else
+            echo "Tag ${TAG} confirmed absent (HTTP 404); push permitted"
+          fi
+
+          {
+            echo "exists=${EXISTS}"
+            echo "manifest_digest=${MANIFEST_DIGEST}"
+            echo "sha256=${OUT_SHA}"
+            echo "tag=${TAG}"
+          } >> "$GITHUB_OUTPUT"
+
+      # Attest only at first publish — an existing immutable
+      # tag's artifact was attested when first pushed. The
+      # subject stays the tar.zst FILE: that is exactly what
+      # gale v0.16.5 installs verify via gh attestation
+      # verify. Never change the attestation subject.
+      - name: Attest build provenance
+        if: steps.tag.outputs.exists != 'true'
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
+        with:
+          subject-path: ${{ steps.build.outputs.archive }}
+
       - name: Push to GHCR
-        if: steps.build.outputs.skipped != 'true'
+        id: push
+        if: steps.tag.outputs.exists != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
-          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+          TAG: ${{ steps.tag.outputs.tag }}
           REPO_URL: https://github.com/${{ github.repository }}
         run: |
-          VERSION=$(grep '^version' "$RECIPE_FILE" | \
-            head -1 | sed 's/.*= *"//' | sed 's/".*//')
-          TAG="${VERSION}-${PLATFORM}"
+          # If an attempt partially lands and a retry then
+          # fails against the now-existing tag, this step
+          # fails; a job re-run recovers via the adopt path.
+          DIGEST=""
           for attempt in 1 2 3; do
-            if oras push --disable-path-validation \
+            if DIGEST=$(oras push --disable-path-validation \
                 --annotation "org.opencontainers.image.source=${REPO_URL}" \
+                --format go-template='{{.digest}}' \
                 "${GHCR_REPO}/${RECIPE_NAME}:${TAG}" \
-                "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"; then
-              exit 0
+                "${ARCHIVE}:application/vnd.oci.image.layer.v1.tar+zstd"); then
+              break
             fi
+            DIGEST=""
             if [ "$attempt" -lt 3 ]; then
-              sleep $((attempt * 10))
               echo "::warning::oras push attempt $attempt failed, retrying..."
+              sleep $((attempt * 10))
             fi
           done
-          echo "::error::oras push failed after 3 attempts"
-          exit 1
+          if [ -z "$DIGEST" ]; then
+            echo "::error::oras push failed after 3 attempts"
+            exit 1
+          fi
+          if ! printf '%s' "$DIGEST" | grep -qE '^sha256:[0-9a-f]{64}$'; then
+            echo "::error::oras reported malformed digest '${DIGEST}' for ${TAG}; never proceed without a digest"
+            exit 1
+          fi
+          echo "Pushed ${TAG} as ${DIGEST}"
+          echo "manifest_digest=${DIGEST}" >> "$GITHUB_OUTPUT"
 
       - name: Save build metadata
-        if: steps.build.outputs.skipped != 'true'
         env:
-          SHA256: ${{ steps.build.outputs.sha256 }}
+          # Registry truth wins: on the adopt path sha256 is
+          # the registry layer digest (what clients pin), not
+          # the local rebuild's; manifest_digest comes from
+          # whichever of resolve/push talked to GHCR. The
+          # metadata always matches what GHCR serves.
+          SHA256: ${{ steps.tag.outputs.sha256 }}
+          MANIFEST_DIGEST: ${{ steps.tag.outputs.exists == 'true' && steps.tag.outputs.manifest_digest || steps.push.outputs.manifest_digest }}
           ARCHIVE: ${{ steps.build.outputs.archive }}
         run: |
+          if ! printf '%s' "${MANIFEST_DIGEST}" | grep -qE '^sha256:[0-9a-f]{64}$'; then
+            echo "::error::missing or malformed manifest_digest '${MANIFEST_DIGEST}'; metadata must always match what GHCR serves"
+            exit 1
+          fi
+
           mkdir -p /tmp/metadata
 
+          # deps come from the LOCALLY built archive's
+          # .gale-deps.toml (informational only). Adopt-path
+          # caveat: they describe what this rebuild linked
+          # against, which can differ from the registry
+          # artifact's closure; the archive's own
+          # .gale-deps.toml stays authoritative.
           DEPS_JSON="[]"
           EXTRACT_DIR=$(mktemp -d)
           if tar --zstd -xf "${ARCHIVE}" -C "${EXTRACT_DIR}" .gale-deps.toml 2>/dev/null; then
@@ -405,12 +551,12 @@ jobs:
             --arg recipe "${RECIPE_NAME}" \
             --arg platform "${PLATFORM}" \
             --arg sha256 "${SHA256}" \
+            --arg md "${MANIFEST_DIGEST}" \
             --argjson deps "${DEPS_JSON}" \
-            '{recipe: $recipe, platform: $platform, sha256: $sha256, deps: $deps}' \
+            '{recipe: $recipe, platform: $platform, sha256: $sha256, manifest_digest: $md, deps: $deps}' \
             > "/tmp/metadata/${RECIPE_NAME}-${PLATFORM}.json"
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
-        if: steps.build.outputs.skipped != 'true'
         with:
           name: metadata-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}
           path: /tmp/metadata/

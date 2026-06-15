@@ -1,6 +1,7 @@
 [package]
 name = "cairo"
 version = "1.18.4"
+revision = 2
 platforms = ["darwin-amd64", "darwin-arm64"]
 description = "2D graphics library with multiple output backends"
 license = "LGPL-2.1-only OR MPL-1.1"

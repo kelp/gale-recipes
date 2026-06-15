@@ -1,34 +1,43 @@
-version = "1.4.0-2"
+version = "1.4.0-3"
 
 [darwin-arm64]
-sha256 = "ed0d8e1bdbeee3661d38d44948928c5689eac8faf74acd29130f881ddf747b86"
+sha256 = "a686893f375b742ac3acfec52b87045c66f8103a4c5b8450cfea3568e7910073"
+manifest_digest = "sha256:f8fc5217c8d6266353f8be206328f28753b9ad0a234d7b2956b2897f6354ef4b"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "protobuf", version = "34.1", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "protobuf", version = "35.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-amd64]
-sha256 = "80b36e68ceb9baa4c246b5dbe41a56d9cff91eb57b3194b988d05530bf3733de"
+sha256 = "c2fb0f378e3a4db0472ad4e6ee3fe0329d5d8f16eb8d54ba73abc2fd6553e905"
+manifest_digest = "sha256:03cb2ef4366c7564e371f42ab503dbdac39fe1ea27a19c69c0b055865012733c"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "protobuf", version = "34.1", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "protobuf", version = "35.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-arm64]
-sha256 = "9d422bc78e8d592d3bde1972c49cc7a78c87546702cf3230a63aa7fbecb0e817"
+sha256 = "48ed0ad7f2038cfc1bc9da83db71353ccd9a37970d58963df775ce6d670cceca"
+manifest_digest = "sha256:533d0c671a172bf1a101bbec3f748a045d5f562bc2905b1c4b47596db306e46d"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "protobuf", version = "34.1", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "protobuf", version = "35.0", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
+
+[[history]]
+version = "1.4.0-3"
+darwin-arm64 = { sha256 = "a686893f375b742ac3acfec52b87045c66f8103a4c5b8450cfea3568e7910073", manifest_digest = "sha256:f8fc5217c8d6266353f8be206328f28753b9ad0a234d7b2956b2897f6354ef4b" }
+linux-amd64 = { sha256 = "c2fb0f378e3a4db0472ad4e6ee3fe0329d5d8f16eb8d54ba73abc2fd6553e905", manifest_digest = "sha256:03cb2ef4366c7564e371f42ab503dbdac39fe1ea27a19c69c0b055865012733c" }
+linux-arm64 = { sha256 = "48ed0ad7f2038cfc1bc9da83db71353ccd9a37970d58963df775ce6d670cceca", manifest_digest = "sha256:533d0c671a172bf1a101bbec3f748a045d5f562bc2905b1c4b47596db306e46d" }
