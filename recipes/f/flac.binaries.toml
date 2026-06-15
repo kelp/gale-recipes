@@ -1,10 +1,37 @@
-version = "1.5.0-2"
+version = "1.5.0-3"
 
 [darwin-arm64]
-sha256 = "f19f0ca55d6f9c81d42f358d41ab8efca005df09235f733757c1e5d24a931b6b"
+sha256 = "470b5737c3105a29b5e6846b7bf677a300c8122f33a0b5526c0e01f3237260d8"
+manifest_digest = "sha256:b069cc54f67f7aa9c5fcedf6447250f4bb659cf8f2f1dae6fd4cd968c7805116"
+deps = [
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "libogg", version = "1.3.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-amd64]
-sha256 = "c85aa4eccfd2672d446ef1a84a84e617743df6f7ac40fb3b9f7c6346ed035bab"
+sha256 = "95bfa0306aecaf9fd8414f2b91f226f015ab4085e83bf12f56c0b7ccdf32fea7"
+manifest_digest = "sha256:7bd55bddba26b710f1980f7d36772070e0eda2f17d59a808f221dc266671533d"
+deps = [
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "libogg", version = "1.3.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
 
 [linux-arm64]
-sha256 = "a6e9ec084ccb865f784412bf2734bc9fe9a5dbbcfdf2fe1193f03b62da248c3b"
+sha256 = "58987088b59ac5734d96f028490f52a00dbf22196f8cc896b935f731fb0fcdf3"
+manifest_digest = "sha256:774120a3ee69ea85e52ad6c95d17dd520a3638294858dc79bac16a2436c37f71"
+deps = [
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "libogg", version = "1.3.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
+  { name = "pkgconf", version = "2.5.1", revision = 2 },
+]
+
+[[history]]
+version = "1.5.0-3"
+darwin-arm64 = { sha256 = "470b5737c3105a29b5e6846b7bf677a300c8122f33a0b5526c0e01f3237260d8", manifest_digest = "sha256:b069cc54f67f7aa9c5fcedf6447250f4bb659cf8f2f1dae6fd4cd968c7805116" }
+linux-amd64 = { sha256 = "95bfa0306aecaf9fd8414f2b91f226f015ab4085e83bf12f56c0b7ccdf32fea7", manifest_digest = "sha256:7bd55bddba26b710f1980f7d36772070e0eda2f17d59a808f221dc266671533d" }
+linux-arm64 = { sha256 = "58987088b59ac5734d96f028490f52a00dbf22196f8cc896b935f731fb0fcdf3", manifest_digest = "sha256:774120a3ee69ea85e52ad6c95d17dd520a3638294858dc79bac16a2436c37f71" }
