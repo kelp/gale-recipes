@@ -1,0 +1,24 @@
+[package]
+name = "herdr"
+version = "0.7.0"
+description = "Terminal workspace manager for AI coding agents"
+license = "AGPL-3.0-or-later"
+homepage = "https://herdr.dev"
+
+[source]
+repo = "ogulcancelik/herdr"
+url = "https://github.com/ogulcancelik/herdr/archive/refs/tags/v0.7.0.tar.gz"
+sha256 = "6c7e7b1eaefc50a63a66fdeae681df994b528511ce5e1aa2ac611f8119231946"
+released_at = "2026-06-15"
+
+# build.rs compiles the vendored libghostty-vt with `zig build`
+# and statically links it. Upstream pins zig 0.15.2 (mlugg/setup-zig
+# in CI; build.zig.zon minimum_zig_version = 0.15.2), so depend on the
+# parallel-installable zig15 recipe, which installs as `bin/zig`.
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust", "zig15"]
