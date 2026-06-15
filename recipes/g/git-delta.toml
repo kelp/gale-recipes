@@ -3,7 +3,7 @@
 [package]
 name = "git-delta"
 version = "0.19.2"
-revision = 3
+revision = 2
 description = "Syntax-highlighting pager for git and diff output"
 license = "MIT"
 homepage = "https://github.com/dandavison/delta"
