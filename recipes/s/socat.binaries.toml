@@ -1,22 +1,31 @@
-version = "1.8.1.1-2"
+version = "1.8.1.1-3"
 
 [darwin-arm64]
-sha256 = "a3887f74679238116f5b487558f181514591d6bd3e9ea5e97053aa3508b8f5c0"
+sha256 = "4233d6f3acbd74900d3b98b430853e3599ede7a1b51cd2b6c16fa7c35d5f1e71"
+manifest_digest = "sha256:174ec3b47823b82947a855c141d281dbdc6d1992148097d3258162c1545b8d3b"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "3d9e832dfb31d8cfe6fed3bfaf040a67f085ea3dbc6561fa3d57294b8f22a31a"
+sha256 = "dc2eff9c72767c6e7935cc893644a384727f42b4f2962a45241288ddce66aa92"
+manifest_digest = "sha256:e2898c039a27360d841153ec93ef1d39cebb20cadcabecc2887b0542d6c9c551"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "03ba7a9b5103097eb5ab906d0bb6527eb59b1c40a68079a8f31cf16f4d04dfa5"
+sha256 = "7de35852eef553de4bc3b3bab979f118c4e0b985e5317fd68b33259c9e099604"
+manifest_digest = "sha256:9bf719e73e9d91178059901878d660f4adc670c012e6221e6c02b141993fa09e"
 deps = [
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
+
+[[history]]
+version = "1.8.1.1-3"
+darwin-arm64 = { sha256 = "4233d6f3acbd74900d3b98b430853e3599ede7a1b51cd2b6c16fa7c35d5f1e71", manifest_digest = "sha256:174ec3b47823b82947a855c141d281dbdc6d1992148097d3258162c1545b8d3b" }
+linux-amd64 = { sha256 = "dc2eff9c72767c6e7935cc893644a384727f42b4f2962a45241288ddce66aa92", manifest_digest = "sha256:e2898c039a27360d841153ec93ef1d39cebb20cadcabecc2887b0542d6c9c551" }
+linux-arm64 = { sha256 = "7de35852eef553de4bc3b3bab979f118c4e0b985e5317fd68b33259c9e099604", manifest_digest = "sha256:9bf719e73e9d91178059901878d660f4adc670c012e6221e6c02b141993fa09e" }
