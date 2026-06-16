@@ -79,6 +79,24 @@ SAFETY_MARGIN = 1
 MAX_CELLS_PER_CHUNK = GH_MATRIX_CELL_CAP - SAFETY_MARGIN
 
 
+# GitHub-hosted runner images a recipe may opt into via
+# .github/runner-overrides.json. An override redirects a single
+# (recipe, platform) cell onto one of these images; anything
+# else (a self-hosted label, a typo'd image) is a hard error.
+# This bounds what a recipe PR can do to the privileged build's
+# runs-on: build.yml chooses runs-on from files at the reviewed
+# SHA, so the allowlist keeps a merged override on a known
+# hosted runner rather than an attacker-controlled label.
+ALLOWED_RUNNER_OVERRIDES = {
+    "macos-15",
+    "macos-26",
+    "ubuntu-latest",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "ubuntu-22.04",
+}
+
+
 def load_platforms(platforms_path: Path) -> list[dict]:
     """Parse the build-matrix platform list. Each entry must
     have ``os`` (the GitHub runner image) and ``platform``
@@ -99,6 +117,42 @@ def load_platforms(platforms_path: Path) -> list[dict]:
                 raise ValueError(
                     f"{platforms_path}: each entry must have a "
                     f"string '{key}'; missing in {entry}"
+                )
+    return data
+
+
+def load_runner_overrides(path: Path) -> dict[str, dict[str, str]]:
+    """Parse the optional per-recipe runner-override map.
+
+    Shape: ``{recipe: {platform: runner_os}}``. A missing file
+    is not an error -- overrides are opt-in and the common case
+    is none. Every override value must be in
+    ``ALLOWED_RUNNER_OVERRIDES``; an unknown image is a hard
+    error naming the recipe, platform, and value, so a typo or a
+    self-hosted label can't silently redirect a build."""
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must be a JSON object")
+    for recipe, by_platform in data.items():
+        if not isinstance(by_platform, dict):
+            raise ValueError(
+                f"{path}: '{recipe}' must map to an object of "
+                f"platform->runner, got "
+                f"{type(by_platform).__name__}"
+            )
+        for platform, runner in by_platform.items():
+            if not isinstance(runner, str):
+                raise ValueError(
+                    f"{path}: {recipe}.{platform} runner must be "
+                    f"a string, got {type(runner).__name__}"
+                )
+            if runner not in ALLOWED_RUNNER_OVERRIDES:
+                raise ValueError(
+                    f"{path}: {recipe}.{platform} runner "
+                    f"'{runner}' is not an allowed runner image "
+                    f"{sorted(ALLOWED_RUNNER_OVERRIDES)}"
                 )
     return data
 
@@ -151,21 +205,32 @@ def build_cells(
     recipes: list[str],
     platforms: list[dict],
     recipes_dir: Path = Path("recipes"),
+    overrides: dict[str, dict[str, str]] | None = None,
 ) -> list[dict]:
     """Flatten the recipe × eligible-platform product into one
     cell per matrix job. Order is (recipe-major,
     platform-minor) so chunks group platforms of the same
     recipe together when chunk boundaries fall mid-recipe —
-    slightly tighter sccache locality, no other reason."""
+    slightly tighter sccache locality, no other reason.
+
+    ``overrides`` (``{recipe: {platform: runner_os}}``, see
+    ``load_runner_overrides``) only swaps which runner image a
+    matching cell runs on. It never adds or removes a cell: an
+    override for a platform a recipe isn't eligible for has no
+    cell to rewrite, so it is a no-op."""
+    overrides = overrides or {}
     cells: list[dict] = []
     for recipe in recipes:
+        recipe_overrides = overrides.get(recipe, {})
         for plat in eligible_platforms(
             recipe, platforms, recipes_dir
         ):
             cells.append({
                 "recipe": recipe,
                 "platform": plat["platform"],
-                "os": plat["os"],
+                "os": recipe_overrides.get(
+                    plat["platform"], plat["os"]
+                ),
             })
     return cells
 
@@ -201,6 +266,16 @@ def main(argv: list[str] | None = None) -> int:
         default=Path("recipes"),
         help="recipe TOML directory (default: recipes)",
     )
+    p.add_argument(
+        "--runner-overrides",
+        type=Path,
+        default=Path(".github/runner-overrides.json"),
+        help=(
+            "path to runner-overrides.json "
+            "(default: .github/runner-overrides.json; "
+            "absent = no overrides)"
+        ),
+    )
     args = p.parse_args(argv)
 
     try:
@@ -209,10 +284,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
+    try:
+        overrides = load_runner_overrides(args.runner_overrides)
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+
     recipes = read_recipe_names(sys.stdin)
     try:
         cells = build_cells(
-            recipes, platforms, recipes_dir=args.recipes_dir
+            recipes, platforms,
+            recipes_dir=args.recipes_dir,
+            overrides=overrides,
         )
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)

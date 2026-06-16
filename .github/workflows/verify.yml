@@ -108,6 +108,9 @@ jobs:
                   names,
                   chunk_recipes.load_platforms(
                       chunk_recipes.Path(".github/platforms.json")),
+                  overrides=chunk_recipes.load_runner_overrides(
+                      chunk_recipes.Path(
+                          ".github/runner-overrides.json")),
               )
           except ValueError as e:
               print(f"::error::{e}", file=sys.stderr)
