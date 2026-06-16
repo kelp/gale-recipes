@@ -46,6 +46,27 @@ jobs:
         if: ${{ github.event_name == 'schedule' }}
         run: sleep $((RANDOM % 60))
 
+      # upstream.json is the persistent first-observation clock
+      # (timestamps, sha256, commit SHA for the cooldown and
+      # tamper gates). It lives on the dashboard-data branch, not
+      # main, so the daily commit never trips main's required
+      # ledger-check. Overlay the prior copy into the working tree
+      # so auto-update.sh reads the correct prior state; the main
+      # checkout's tracked copy is only a seed/fallback.
+      - name: Seed prior upstream.json from dashboard-data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p _data
+          if git fetch origin dashboard-data 2>/dev/null; then
+            git show origin/dashboard-data:_data/upstream.json \
+              > _data/upstream.json 2>/dev/null \
+              && echo "seeded prior state from dashboard-data" \
+              || echo "dashboard-data has no upstream.json yet; using main seed"
+          else
+            echo "dashboard-data branch absent; using main seed"
+          fi
+
       - name: Check for updates
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -55,8 +76,13 @@ jobs:
       # GITHUB_TOKEN commits don't re-trigger workflows —
       # same pattern build.yml uses for .binaries.toml.
       # GraphQL createCommitOnBranch auto-signs "Verified"
-      # so the commit passes the signed-commit branch rule.
-      - name: Commit _data/upstream.json
+      # so the commit passes the ~ALL signed-commit rule.
+      #
+      # Target the dashboard-data branch, not main: main's
+      # "Protect main" ruleset requires the ledger-check status on
+      # every update, which a non-PR direct commit can never
+      # report, so a commit here would be rejected FORBIDDEN.
+      - name: Commit _data/upstream.json to dashboard-data
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -66,11 +92,15 @@ jobs:
             exit 0
           fi
 
-          # Only commit when the tracked file actually changed
-          # relative to origin/main. For an untracked new file
-          # the diff is also non-empty; `git status --porcelain`
-          # covers both cases.
-          if [ -z "$(git status --porcelain -- _data/upstream.json)" ]; then
+          # Compare against the current dashboard-data copy (the
+          # store), not the working-tree HEAD — the prior file was
+          # overlaid from dashboard-data above, so a git-status
+          # check would always read dirty. origin/dashboard-data
+          # was fetched in the seed step.
+          PRIOR=$(mktemp)
+          git show origin/dashboard-data:_data/upstream.json \
+            > "$PRIOR" 2>/dev/null || : > "$PRIOR"
+          if cmp -s _data/upstream.json "$PRIOR"; then
             echo "upstream.json unchanged, skipping commit"
             exit 0
           fi
@@ -78,7 +108,7 @@ jobs:
           HEAD_OID=$(gh api graphql -f query='
             query($owner:String!,$name:String!) {
               repository(owner:$owner,name:$name) {
-                ref(qualifiedName:"refs/heads/main") {
+                ref(qualifiedName:"refs/heads/dashboard-data") {
                   target { oid }
                 }
               }
@@ -114,7 +144,7 @@ jobs:
                 input: {
                   branch: {
                     repositoryNameWithOwner: $repo,
-                    branchName: "main"
+                    branchName: "dashboard-data"
                   },
                   message: {
                     headline: "Update _data/upstream.json from daily check"

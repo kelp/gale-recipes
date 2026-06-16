@@ -56,6 +56,22 @@ jobs:
         with:
           python-version: '3.13'
 
+      # upstream.json lives on the dashboard-data branch (kept off
+      # main so the daily auto-update commit doesn't trip main's
+      # required ledger-check). Overlay the live copy onto the main
+      # checkout before rendering; main's tracked copy is only a
+      # fallback, and the generator tolerates a missing file.
+      - name: Overlay dashboard data from dashboard-data branch
+        run: |
+          if git fetch origin dashboard-data 2>/dev/null; then
+            git show origin/dashboard-data:_data/upstream.json \
+              > _data/upstream.json 2>/dev/null \
+              && echo "overlaid upstream.json from dashboard-data" \
+              || echo "dashboard-data has no upstream.json; using main copy"
+          else
+            echo "dashboard-data branch absent; using main copy"
+          fi
+
       - name: Generate site
         run: python3 scripts/gen_status_page.py --repo-root . --out-dir _site
 
