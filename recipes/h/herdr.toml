@@ -4,13 +4,15 @@ version = "0.7.0"
 description = "Terminal workspace manager for AI coding agents"
 license = "AGPL-3.0-or-later"
 homepage = "https://herdr.dev"
-# Linux-only for now. The darwin build needs zig 0.15.2 (pinned by
-# the vendored libghostty-vt, see [build]) to link against a macOS
-# <= 15 SDK, but the macos-26 CI runner ships only macOS 26.x SDKs,
+# The darwin build needs zig 0.15.2 (pinned by the vendored
+# libghostty-vt, see [build]) to link against a macOS <= 15 SDK.
+# The default macos-26 CI runner ships only macOS 26.x SDKs,
 # against which zig 0.15.2's compiler_rt fails to resolve the
-# availability runtime (__availability_version_check). Revisit darwin
-# once upstream supports a newer zig or the runner toolchain changes.
-platforms = ["linux-amd64", "linux-arm64"]
+# availability runtime (__availability_version_check). So this
+# recipe pins darwin-arm64 to the macos-15 runner via
+# .github/runner-overrides.json. Revisit once upstream supports a
+# newer zig and drop the override.
+platforms = ["darwin-arm64", "linux-amd64", "linux-arm64"]
 
 [source]
 repo = "ogulcancelik/herdr"
