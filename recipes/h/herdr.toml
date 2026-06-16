@@ -15,9 +15,16 @@ released_at = "2026-06-15"
 # and statically links it. Upstream pins zig 0.15.2 (mlugg/setup-zig
 # in CI; build.zig.zon minimum_zig_version = 0.15.2), so depend on the
 # parallel-installable zig15 recipe, which installs as `bin/zig`.
+#
+# Export SDKROOT so the zig invoked by build.rs resolves the macOS SDK
+# explicitly. gale's clean build env carries no SDKROOT/DEVELOPER_DIR,
+# leaving zig 0.15.2 to auto-detect the SDK; on the CI runner that
+# detection fails and every libSystem symbol comes back undefined
+# (build.rs panics "zig build for vendored libghostty-vt failed").
+# xcrun is macOS-only; on Linux the substitution is empty and ignored.
 [build]
 steps = [
-  "cargo install --path . --root ${PREFIX}",
+  "export SDKROOT=$(xcrun --show-sdk-path 2>/dev/null || true) && cargo install --path . --root ${PREFIX}",
 ]
 
 [dependencies]
