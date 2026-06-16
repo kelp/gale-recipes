@@ -1,15 +1,15 @@
 [package]
 name = "vibeutils"
-version = "0.10.1"
-revision = 2
+version = "0.10.2"
+revision = 1
 description = "Modern Unix coreutils in Zig — git-aware ls, colored output, Nerd Font icons"
 license = "MIT"
 homepage = "https://github.com/kelp/vibeutils"
 
 [source]
 repo = "kelp/vibeutils"
-url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.10.1.tar.gz"
-sha256 = "95da5632518302ad433cf4d830a351f5d2a9aac7dfe4bf25b91b63654e7a54c1"
+url = "https://github.com/kelp/vibeutils/archive/refs/tags/v0.10.2.tar.gz"
+sha256 = "312528a68ec72598db9eced08ce76431acee6b5d0bc92890631538edfccd3012"
 
 [build]
 # -Dcpu=baseline targets the LLVM x86_64 / aarch64 baseline so the
