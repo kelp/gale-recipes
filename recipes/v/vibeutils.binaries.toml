@@ -1,31 +1,40 @@
-version = "0.10.1"
+version = "0.10.1-2"
 
 [darwin-arm64]
-sha256 = "df283488416c7db195d969c7495ef35906d73708c580333b51d71472725a3b0f"
+sha256 = "e5e3e09199e176f697728c0ea03c7beaa29f5033e2346d6998ebf085e6f11a6b"
+manifest_digest = "sha256:7f3428b8f1b1c71d710a3e93b3fe11df27d2d421c4d63d1a60204f6c59f38644"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "mandoc", version = "1.14.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "zig", version = "0.16.0", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-amd64]
-sha256 = "fa8d138b8349dd5e3fff3dffbaafff4fff074c36051c739d5722d82dcec01024"
+sha256 = "804f5ab6f5929d0eea42411a1c2cc0a1b5d0fcb5be9bc321570e0fae04eabcce"
+manifest_digest = "sha256:50f2ea0bbf5116de2ae49fac831c2aa59d6e3f9cb62d329eac00e2a65c79c32f"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "mandoc", version = "1.14.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "zig", version = "0.16.0", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
 
 [linux-arm64]
-sha256 = "d5adcd9ecd1262f0ec99fdcca6c5d0fb4372390f708248839360206da2b2d735"
+sha256 = "bc29831841e0b47d3527b7c512728acc685714097d29b436702884aba831559e"
+manifest_digest = "sha256:10917a3aac418ff99e09178607e8943253648eed72552f3057d6a33ffe5c8ab7"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "mandoc", version = "1.14.6", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "mandoc", version = "1.14.6", revision = 3 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "zig", version = "0.16.0", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 2 },
+  { name = "zlib", version = "1.3.2", revision = 3 },
 ]
+
+[[history]]
+version = "0.10.1-2"
+darwin-arm64 = { sha256 = "e5e3e09199e176f697728c0ea03c7beaa29f5033e2346d6998ebf085e6f11a6b", manifest_digest = "sha256:7f3428b8f1b1c71d710a3e93b3fe11df27d2d421c4d63d1a60204f6c59f38644" }
+linux-amd64 = { sha256 = "804f5ab6f5929d0eea42411a1c2cc0a1b5d0fcb5be9bc321570e0fae04eabcce", manifest_digest = "sha256:50f2ea0bbf5116de2ae49fac831c2aa59d6e3f9cb62d329eac00e2a65c79c32f" }
+linux-arm64 = { sha256 = "bc29831841e0b47d3527b7c512728acc685714097d29b436702884aba831559e", manifest_digest = "sha256:10917a3aac418ff99e09178607e8943253648eed72552f3057d6a33ffe5c8ab7" }

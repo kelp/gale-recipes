@@ -1,6 +1,7 @@
 [package]
 name = "vibeutils"
 version = "0.10.1"
+revision = 2
 description = "Modern Unix coreutils in Zig — git-aware ls, colored output, Nerd Font icons"
 license = "MIT"
 homepage = "https://github.com/kelp/vibeutils"
