@@ -1,20 +1,26 @@
 name: Publish Pages
 
 on:
-  # Refresh the dashboard whenever Build Recipes or
-  # Auto-Update Recipes finishes, so .binaries.toml and
-  # _data/upstream.json updates are reflected promptly.
+  # Refresh the dashboard when the scheduled Auto-Update run
+  # finishes (it commits _data/upstream.json with
+  # GITHUB_TOKEN, which fires workflow_run from a schedule).
+  # Build Recipes is not listed: its runs are
+  # GITHUB_TOKEN-dispatched, so they never fire workflow_run.
   workflow_run:
-    workflows: ["Build Recipes", "Auto-Update Recipes"]
+    workflows: ["Auto-Update Recipes"]
     types: [completed]
     branches: [main]
   # Manual regen.
   workflow_dispatch:
-  # Ship generator/template tweaks immediately without
-  # waiting for a build.
+  # With one writer, every recipes/** change on main arrives
+  # as a human merge push, which fires this event — that is
+  # how .binaries.toml updates reach the dashboard. Generator
+  # and data tweaks ship the same way.
   push:
     branches: [main]
     paths:
+      - 'recipes/**'
+      - '_data/**'
       - 'scripts/gen_status_page.py'
       - 'scripts/templates/**'
       - '.github/workflows/pages.yml'
@@ -41,9 +47,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           # For workflow_run, github.sha points at the
-          # triggering run's commit — but build.yml commits
-          # .binaries.toml updates afterward, so we
-          # explicitly pull latest main.
+          # triggering run's commit — but auto-update commits
+          # _data/upstream.json afterward, so we explicitly
+          # pull latest main.
           ref: main
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0

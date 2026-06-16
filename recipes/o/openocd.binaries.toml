@@ -20,3 +20,9 @@ deps = [
   { name = "libusb", version = "1.0.30", revision = 1 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
+
+[[history]]
+version = "0.12.0-1"
+darwin-arm64 = { sha256 = "43a58453fce475cd543cffa63696d765076156f909ae5c87a68a5c54c77da62f", manifest_digest = "sha256:4a77f26d833a98cb9eed88fef46043a474bcb60dc25f0789bd892e82e6b740fd" }
+linux-amd64 = { sha256 = "5bef42550daf5f02b18db90b91d1cd1d9e2bbd7ddf526e6596e9d56bbd12cb6e", manifest_digest = "sha256:c55fc1c01483e62c17370e120f80fb9fcca0ae3ff1a5d44b3acc84bae8ea097f" }
+linux-arm64 = { sha256 = "18c33184d00fdf03c88e87bed9b27c78a77d05b8be17c20546257dcd4a09f120", manifest_digest = "sha256:86698299833ee2eaa643d2e4e26c3e720c3f71f2783329c0eed1e67a3034e733" }

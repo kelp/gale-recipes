@@ -3,6 +3,7 @@
 [package]
 name = "starship"
 version = "1.25.1"
+revision = 2
 description = "Cross-shell prompt for astronauts"
 license = "ISC"
 homepage = "https://starship.rs/"

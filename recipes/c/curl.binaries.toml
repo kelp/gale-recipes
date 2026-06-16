@@ -1,31 +1,40 @@
-version = "8.19.0-2"
+version = "8.19.0-3"
 
 [darwin-arm64]
-sha256 = "5a1d46b28e95b0ea8757b0e42200bc491371457fa2f718303e1f89d394b7a03d"
+sha256 = "c59120cd5c6d081b3b2e551c0cfcb44e150593328e7018a18f1634f5d9fd416c"
+manifest_digest = "sha256:8f20997f960518f41b4b3a54f80ad7cedf05860935ce735725278f04882156c9"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "zstd", version = "1.5.7", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 3 },
 ]
 
 [linux-amd64]
-sha256 = "4209b9567104da5107c90b1677818fbd3ebcdceee6d2365e0c62dadf5f7c6f40"
+sha256 = "8ad11a5256ef8137b49ff8b3490a527b2f77ef1dabfbbc6e709ecc0cc7568264"
+manifest_digest = "sha256:731e81af9b2092ec4749668566738d57a08fc3f41a32eb7d15bedc9f555823a8"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "zstd", version = "1.5.7", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 3 },
 ]
 
 [linux-arm64]
-sha256 = "02d065aa02ece6aaf5dfa57eb5c142f3017947cbf78083a7e110d3483e36b07e"
+sha256 = "60c8e77c7b6837c96ddfb470f3098d639699b57909ee6dc217fc2ca00e4d79af"
+manifest_digest = "sha256:1cf5efd3c1ace86b6d5ae8083896fe340d2b11603e0fad55b36d3ac36eaa05ab"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "libidn2", version = "2.3.8", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
   { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "zstd", version = "1.5.7", revision = 2 },
+  { name = "zstd", version = "1.5.7", revision = 3 },
 ]
+
+[[history]]
+version = "8.19.0-3"
+darwin-arm64 = { sha256 = "c59120cd5c6d081b3b2e551c0cfcb44e150593328e7018a18f1634f5d9fd416c", manifest_digest = "sha256:8f20997f960518f41b4b3a54f80ad7cedf05860935ce735725278f04882156c9" }
+linux-amd64 = { sha256 = "8ad11a5256ef8137b49ff8b3490a527b2f77ef1dabfbbc6e709ecc0cc7568264", manifest_digest = "sha256:731e81af9b2092ec4749668566738d57a08fc3f41a32eb7d15bedc9f555823a8" }
+linux-arm64 = { sha256 = "60c8e77c7b6837c96ddfb470f3098d639699b57909ee6dc217fc2ca00e4d79af", manifest_digest = "sha256:1cf5efd3c1ace86b6d5ae8083896fe340d2b11603e0fad55b36d3ac36eaa05ab" }

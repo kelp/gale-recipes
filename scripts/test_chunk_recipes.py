@@ -37,6 +37,25 @@ def _write_platforms(tmp: Path, platforms: list[dict]) -> Path:
     return path
 
 
+def _write_recipe(
+    recipes_dir: Path,
+    name: str,
+    platforms: list[str] | None = None,
+) -> Path:
+    d = recipes_dir / name[0]
+    d.mkdir(parents=True, exist_ok=True)
+    lines = ["[package]", f'name = "{name}"', 'version = "1.0"']
+    if platforms is not None:
+        lines.append(
+            "platforms = ["
+            + ", ".join(f'"{p}"' for p in platforms)
+            + "]"
+        )
+    path = d / f"{name}.toml"
+    path.write_text("\n".join(lines) + "\n")
+    return path
+
+
 class LoadPlatformsTests(unittest.TestCase):
     def test_loads_well_formed_file(self) -> None:
         with TemporaryDirectory() as tmp:
@@ -101,6 +120,98 @@ class BuildCellsTests(unittest.TestCase):
         self.assertEqual(c.build_cells([], THREE_PLATFORMS), [])
 
 
+class DeclaredPlatformTests(unittest.TestCase):
+    """Declared [package].platforms are authoritative: the
+    chunker emits cells only for eligible platforms, so a
+    linux-only recipe never schedules a darwin job that would
+    'skip' (the skip machinery is gone — a build failure is a
+    failure, full stop)."""
+
+    def test_undeclared_recipe_gets_all_matrix_cells(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(rdir, "jq")
+            cells = c.build_cells(
+                ["jq"], THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(len(cells), 3)
+            self.assertEqual(
+                {x["platform"] for x in cells},
+                {"darwin-arm64", "linux-amd64", "linux-arm64"},
+            )
+
+    def test_declared_subset_filters_cells(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(
+                rdir,
+                "traceroute",
+                platforms=["linux-amd64", "linux-arm64"],
+            )
+            cells = c.build_cells(
+                ["traceroute"], THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(
+                {x["platform"] for x in cells},
+                {"linux-amd64", "linux-arm64"},
+            )
+
+    def test_declared_platform_outside_matrix_ignored(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(
+                rdir,
+                "bun",
+                platforms=["darwin-arm64", "windows-amd64"],
+            )
+            cells = c.build_cells(
+                ["bun"], THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(
+                {x["platform"] for x in cells}, {"darwin-arm64"}
+            )
+
+    def test_empty_intersection_is_a_hard_error(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(rdir, "wintool", platforms=["windows-amd64"])
+            with self.assertRaisesRegex(ValueError, "wintool"):
+                c.build_cells(
+                    ["wintool"], THREE_PLATFORMS, recipes_dir=rdir
+                )
+
+    def test_missing_recipe_file_treated_as_undeclared(self) -> None:
+        # Callers (build.yml discover, verify.yml) validate
+        # recipe existence before invoking the chunker; a
+        # missing file here degrades to the full matrix, same
+        # as the pre-filtering behavior.
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            rdir.mkdir()
+            cells = c.build_cells(
+                ["ghost"], THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(len(cells), 3)
+
+    def test_mixed_recipes_emit_only_eligible_cells(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(rdir, "jq")
+            _write_recipe(rdir, "qemu", platforms=["darwin-arm64"])
+            cells = c.build_cells(
+                ["jq", "qemu"], THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(
+                [(x["recipe"], x["platform"]) for x in cells],
+                [
+                    ("jq", "darwin-arm64"),
+                    ("jq", "linux-amd64"),
+                    ("jq", "linux-arm64"),
+                    ("qemu", "darwin-arm64"),
+                ],
+            )
+
+
 class ChunkCellsTests(unittest.TestCase):
     """The per-chunk size cap is the contract. Test it
     around every boundary."""
@@ -147,18 +258,53 @@ class ChunkCellsTests(unittest.TestCase):
 class MainTests(unittest.TestCase):
     """End-to-end: stdin in, JSON object out, exit 0."""
 
-    def _run(self, stdin_text: str, platforms: list[dict]):
+    def _run(
+        self,
+        stdin_text: str,
+        platforms: list[dict],
+        recipes_dir: Path | None = None,
+    ):
         with TemporaryDirectory() as tmp:
             path = _write_platforms(Path(tmp), platforms)
+            argv = ["--platforms", str(path)]
+            if recipes_dir is not None:
+                argv += ["--recipes-dir", str(recipes_dir)]
             old_stdin, old_stdout = sys.stdin, sys.stdout
             sys.stdin = io.StringIO(stdin_text)
             sys.stdout = io.StringIO()
             try:
-                rc = c.main(["--platforms", str(path)])
+                rc = c.main(argv)
                 out = sys.stdout.getvalue()
             finally:
                 sys.stdin, sys.stdout = old_stdin, old_stdout
         return rc, out
+
+    def test_declared_subset_filters_through_main(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(
+                rdir, "traceroute", platforms=["linux-amd64"]
+            )
+            rc, out = self._run(
+                "traceroute\n", THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(rc, 0)
+            doc = json.loads(out)
+            self.assertEqual(doc["all_recipes"], ["traceroute"])
+            self.assertEqual(len(doc["chunks"]), 1)
+            self.assertEqual(
+                [x["platform"] for x in doc["chunks"][0]],
+                ["linux-amd64"],
+            )
+
+    def test_empty_intersection_returns_two_through_main(self) -> None:
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(rdir, "wintool", platforms=["windows-amd64"])
+            rc, _ = self._run(
+                "wintool\n", THREE_PLATFORMS, recipes_dir=rdir
+            )
+            self.assertEqual(rc, 2)
 
     def test_empty_input_emits_empty_chunks(self) -> None:
         rc, out = self._run("", THREE_PLATFORMS)

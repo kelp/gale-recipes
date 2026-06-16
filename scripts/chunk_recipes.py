@@ -11,7 +11,12 @@ emits a single JSON object on stdout with three fields:
                       ``build-chunk.yml`` reusable-workflow
                       call. Each chunk is sized to stay
                       below GitHub Actions' per-matrix
-                      expansion cap.
+                      expansion cap. Cells are emitted only
+                      for a recipe's eligible platforms: its
+                      declared ``[package].platforms``
+                      intersected with the matrix when
+                      declared, else the full matrix. An
+                      empty intersection is a hard error.
 - ``all_recipes``   — flat sorted list of every recipe name
                       that should produce metadata in this
                       run. Consumed by ``update-recipes``
@@ -49,6 +54,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import tomllib
 from pathlib import Path
 
 # GitHub Actions caps a single matrix expansion at 256 jobs.
@@ -104,18 +110,58 @@ def read_recipe_names(stream) -> list[str]:
     return sorted(names)
 
 
+def eligible_platforms(
+    recipe: str,
+    platforms: list[dict],
+    recipes_dir: Path,
+) -> list[dict]:
+    """The recipe's declared ``[package].platforms``
+    intersected with the matrix when declared, else the full
+    matrix. The declaration is authoritative: ineligible
+    platforms get no cell at all, so there is no 'skipped'
+    build to special-case downstream — a build failure is a
+    failure, full stop.
+
+    A missing or unparsable recipe file degrades to the full
+    matrix (callers validate recipe existence before invoking
+    the chunker; this matches the pre-filtering behavior).
+    An empty intersection is a hard error naming the recipe —
+    a recipe no platform can build must not silently vanish
+    from the run."""
+    recipe_file = recipes_dir / recipe[0] / f"{recipe}.toml"
+    try:
+        with recipe_file.open("rb") as fh:
+            data = tomllib.load(fh)
+    except (OSError, tomllib.TOMLDecodeError):
+        return list(platforms)
+    declared = data.get("package", {}).get("platforms")
+    if not isinstance(declared, list):
+        return list(platforms)
+    eligible = [p for p in platforms if p["platform"] in declared]
+    if not eligible:
+        raise ValueError(
+            f"recipe '{recipe}' declares platforms {declared!r} "
+            f"with no overlap with the build matrix "
+            f"{[p['platform'] for p in platforms]}"
+        )
+    return eligible
+
+
 def build_cells(
     recipes: list[str],
     platforms: list[dict],
+    recipes_dir: Path = Path("recipes"),
 ) -> list[dict]:
-    """Flatten the recipe × platform product into one cell
-    per matrix job. Order is (recipe-major, platform-minor)
-    so chunks group platforms of the same recipe together
-    when chunk boundaries fall mid-recipe — slightly tighter
-    sccache locality, no other reason."""
+    """Flatten the recipe × eligible-platform product into one
+    cell per matrix job. Order is (recipe-major,
+    platform-minor) so chunks group platforms of the same
+    recipe together when chunk boundaries fall mid-recipe —
+    slightly tighter sccache locality, no other reason."""
     cells: list[dict] = []
     for recipe in recipes:
-        for plat in platforms:
+        for plat in eligible_platforms(
+            recipe, platforms, recipes_dir
+        ):
             cells.append({
                 "recipe": recipe,
                 "platform": plat["platform"],
@@ -149,6 +195,12 @@ def main(argv: list[str] | None = None) -> int:
         default=Path(".github/platforms.json"),
         help="path to platforms.json (default: .github/platforms.json)",
     )
+    p.add_argument(
+        "--recipes-dir",
+        type=Path,
+        default=Path("recipes"),
+        help="recipe TOML directory (default: recipes)",
+    )
     args = p.parse_args(argv)
 
     try:
@@ -158,7 +210,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     recipes = read_recipe_names(sys.stdin)
-    cells = build_cells(recipes, platforms)
+    try:
+        cells = build_cells(
+            recipes, platforms, recipes_dir=args.recipes_dir
+        )
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
     chunks = chunk_cells(cells)
 
     # Log to stderr so stdout stays machine-parseable.

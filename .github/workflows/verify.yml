@@ -92,16 +92,26 @@ jobs:
             done | sort -u)
           fi
 
-          # Build recipe × platform cells from platforms.json.
+          # Build recipe × platform cells through the same
+          # chunker build.yml uses, so verify and build can
+          # never disagree on a recipe's eligible platforms
+          # (declared [package].platforms are authoritative —
+          # ineligible platforms get no cell, so there is no
+          # skip path downstream).
           CELLS=$(NAMES="$NAMES" python3 - <<'PY'
-          import json, os
-          names = os.environ["NAMES"].split()
-          with open(".github/platforms.json") as f:
-              plats = json.load(f)
-          cells = [
-              {"recipe": n, "platform": p["platform"], "os": p["os"]}
-              for n in names for p in plats
-          ]
+          import json, os, sys
+          sys.path.insert(0, "scripts")
+          import chunk_recipes
+          names = sorted(set(os.environ["NAMES"].split()))
+          try:
+              cells = chunk_recipes.build_cells(
+                  names,
+                  chunk_recipes.load_platforms(
+                      chunk_recipes.Path(".github/platforms.json")),
+              )
+          except ValueError as e:
+              print(f"::error::{e}", file=sys.stderr)
+              sys.exit(1)
           print(json.dumps(cells))
           PY
           )
@@ -173,8 +183,6 @@ jobs:
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          SKIPPED=false
-
           for attempt in 1 2 3; do
             OUTPUT=$(gale build "$RECIPE_FILE" \
               2>&1 | tee /tmp/build.log)
@@ -185,22 +193,11 @@ jobs:
               break
             fi
 
-            if grep -q 'unsupported platform' /tmp/build.log; then
-              echo "::notice::Skipping unsupported platform ${PLATFORM} for ${RECIPE_NAME}"
-              SKIPPED=true
-              break
-            fi
-
             echo "::warning::Build attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
 
           echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
-          echo "skipped=${SKIPPED}" >> "$GITHUB_OUTPUT"
-
-          if [ "$SKIPPED" = true ]; then
-            exit 0
-          fi
 
           if [ -z "$ARCHIVE" ]; then
             echo "::error::Build failed after 3 attempts"
@@ -209,109 +206,33 @@ jobs:
             exit 1
           fi
 
-      - name: Verify binary runs
-        if: steps.build.outputs.skipped != 'true'
+      # Install the recipe (with its build+runtime deps) so the
+      # dependency farm is populated and the binary lands at its
+      # real store path with the farm rpath baked correctly. The
+      # next step then runs THAT installed binary — the way a
+      # user runs it. A relocated tar extract would dyld-abort on
+      # a dynamically-linked runtime-dep dylib (eza->libgit2,
+      # flac->libogg, git-delta, bat), even though the binary is
+      # correct, because the @loader_path-relative farm rpath
+      # only resolves at the install location. gale cannot
+      # install a pre-built archive, so this is a second build;
+      # correctness over the saved compile (see the build step's
+      # archive, still used by Check install below).
+      - name: Install recipe (populate dep farm)
         env:
-          ARCHIVE: ${{ steps.build.outputs.archive }}
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          VERIFY_DIR=$(mktemp -d)
-          tar --zstd -xf "${ARCHIVE}" -C "${VERIFY_DIR}"
+          gale install --global "${RECIPE_NAME}" \
+            --recipe "${RECIPE_FILE}"
 
-          BIN=""
-
-          for dir in bin sbin; do
-            if [ -x "${VERIFY_DIR}/${dir}/${RECIPE_NAME}" ]; then
-              BIN="${VERIFY_DIR}/${dir}/${RECIPE_NAME}"
-              break
-            fi
-          done
-
-          if [ -z "$BIN" ]; then
-            for dir in bin sbin; do
-              for f in "${VERIFY_DIR}/${dir}/"*; do
-                if [ -x "$f" ] && [ ! -d "$f" ]; then
-                  BIN="$f"
-                  break 2
-                fi
-              done
-            done
-          fi
-
-          if [ -z "$BIN" ]; then
-            LIB_COUNT=0
-            for dir in lib include; do
-              if [ -d "${VERIFY_DIR}/${dir}" ]; then
-                COUNT=$(find "${VERIFY_DIR}/${dir}" \
-                  -type f 2>/dev/null | wc -l)
-                LIB_COUNT=$((LIB_COUNT + COUNT))
-              fi
-            done
-            if [ "$LIB_COUNT" -gt 0 ]; then
-              echo "Library recipe: ${LIB_COUNT} files" \
-                "in lib/ and/or include/"
-              echo "Verified: library install produced output"
-              rm -rf "$VERIFY_DIR"
-              exit 0
-            fi
-            echo "::error::No executables or library files"
-            ls -laR "$VERIFY_DIR" 2>/dev/null | head -40
-            exit 1
-          fi
-
-          echo "Testing: $(basename "$BIN")"
-
-          export PERL5LIB="${VERIFY_DIR}/share:${PERL5LIB}"
-          for sp in "${VERIFY_DIR}"/lib/python*/site-packages; do
-            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
-          done
-          for sp in "${VERIFY_DIR}"/lib/*/lib/python*/site-packages; do
-            [ -d "$sp" ] && PYTHONPATH="${sp}:${PYTHONPATH}"
-          done
-          export PYTHONPATH="${VERIFY_DIR}/lib:${PYTHONPATH}"
-          export PATH="${VERIFY_DIR}/bin:${PATH}"
-
-          PROBE_OK=0
-          KILLED_BY_SIGNAL=0
-          for args in --version version --help -V -v; do
-            "$BIN" "$args" && PROBE_OK=1 && break
-            rc=$?
-            [ $rc -ge 128 ] && KILLED_BY_SIGNAL=1
-          done
-
-          if [ "$PROBE_OK" = 0 ] && \
-             [ "$KILLED_BY_SIGNAL" = 1 ]; then
-            echo "::error::$(basename "$BIN") was killed" \
-              "by a signal (likely dyld could not load a" \
-              "required library). Diagnostic:"
-            "$BIN" --version 2>&1 | head -20 || true
-            exit 1
-          fi
-
-          if [ "$PROBE_OK" = 0 ]; then
-            if file "$BIN" | grep -qiE "text|script"; then
-              echo "Script binary, cannot run outside" \
-                "install prefix"
-              echo "Verified: $(basename "$BIN") exists" \
-                "and is executable"
-              rm -rf "$VERIFY_DIR"
-              exit 0
-            fi
-            if file "$BIN" | grep -qiE "executable|Mach-O|ELF"; then
-              echo "Binary ran but has no version/help flag"
-              echo "Verified: $(basename "$BIN") is a" \
-                "valid executable"
-              rm -rf "$VERIFY_DIR"
-              exit 0
-            fi
-            echo "::error::Binary failed to run"
-            exit 1
-          fi
-
-          echo "Verified: $(basename "$BIN") runs"
-          rm -rf "$VERIFY_DIR"
+      - name: Verify binary runs
+        env:
+          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
+        run: |
+          python3 scripts/verify_binary.py \
+            --recipe "${RECIPE_FILE}"
 
       - name: Check install (rpath vs runtime deps)
-        if: steps.build.outputs.skipped != 'true'
         env:
           ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
@@ -324,7 +245,6 @@ jobs:
           rm -rf "${CHECK_DIR}"
 
       - name: Install and smoke test
-        if: steps.build.outputs.skipped != 'true'
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
@@ -346,7 +266,7 @@ jobs:
             --recipe "${RECIPE_FILE}"
 
       - name: Upload build log on failure
-        if: failure() && steps.build.outputs.skipped != 'true'
+        if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: verify-log-${{ matrix.cell.recipe }}-${{ matrix.cell.platform }}

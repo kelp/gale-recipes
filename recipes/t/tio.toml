@@ -1,6 +1,7 @@
 [package]
 name = "tio"
 version = "3.9"
+revision = 2
 description = "Simple serial device I/O tool"
 license = "GPL-2.0-or-later"
 homepage = "https://tio.github.io"

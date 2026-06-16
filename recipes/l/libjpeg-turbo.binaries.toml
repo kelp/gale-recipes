@@ -1,8 +1,13 @@
-version = "3.1.4.1"
+version = "3.1.4.1-2"
 
 [darwin-arm64]
-sha256 = "8f2d700c1eada728a5d67445fd27d985e58e5867c1688be5b656ebcd312c4671"
+sha256 = "02e4fa796e07afaa23fba82a7aafcbb26322be6f636aa2700847517124d58ee8"
+manifest_digest = "sha256:3fc0f8f9c92b15f9f07726f83c645890407da91549ec43be2efad78aa8fde80f"
 deps = [
-  { name = "cmake", version = "4.3.2", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 2 },
+  { name = "cmake", version = "4.3.3", revision = 2 },
+  { name = "openssl", version = "3.6.1", revision = 4 },
 ]
+
+[[history]]
+version = "3.1.4.1-2"
+darwin-arm64 = { sha256 = "02e4fa796e07afaa23fba82a7aafcbb26322be6f636aa2700847517124d58ee8", manifest_digest = "sha256:3fc0f8f9c92b15f9f07726f83c645890407da91549ec43be2efad78aa8fde80f" }

@@ -3,7 +3,7 @@
 [package]
 name = "fd"
 version = "10.4.2"
-revision = 2
+revision = 3
 description = "Simple, fast and user-friendly alternative to find"
 license = "Apache-2.0"
 homepage = "https://github.com/sharkdp/fd"
