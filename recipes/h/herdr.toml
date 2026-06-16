@@ -12,20 +12,21 @@ sha256 = "6c7e7b1eaefc50a63a66fdeae681df994b528511ce5e1aa2ac611f8119231946"
 released_at = "2026-06-15"
 
 # build.rs compiles the vendored libghostty-vt with `zig build`
-# and statically links it. Upstream pins zig 0.15.2 (mlugg/setup-zig
-# in CI; build.zig.zon minimum_zig_version = 0.15.2), so depend on the
-# parallel-installable zig15 recipe, which installs as `bin/zig`.
+# and statically links it. build.zig.zon sets minimum_zig_version =
+# 0.15.2, a floor, so any newer zig is valid.
 #
-# Export SDKROOT so the zig invoked by build.rs resolves the macOS SDK
-# explicitly. gale's clean build env carries no SDKROOT/DEVELOPER_DIR,
-# leaving zig 0.15.2 to auto-detect the SDK; on the CI runner that
-# detection fails and every libSystem symbol comes back undefined
-# (build.rs panics "zig build for vendored libghostty-vt failed").
-# xcrun is macOS-only; on Linux the substitution is empty and ignored.
+# Build on zig 0.16.0, not zig15 (0.15.2): on the macOS-26 CI runner
+# zig 0.15.2 fails to link its own native build runner against the
+# system SDK -- every libSystem symbol comes back undefined
+# (__availability_version_check, _abort, _malloc_size, ...) and
+# build.rs panics "zig build for vendored libghostty-vt failed".
+# Setting SDKROOT explicitly did not help (0.15.2 ignores it for the
+# native link); 0.16.0 links cleanly. `zig version` is echoed so the
+# build log confirms which toolchain ran.
 [build]
 steps = [
-  "export SDKROOT=$(xcrun --show-sdk-path 2>/dev/null || true) && cargo install --path . --root ${PREFIX}",
+  "zig version && cargo install --path . --root ${PREFIX}",
 ]
 
 [dependencies]
-build = ["rust", "zig15"]
+build = ["rust", "zig"]
