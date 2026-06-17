@@ -1,6 +1,6 @@
 [package]
 name = "flyctl"
-version = "0.4.27"
+version = "0.4.59"
 revision = 2
 description = "Command line tools for fly.io services"
 license = "Apache-2.0"
@@ -8,9 +8,9 @@ homepage = "https://fly.io"
 
 [source]
 repo = "superfly/flyctl"
-url = "https://github.com/superfly/flyctl/archive/refs/tags/v0.4.27.tar.gz"
-sha256 = "805c4f0114f6e53a00366ed8c4cc5583408fef784643046f080d95081a4ac7b8"
-released_at = "2025-01-27"
+url = "https://github.com/superfly/flyctl/archive/refs/tags/v0.4.59.tar.gz"
+sha256 = "3236cdb1535b1a2051a9f1f198a9f6d481416638ef5aadd2ab0d3a8f86471656"
+released_at = "2026-06-09"
 
 [build]
 system = "go"
