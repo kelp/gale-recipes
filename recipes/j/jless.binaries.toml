@@ -1,7 +1,12 @@
-version = "0.9.0-2"
+version = "0.9.0-3"
 
 [darwin-arm64]
-sha256 = "66dc535a938c2e19673dda1ed7e803349f9682a06788e6ad68cc1b4d9820d233"
+sha256 = "847e98aa3de363ca28063ff7e3667673ddb071dd251488de539f943dbddb6710"
+manifest_digest = "sha256:0a7192d8966ea49cd58e966c322968c00b3e221e94c9b07bbb555a3963b75cd9"
 deps = [
-  { name = "rust", version = "1.95.0", revision = 2 },
+  { name = "rust", version = "1.96.0", revision = 1 },
 ]
+
+[[history]]
+version = "0.9.0-3"
+darwin-arm64 = { sha256 = "847e98aa3de363ca28063ff7e3667673ddb071dd251488de539f943dbddb6710", manifest_digest = "sha256:0a7192d8966ea49cd58e966c322968c00b3e221e94c9b07bbb555a3963b75cd9" }

@@ -1,10 +1,28 @@
-version = "1.1.0-2"
+version = "1.1.0-3"
 
 [darwin-arm64]
-sha256 = "15f3c94ba7d57662586d8a67e04f51891b7ef704b2ca002f93225132fe07a7bc"
+sha256 = "52f6d2eb27151e227facbf399387dd0cb81dacb204a3a328e995c56ab06e45bc"
+manifest_digest = "sha256:5cef4efdfdc6dd8c6ac7d710e496cdead077d11e409c41e681873b13e001565e"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+]
 
 [linux-amd64]
-sha256 = "3e40ec880599999b9508858144bbb7b072e79e9c0c8e9513fd4ac745da28eab1"
+sha256 = "9cfd987e5dfad209594ff97ad2f93142d616b06b80bba13610de8cbd667c7eba"
+manifest_digest = "sha256:222ad78acf7564672d2d580cf31511b9fb9fc93f8237e60fd8ebca8f891fd439"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+]
 
 [linux-arm64]
-sha256 = "baed784b4e551eef7aee9256077a10e612eabd23e21ed8e0d6c36c81e5564fd2"
+sha256 = "9db3d82df2a1e50b3e271a0babb966bd748accfe1b3c2ab7764cd79afb066ec1"
+manifest_digest = "sha256:f018b6e6ae85e470a5540bf842193b97676caa6d290d24e2e0e8b5d0789e60ba"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+]
+
+[[history]]
+version = "1.1.0-3"
+darwin-arm64 = { sha256 = "52f6d2eb27151e227facbf399387dd0cb81dacb204a3a328e995c56ab06e45bc", manifest_digest = "sha256:5cef4efdfdc6dd8c6ac7d710e496cdead077d11e409c41e681873b13e001565e" }
+linux-amd64 = { sha256 = "9cfd987e5dfad209594ff97ad2f93142d616b06b80bba13610de8cbd667c7eba", manifest_digest = "sha256:222ad78acf7564672d2d580cf31511b9fb9fc93f8237e60fd8ebca8f891fd439" }
+linux-arm64 = { sha256 = "9db3d82df2a1e50b3e271a0babb966bd748accfe1b3c2ab7764cd79afb066ec1", manifest_digest = "sha256:f018b6e6ae85e470a5540bf842193b97676caa6d290d24e2e0e8b5d0789e60ba" }
