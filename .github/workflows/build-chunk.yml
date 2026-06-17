@@ -418,17 +418,18 @@ jobs:
           echo "Pushed ${TAG} as ${DIGEST}"
           echo "manifest_digest=${DIGEST}" >> "$GITHUB_OUTPUT"
 
-      # Attest only at first publish — an existing immutable
-      # tag's artifact was attested when first pushed. The
-      # attestation is attached to the OCI image manifest so
-      # `gale verify` and `gale install` can verify it via
-      # `gh attestation verify --bundle-from-oci`.
+      # Attest whenever the image manifest is available. On a
+      # first publish the digest comes from the push step; on the
+      # adopt path it comes from the resolve step. Re-running the
+      # attestation on an already-attested image is harmless and
+      # covers the case where a previous attestation failed after a
+      # successful push, leaving the image without an OCI referrer.
       - name: Attest build provenance
-        if: steps.push.outputs.manifest_digest != ''
+        if: steps.push.outputs.manifest_digest != '' || steps.tag.outputs.manifest_digest != ''
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
         with:
           subject-name: ghcr.io/${{ github.repository }}/${{ matrix.cell.recipe }}
-          subject-digest: ${{ steps.push.outputs.manifest_digest }}
+          subject-digest: ${{ steps.push.outputs.manifest_digest || steps.tag.outputs.manifest_digest }}
           push-to-registry: true
           create-storage-record: false
 
