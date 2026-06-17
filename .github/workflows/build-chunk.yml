@@ -381,17 +381,6 @@ jobs:
             echo "tag=${TAG}"
           } >> "$GITHUB_OUTPUT"
 
-      # Attest only at first publish — an existing immutable
-      # tag's artifact was attested when first pushed. The
-      # subject stays the tar.zst FILE: that is exactly what
-      # gale v0.16.5 installs verify via gh attestation
-      # verify. Never change the attestation subject.
-      - name: Attest build provenance
-        if: steps.tag.outputs.exists != 'true'
-        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
-        with:
-          subject-path: ${{ steps.build.outputs.archive }}
-
       - name: Push to GHCR
         id: push
         if: steps.tag.outputs.exists != 'true'
@@ -428,6 +417,20 @@ jobs:
           fi
           echo "Pushed ${TAG} as ${DIGEST}"
           echo "manifest_digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+
+      # Attest only at first publish — an existing immutable
+      # tag's artifact was attested when first pushed. The
+      # attestation is attached to the OCI image manifest so
+      # `gale verify` and `gale install` can verify it via
+      # `gh attestation verify --bundle-from-oci`.
+      - name: Attest build provenance
+        if: steps.push.outputs.manifest_digest != ''
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
+        with:
+          subject-name: ghcr.io/${{ github.repository }}/${{ matrix.cell.recipe }}
+          subject-digest: ${{ steps.push.outputs.manifest_digest }}
+          push-to-registry: true
+          create-storage-record: false
 
       - name: Save build metadata
         env:
