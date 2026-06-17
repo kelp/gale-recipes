@@ -27,7 +27,12 @@ name: Verify Recipe
 
 on:
   pull_request:
-    paths: ['recipes/**']
+    # runner-overrides.json is here too: a PR that retargets a
+    # recipe's runner without touching its TOML must still run
+    # Verify. Discover (below) re-lists the affected recipes.
+    paths:
+      - 'recipes/**'
+      - '.github/runner-overrides.json'
   workflow_dispatch:
     inputs:
       recipe:
@@ -90,6 +95,34 @@ jobs:
             NAMES=$(echo "$CHANGED" | while read -r f; do
               [ -f "$f" ] && basename "$f" .toml
             done | sort -u)
+
+            # If the runner-override sidecar changed, re-verify
+            # every recipe it names. An override-only PR (or one
+            # that retargets an existing recipe's runner without
+            # touching its TOML) leaves CHANGED empty for that
+            # recipe, so without this the affected build never
+            # reruns. The override set is tiny; rebuilding all of
+            # it on any sidecar change is the conservative choice
+            # for a merge gate.
+            OVERRIDES_FILE=".github/runner-overrides.json"
+            if git diff --name-only \
+                 "origin/${PR_BASE_REF}...HEAD" \
+                 -- "$OVERRIDES_FILE" | grep -q .; then
+              OVR_NAMES=$(python3 - "$OVERRIDES_FILE" <<'PY'
+          import json, sys
+          from pathlib import Path
+          try:
+              data = json.load(open(sys.argv[1]))
+          except (OSError, ValueError):
+              sys.exit(0)
+          for name in (data if isinstance(data, dict) else []):
+              if (Path("recipes") / name[0] / f"{name}.toml").is_file():
+                  print(name)
+          PY
+              )
+              NAMES=$(printf '%s\n%s\n' "$NAMES" "$OVR_NAMES" \
+                | sort -u | sed '/^$/d')
+            fi
           fi
 
           # Build recipe × platform cells through the same
