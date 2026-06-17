@@ -1,0 +1,31 @@
+version = "0.7.0"
+
+[darwin-arm64]
+sha256 = "2eeb7c4ee7d87f07f2963ffdaf457b516748c83f8d4bf21983bfb44438fb5c24"
+manifest_digest = "sha256:67cce69e602045c57354897ac00e3060fae81a0c0d7b74aa116f97ea04e7de9e"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
+
+[linux-amd64]
+sha256 = "93f41e0f534581dd2880a11a14f8e9c977287b3765f6747106154c173b2ae221"
+manifest_digest = "sha256:ce5b149384274f5a8d0f74464a47a6ffb8d4b351ed5aca57cc541a7cbd08ad17"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
+
+[linux-arm64]
+sha256 = "d815e6fec78942f812b3b1e0a4b68223857a9bcbabf7859b941e49cf3a2f5f23"
+manifest_digest = "sha256:9a698215720ce501b1fecfe900837eed82a0ea8e0c995439be5f05a317f64353"
+deps = [
+  { name = "rust", version = "1.96.0", revision = 1 },
+  { name = "zig15", version = "0.15.2", revision = 1 },
+]
+
+[[history]]
+version = "0.7.0-1"
+darwin-arm64 = { sha256 = "2eeb7c4ee7d87f07f2963ffdaf457b516748c83f8d4bf21983bfb44438fb5c24", manifest_digest = "sha256:67cce69e602045c57354897ac00e3060fae81a0c0d7b74aa116f97ea04e7de9e" }
+linux-amd64 = { sha256 = "93f41e0f534581dd2880a11a14f8e9c977287b3765f6747106154c173b2ae221", manifest_digest = "sha256:ce5b149384274f5a8d0f74464a47a6ffb8d4b351ed5aca57cc541a7cbd08ad17" }
+linux-arm64 = { sha256 = "d815e6fec78942f812b3b1e0a4b68223857a9bcbabf7859b941e49cf3a2f5f23", manifest_digest = "sha256:9a698215720ce501b1fecfe900837eed82a0ea8e0c995439be5f05a317f64353" }
