@@ -3,7 +3,7 @@
 [package]
 name = "btop"
 version = "1.4.7"
-revision = 2
+revision = 3
 description = "Resource monitor. C++ version and continuation of bashtop and bpytop"
 license = "Apache-2.0"
 homepage = "https://github.com/aristocratos/btop"

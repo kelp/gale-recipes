@@ -3,7 +3,7 @@
 [package]
 name = "bandwhich"
 version = "0.23.1"
-revision = 2
+revision = 3
 description = "Terminal bandwidth utilization tool"
 license = "MIT"
 homepage = "https://github.com/imsnif/bandwhich"

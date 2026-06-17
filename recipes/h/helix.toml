@@ -3,7 +3,7 @@
 [package]
 name = "helix"
 version = "25.07.1"
-revision = 2
+revision = 3
 description = "Post-modern modal text editor"
 license = "MPL-2.0"
 homepage = "https://helix-editor.com"

@@ -3,7 +3,7 @@
 [package]
 name = "difftastic"
 version = "0.69.0"
-revision = 2
+revision = 3
 description = "Diff that understands syntax"
 license = "MIT"
 homepage = "https://github.com/Wilfred/difftastic"
