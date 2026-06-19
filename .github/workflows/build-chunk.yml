@@ -381,6 +381,25 @@ jobs:
             echo "tag=${TAG}"
           } >> "$GITHUB_OUTPUT"
 
+      # File-subject attestation for old-client compatibility.
+      # Clients before #132 verify the tar.zst FILE digest via
+      # the GitHub attestations API; without this they find
+      # nothing, fail verification, and fall back to a source
+      # build (the #131 disk-fill). It runs only on first
+      # publish (steps.tag.outputs.exists != 'true') because the
+      # tar.zst exists locally only at build time, and an
+      # immutable tag was already file-attested on its first
+      # publish. We ADD this subject alongside the manifest
+      # referrer below; we never change the existing subject,
+      # honoring the original "Never change the attestation
+      # subject" intent. REMOVABLE once #132 is the floor
+      # version every client runs.
+      - name: Attest build provenance (file subject, old clients)
+        if: steps.tag.outputs.exists != 'true'
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
+        with:
+          subject-path: ${{ steps.build.outputs.archive }}
+
       - name: Push to GHCR
         id: push
         if: steps.tag.outputs.exists != 'true'
@@ -418,13 +437,20 @@ jobs:
           echo "Pushed ${TAG} as ${DIGEST}"
           echo "manifest_digest=${DIGEST}" >> "$GITHUB_OUTPUT"
 
-      # Attest whenever the image manifest is available. On a
-      # first publish the digest comes from the push step; on the
-      # adopt path it comes from the resolve step. Re-running the
-      # attestation on an already-attested image is harmless and
-      # covers the case where a previous attestation failed after a
-      # successful push, leaving the image without an OCI referrer.
-      - name: Attest build provenance
+      # Manifest-subject attestation pushed as an OCI referrer,
+      # ADDED so #132+ clients can verify token-free via
+      # `gh attestation verify --bundle-from-oci` (no GitHub API,
+      # no token). This is an ADDED subject (the image manifest),
+      # not a change to the file subject attested above — the
+      # original "Never change the attestation subject" intent
+      # holds. Attest whenever the image manifest is available:
+      # on a first publish the digest comes from the push step;
+      # on the adopt path it comes from the resolve step.
+      # Re-running on an already-attested image is harmless and
+      # covers the case where a previous attestation failed after
+      # a successful push, leaving the image without an OCI
+      # referrer.
+      - name: Attest build provenance (manifest subject, OCI referrer)
         if: steps.push.outputs.manifest_digest != '' || steps.tag.outputs.manifest_digest != ''
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4.1.0
         with:
