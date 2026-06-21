@@ -1,0 +1,33 @@
+[package]
+name = "herdr"
+version = "0.7.0"
+description = "Terminal workspace manager for AI coding agents"
+license = "AGPL-3.0-or-later"
+homepage = "https://herdr.dev"
+# The darwin build needs zig 0.15.2 (pinned by the vendored
+# libghostty-vt, see [build]) to link against a macOS <= 15 SDK.
+# The default macos-26 CI runner ships only macOS 26.x SDKs,
+# against which zig 0.15.2's compiler_rt fails to resolve the
+# availability runtime (__availability_version_check). So this
+# recipe pins darwin-arm64 to the macos-15 runner via
+# .github/runner-overrides.json. Revisit once upstream supports a
+# newer zig and drop the override.
+platforms = ["darwin-arm64", "linux-amd64", "linux-arm64"]
+
+[source]
+repo = "ogulcancelik/herdr"
+url = "https://github.com/ogulcancelik/herdr/archive/refs/tags/v0.7.0.tar.gz"
+sha256 = "6c7e7b1eaefc50a63a66fdeae681df994b528511ce5e1aa2ac611f8119231946"
+released_at = "2026-06-15"
+
+# build.rs compiles the vendored libghostty-vt with `zig build`
+# and statically links it. libghostty-vt requires zig 0.15.2 exactly
+# (build.zig calls requireZig(0.15.2) and uses 0.15-only std APIs),
+# so the zig15 recipe is mandatory -- 0.16 is rejected at comptime.
+[build]
+steps = [
+  "cargo install --path . --root ${PREFIX}",
+]
+
+[dependencies]
+build = ["rust", "zig15"]

@@ -23,6 +23,16 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
+      # This matrix is hardcoded and does NOT consult
+      # .github/runner-overrides.json (that map only flows
+      # through scripts/chunk_recipes.py, which build.yml and
+      # verify.yml use; this manual, single-recipe workflow does
+      # not). A recipe whose darwin cell is overridden onto an
+      # older runner will fail its darwin run here on macos-26,
+      # same as before the override existed. Acceptable: the
+      # operator picks the recipe by hand. Honoring overrides
+      # would require restructuring this into a discover+matrix
+      # job like build.yml's.
       matrix:
         target:
           - os: macos-26

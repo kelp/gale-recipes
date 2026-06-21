@@ -56,6 +56,12 @@ def _write_recipe(
     return path
 
 
+def _write_overrides(tmp: Path, overrides: dict) -> Path:
+    path = tmp / "runner-overrides.json"
+    path.write_text(json.dumps(overrides))
+    return path
+
+
 class LoadPlatformsTests(unittest.TestCase):
     def test_loads_well_formed_file(self) -> None:
         with TemporaryDirectory() as tmp:
@@ -210,6 +216,120 @@ class DeclaredPlatformTests(unittest.TestCase):
                     ("qemu", "darwin-arm64"),
                 ],
             )
+
+
+class LoadRunnerOverridesTests(unittest.TestCase):
+    """The override map redirects a (recipe, platform) cell onto
+    a different GitHub-hosted runner. Values are allowlisted so a
+    recipe PR can't point a privileged build at a self-hosted
+    label or a typo'd image."""
+
+    def test_missing_file_is_no_overrides(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "runner-overrides.json"
+            self.assertEqual(c.load_runner_overrides(path), {})
+
+    def test_loads_well_formed_map(self) -> None:
+        with TemporaryDirectory() as tmp:
+            ov = {"herdr": {"darwin-arm64": "macos-15"}}
+            path = _write_overrides(Path(tmp), ov)
+            self.assertEqual(c.load_runner_overrides(path), ov)
+
+    def test_empty_object_is_valid(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = _write_overrides(Path(tmp), {})
+            self.assertEqual(c.load_runner_overrides(path), {})
+
+    def test_rejects_non_object_top_level(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "runner-overrides.json"
+            path.write_text('["herdr"]')
+            with self.assertRaisesRegex(ValueError, "JSON object"):
+                c.load_runner_overrides(path)
+
+    def test_rejects_non_object_recipe_entry(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = _write_overrides(Path(tmp), {"herdr": "macos-15"})
+            with self.assertRaisesRegex(ValueError, "herdr"):
+                c.load_runner_overrides(path)
+
+    def test_rejects_non_string_runner(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = _write_overrides(
+                Path(tmp), {"herdr": {"darwin-arm64": 15}}
+            )
+            with self.assertRaisesRegex(ValueError, "string"):
+                c.load_runner_overrides(path)
+
+    def test_rejects_runner_outside_allowlist(self) -> None:
+        with TemporaryDirectory() as tmp:
+            path = _write_overrides(
+                Path(tmp),
+                {"herdr": {"darwin-arm64": "self-hosted-evil"}},
+            )
+            # Error names the offending recipe, platform, and value.
+            with self.assertRaisesRegex(
+                ValueError, "herdr.*darwin-arm64.*self-hosted-evil"
+            ):
+                c.load_runner_overrides(path)
+
+
+class BuildCellsOverrideTests(unittest.TestCase):
+    """An override only swaps which runner a cell runs on; it
+    never adds or removes cells."""
+
+    def test_override_swaps_os_for_matching_cell_only(self) -> None:
+        # Fictional recipe name (no file on disk) so eligibility
+        # degrades to the full matrix, independent of repo state.
+        ov = {"tooly": {"darwin-arm64": "macos-15"}}
+        cells = c.build_cells(
+            ["tooly"], THREE_PLATFORMS, overrides=ov
+        )
+        by_platform = {x["platform"]: x["os"] for x in cells}
+        self.assertEqual(by_platform["darwin-arm64"], "macos-15")
+        self.assertEqual(by_platform["linux-amd64"], "ubuntu-latest")
+        self.assertEqual(by_platform["linux-arm64"], "ubuntu-24.04-arm")
+
+    def test_override_scoped_to_named_recipe(self) -> None:
+        ov = {"tooly": {"darwin-arm64": "macos-15"}}
+        cells = c.build_cells(
+            ["tooly", "other"], THREE_PLATFORMS, overrides=ov
+        )
+        other_darwin = next(
+            x for x in cells
+            if x["recipe"] == "other" and x["platform"] == "darwin-arm64"
+        )
+        self.assertEqual(other_darwin["os"], "macos-26")
+
+    def test_override_for_ineligible_platform_is_noop(self) -> None:
+        # herdr declares linux only; a darwin override has no cell
+        # to rewrite and must not resurrect the darwin cell.
+        with TemporaryDirectory() as tmp:
+            rdir = Path(tmp) / "recipes"
+            _write_recipe(
+                rdir, "herdr",
+                platforms=["linux-amd64", "linux-arm64"],
+            )
+            ov = {"herdr": {"darwin-arm64": "macos-15"}}
+            cells = c.build_cells(
+                ["herdr"], THREE_PLATFORMS,
+                recipes_dir=rdir, overrides=ov,
+            )
+            self.assertEqual(
+                {x["platform"] for x in cells},
+                {"linux-amd64", "linux-arm64"},
+            )
+
+    def test_none_and_empty_reproduce_default(self) -> None:
+        baseline = c.build_cells(["a", "b"], THREE_PLATFORMS)
+        self.assertEqual(
+            c.build_cells(["a", "b"], THREE_PLATFORMS, overrides=None),
+            baseline,
+        )
+        self.assertEqual(
+            c.build_cells(["a", "b"], THREE_PLATFORMS, overrides={}),
+            baseline,
+        )
 
 
 class ChunkCellsTests(unittest.TestCase):
