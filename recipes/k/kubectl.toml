@@ -1,6 +1,6 @@
 [package]
 name = "kubectl"
-version = "1.36.1"
+version = "1.36.2"
 revision = 2
 description = "Kubernetes command-line interface"
 license = "Apache-2.0"
@@ -8,8 +8,8 @@ homepage = "https://kubernetes.io/docs/reference/kubectl/"
 
 [source]
 repo = "kubernetes/kubernetes"
-url = "https://github.com/kubernetes/kubernetes/archive/refs/tags/v1.36.1.tar.gz"
-sha256 = "1ebfa65cc95fbeb2ef4aad6832a3fae4edb88516e43b6437b69a40895803e0e8"
+url = "https://github.com/kubernetes/kubernetes/archive/refs/tags/v1.36.2.tar.gz"
+sha256 = "ffbc46612cf32ad08a3b606de064b63afc350ae1dd1a691e99b5cd127d716c26"
 
 [build]
 steps = [
