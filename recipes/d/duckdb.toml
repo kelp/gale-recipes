@@ -2,7 +2,7 @@
 
 [package]
 name = "duckdb"
-version = "1.5.3"
+version = "1.5.4"
 revision = 2
 description = "Embeddable SQL OLAP Database Management System"
 license = "MIT"
@@ -10,8 +10,8 @@ homepage = "https://www.duckdb.org"
 
 [source]
 repo = "duckdb/duckdb"
-url = "https://github.com/duckdb/duckdb/archive/refs/tags/v1.5.3.tar.gz"
-sha256 = "f22a7cfb3e72be3010f4a7f2fbdd8de7d62fa036b838543acb663a722a7a71df"
+url = "https://github.com/duckdb/duckdb/archive/refs/tags/v1.5.4.tar.gz"
+sha256 = "99c36e4bf415f295e19ed67401adb72e075e63e6a0dc3a14312c986e29781fd0"
 
 [build]
 steps = [
