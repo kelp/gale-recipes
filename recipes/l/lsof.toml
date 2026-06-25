@@ -1,6 +1,6 @@
 [package]
 name = "lsof"
-version = "4.99.6"
+version = "4.99.7"
 revision = 2
 description = "Utility to list open files"
 license = "lsof"
@@ -8,9 +8,9 @@ homepage = "https://github.com/lsof-org/lsof"
 
 [source]
 repo = "lsof-org/lsof"
-url = "https://github.com/lsof-org/lsof/archive/refs/tags/4.99.6.tar.gz"
-sha256 = "2ce65158694e9c44dfc54916f5b843d887763c03128e0a1c77d62ae106537009"
-released_at = "2026-03-04"
+url = "https://github.com/lsof-org/lsof/archive/refs/tags/4.99.7.tar.gz"
+sha256 = "bac1b0acbc50aede42fc97dffaa0b0475e97973e36a6351de5f349c6155afc68"
+released_at = "2026-06-16"
 
 [build.darwin-arm64]
 steps = [
