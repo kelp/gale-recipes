@@ -1,6 +1,6 @@
 [package]
 name = "gh"
-version = "2.93.0"
+version = "2.95.0"
 # rev 3: republish under a fresh tag so users whose store
 # already holds the pre-CGO_ENABLED=0 2.92.0-2 binary
 # (dynamically linked, segfaults on hosts with different
@@ -13,9 +13,9 @@ homepage = "https://cli.github.com/"
 
 [source]
 repo = "cli/cli"
-url = "https://github.com/cli/cli/archive/refs/tags/v2.93.0.tar.gz"
-sha256 = "8f3369ade41fe7a04ff93ec6029d5b0a8a94ccb4bb59f338d5c445aa695f0753"
-released_at = "2026-05-27"
+url = "https://github.com/cli/cli/archive/refs/tags/v2.95.0.tar.gz"
+sha256 = "b6a1c88cbd15f49f60a68d210a117a60b349bcb0d028a0dca0ef2d9dc92bd028"
+released_at = "2026-06-17"
 
 [build]
 # CGO_ENABLED=0 forces a pure-Go static binary — the
