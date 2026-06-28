@@ -2,7 +2,7 @@
 
 [package]
 name = "xh"
-version = "0.25.3"
+version = "0.26.1"
 revision = 2
 description = "Friendly and fast tool for sending HTTP requests"
 license = "MIT"
@@ -10,9 +10,9 @@ homepage = "https://github.com/ducaale/xh"
 
 [source]
 repo = "ducaale/xh"
-url = "https://github.com/ducaale/xh/archive/refs/tags/v0.25.3.tar.gz"
-sha256 = "ba331c33dc5d222f43cc6ad9f602002817772fd52ae28541976db49f34935ae3"
-released_at = "2025-12-16"
+url = "https://github.com/ducaale/xh/archive/refs/tags/v0.26.1.tar.gz"
+sha256 = "6c4822374d3b9bacfc50719ffb5653a32fd84344e50fd88b499ed8fc9e52198b"
+released_at = "2026-06-19"
 
 [build]
 steps = [
