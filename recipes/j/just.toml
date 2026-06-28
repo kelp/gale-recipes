@@ -3,7 +3,7 @@
 [package]
 name = "just"
 version = "1.51.0"
-revision = 2
+revision = 3
 description = "Handy way to save and run project-specific commands"
 license = "CC0-1.0"
 homepage = "https://github.com/casey/just"

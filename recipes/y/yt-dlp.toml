@@ -1,7 +1,7 @@
 [package]
 name = "yt-dlp"
 version = "2026.03.17"
-revision = 2
+revision = 3
 description = "A feature-rich command-line audio/video downloader"
 license = "Unlicense"
 homepage = "https://github.com/yt-dlp/yt-dlp"

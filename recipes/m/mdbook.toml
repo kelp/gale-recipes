@@ -1,6 +1,7 @@
 [package]
 name = "mdbook"
 version = "0.5.3"
+revision = 2
 description = "Create modern online books from Markdown files"
 license = "MPL-2.0"
 homepage = "https://rust-lang.github.io/mdBook/"

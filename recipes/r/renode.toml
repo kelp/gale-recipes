@@ -1,6 +1,7 @@
 [package]
 name = "renode"
 version = "1.16.1"
+revision = 2
 description = "Antmicro's open-source simulator for embedded systems"
 license = "MIT"
 homepage = "https://renode.io"
