@@ -1,6 +1,6 @@
 [package]
 name = "libffi"
-version = "3.5.2"
+version = "3.6.0"
 revision = 2
 description = "Portable Foreign Function Interface library"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://sourceware.org/libffi/"
 
 [source]
 repo = "libffi/libffi"
-url = "https://github.com/libffi/libffi/releases/download/v3.5.2/libffi-3.5.2.tar.gz"
-sha256 = "f3a3082a23b37c293a4fcd1053147b371f2ff91fa7ea1b2a52e335676bac82dc"
-released_at = "2025-08-19"
+url = "https://github.com/libffi/libffi/releases/download/v3.6.0/libffi-3.6.0.tar.gz"
+sha256 = "31ff1fe32deaebfbb388727f32677bb254bf2a41382c51464c0b1837c9ee9828"
+released_at = "2026-06-20"
 
 [build]
 system = "autotools"
