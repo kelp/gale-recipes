@@ -31,5 +31,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["bison", "flex", "meson", "ninja", "pkgconf", "openssl", "zlib", "readline", "gettext"]
+build = ["bison", "flex", "m4", "meson", "ninja", "pkgconf", "openssl", "zlib", "readline", "gettext"]
 runtime = ["openssl", "zlib", "readline", "gettext"]
