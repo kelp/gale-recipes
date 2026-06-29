@@ -98,6 +98,21 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
+      # ubuntu-latest leaves ~20 GB free on /, which Rust/LLVM source
+      # builds plus toolchain and rust-docs extraction exhaust ("No
+      # space left on device"). Drop preinstalled SDKs we never use to
+      # reclaim ~25-30 GB before any build or cache restore.
+      - name: Free up disk space (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo rm -rf \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /usr/share/swift || true
+          df -h /
+
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
           name: gale-${{ matrix.cell.platform }}
