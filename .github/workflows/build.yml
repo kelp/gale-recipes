@@ -262,9 +262,12 @@ jobs:
       # per-recipe all-eligible-platforms gate, hard-fails on
       # missing digests, and refuses to rewrite history.
       - name: Write .binaries.toml files
+        env:
+          HEAD_SHA: ${{ inputs.head_sha }}
         run: |
           python3 scripts/write_binaries.py \
-            --metadata-dir /tmp/metadata --repo-root .
+            --metadata-dir /tmp/metadata --repo-root . \
+            --commit "${HEAD_SHA}"
 
       # Commit .binaries.toml and .versions in TWO commits so the
       # .versions entry can reference the commit that actually

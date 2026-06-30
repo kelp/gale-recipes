@@ -25,6 +25,7 @@ SHA_C = "c" * 64
 MD_A = "sha256:" + "1" * 64
 MD_B = "sha256:" + "2" * 64
 MD_C = "sha256:" + "3" * 64
+COMMIT = "1234567890abcdef1234567890abcdef12345678"
 
 PLATFORMS = ["darwin-arm64", "linux-amd64", "linux-arm64"]
 
@@ -63,9 +64,14 @@ def binaries_text(
     mirror_version: str,
     mirror: dict[str, tuple[str, str]],
     history: list[tuple[str, dict[str, tuple[str, str]]]],
+    commits: dict[str, str] | None = None,
 ) -> str:
     """Render a .binaries.toml in the CI writer's shape: head
-    mirror first, [[history]] blocks appended."""
+    mirror first, [[history]] blocks appended. ``commits`` maps
+    an entry's version string to a ``commit`` line emitted right
+    after ``version`` — entries absent from the map carry none,
+    matching pre-commit-field ledgers."""
+    commits = commits or {}
     parts = [f'version = "{mirror_version}"\n']
     for platform in sorted(mirror):
         sha, md = mirror[platform]
@@ -75,6 +81,8 @@ def binaries_text(
     for entry_version, entries in history:
         parts.append("\n[[history]]\n")
         parts.append(f'version = "{entry_version}"\n')
+        if entry_version in commits:
+            parts.append(f'commit = "{commits[entry_version]}"\n')
         for platform in sorted(entries):
             sha, md = entries[platform]
             parts.append(
@@ -677,6 +685,84 @@ class TrivialPassTests(RepoCase):
         self.commit("steps tweak, same version")
         res = self.run_check(base)
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+
+class CommitFieldTests(RepoCase):
+    """gh#121 item 3 Part A: a newly appended [[history]] entry
+    may record the reviewed head SHA as ``commit``. The gate is
+    additive-tolerant: old entries without it pass; a present
+    commit must be a 40-hex SHA or the check fails."""
+
+    def test_bump_with_valid_commit_passes(self) -> None:
+        base = self.seed_published_v1()
+        self.write("recipes/t/testpkg.toml", recipe_text("1.1.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.1.0",
+                all_platform_digests(SHA_B, MD_B),
+                [
+                    ("1.0.0-1", all_platform_digests()),
+                    ("1.1.0-1", all_platform_digests(SHA_B, MD_B)),
+                ],
+                commits={"1.1.0-1": COMMIT},
+            ),
+        )
+        self.commit("bump with commit field")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_old_entry_without_commit_passes(self) -> None:
+        # The base ledger has a commit-bearing entry; the bump
+        # appends another. The historical entry without a commit
+        # must not be flagged.
+        self.write("recipes/t/testpkg.toml", recipe_text("1.0.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.0.0",
+                all_platform_digests(),
+                [("1.0.0-1", all_platform_digests())],
+            ),
+        )
+        base = self.commit("base: commit-free ledger")
+        self.write("recipes/t/testpkg.toml", recipe_text("1.1.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.1.0",
+                all_platform_digests(SHA_B, MD_B),
+                [
+                    ("1.0.0-1", all_platform_digests()),
+                    ("1.1.0-1", all_platform_digests(SHA_B, MD_B)),
+                ],
+                commits={"1.1.0-1": COMMIT},
+            ),
+        )
+        self.commit("bump, only new entry carries commit")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_malformed_commit_fails(self) -> None:
+        base = self.seed_published_v1()
+        self.write("recipes/t/testpkg.toml", recipe_text("1.1.0"))
+        self.write(
+            "recipes/t/testpkg.binaries.toml",
+            binaries_text(
+                "1.1.0",
+                all_platform_digests(SHA_B, MD_B),
+                [
+                    ("1.0.0-1", all_platform_digests()),
+                    ("1.1.0-1", all_platform_digests(SHA_B, MD_B)),
+                ],
+                commits={"1.1.0-1": "not-a-sha"},
+            ),
+        )
+        self.commit("bump with malformed commit")
+        res = self.run_check(base)
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        combined = res.stdout + res.stderr
+        self.assertIn("commit", combined)
 
 
 if __name__ == "__main__":

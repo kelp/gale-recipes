@@ -171,9 +171,13 @@ def render_mirror(version_str: str, entries: dict[str, dict]) -> str:
 
 
 def render_history_entry(
-    full_version: str, entries: dict[str, dict]
+    full_version: str,
+    entries: dict[str, dict],
+    commit: str = "",
 ) -> str:
     parts = ["[[history]]\n", f'version = "{full_version}"\n']
+    if commit:
+        parts.append(f'commit = "{commit}"\n')
     for platform in sorted(entries):
         e = entries[platform]
         parts.append(
@@ -198,6 +202,7 @@ def build_output(
     version: str,
     revision: int,
     entries: dict[str, dict],
+    commit: str = "",
 ) -> str:
     """Compose the new file text: regenerated mirror prefix,
     verbatim-preserved prior history, and (unless idempotent)
@@ -224,7 +229,9 @@ def build_output(
             if entry.get("version") != full:
                 continue
             recorded = {
-                k: v for k, v in entry.items() if k != "version"
+                k: v
+                for k, v in entry.items()
+                if k not in ("version", "commit")
             }
             if recorded == new_platforms:
                 append_entry = False
@@ -242,7 +249,7 @@ def build_output(
     if append_entry:
         if not out.endswith("\n"):
             out += "\n"
-        out += "\n" + render_history_entry(full, entries)
+        out += "\n" + render_history_entry(full, entries, commit)
 
     self_check(out, preserved, entries)
     return out
@@ -325,6 +332,14 @@ def main(argv: list[str] | None = None) -> int:
         default=Path("."),
         help="repository root (default: .)",
     )
+    ap.add_argument(
+        "--commit",
+        default="",
+        help=(
+            "reviewed head SHA recorded on each newly appended "
+            "[[history]] entry (default: none)"
+        ),
+    )
     args = ap.parse_args(argv)
 
     try:
@@ -376,7 +391,9 @@ def main(argv: list[str] | None = None) -> int:
                 if binaries_file.is_file()
                 else None
             )
-            out = build_output(existing, version, revision, metas)
+            out = build_output(
+                existing, version, revision, metas, args.commit
+            )
             if existing == out:
                 print(f"Unchanged {binaries_file}")
                 continue
