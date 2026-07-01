@@ -1,15 +1,15 @@
 [package]
 name = "pnpm"
-version = "11.1.3"
+version = "11.9.0"
 description = "Fast, disk space efficient package manager"
 license = "MIT"
 homepage = "https://pnpm.io"
 
 [source]
 repo = "pnpm/pnpm"
-url = "https://github.com/pnpm/pnpm/archive/refs/tags/v11.1.3.tar.gz"
-sha256 = "2ddb1e9ab4eceb3a87cd0aeac8fd637350ee57181d160a47d2b77445b54e8243"
-released_at = "2026-05-18"
+url = "https://github.com/pnpm/pnpm/archive/refs/tags/v11.9.0.tar.gz"
+sha256 = "8a04f3076e390427d59e2a306443c6a6fa22de98468d3de567c583f927595c0f"
+released_at = "2026-06-23"
 
 # pnpm requires pnpm to build from source (circular
 # dependency). Use prebuilt standalone binaries from
