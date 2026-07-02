@@ -16,6 +16,6 @@ build = ["go"]
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin ${PREFIX}/man/man1",
-  "go build -ldflags \"-X main.version=v${VERSION}\" -o ${PREFIX}/bin/gale ./cmd/gale/",
+  "CGO_ENABLED=0 go build -ldflags \"-X main.version=v${VERSION}\" -o ${PREFIX}/bin/gale ./cmd/gale/",
   "cp gale.1 ${PREFIX}/man/man1/",
 ]
