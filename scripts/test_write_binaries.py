@@ -41,6 +41,7 @@ SHA_C = "c" * 64
 DIG_A = "sha256:" + "1" * 64
 DIG_B = "sha256:" + "2" * 64
 DIG_C = "sha256:" + "3" * 64
+COMMIT = "1234567890abcdef1234567890abcdef12345678"
 
 
 def make_repo(tmp: Path) -> Path:
@@ -108,18 +109,32 @@ def binaries_path(repo: Path, name: str) -> Path:
     return repo / "recipes" / name[0] / f"{name}.binaries.toml"
 
 
-def run_main(repo: Path, metadir: Path) -> tuple[int, str, str]:
+def run_main(
+    repo: Path, metadir: Path, commit: str | None = None
+) -> tuple[int, str, str]:
+    argv = [
+        "--metadata-dir",
+        str(metadir),
+        "--repo-root",
+        str(repo),
+    ]
+    if commit is not None:
+        argv += ["--commit", commit]
     out, err = io.StringIO(), io.StringIO()
     with redirect_stdout(out), redirect_stderr(err):
-        rc = wb.main(
-            [
-                "--metadata-dir",
-                str(metadir),
-                "--repo-root",
-                str(repo),
-            ]
-        )
+        rc = wb.main(argv)
     return rc, out.getvalue(), err.getvalue()
+
+
+def entries_from(
+    shas: dict[str, tuple[str, str]],
+) -> dict[str, dict]:
+    """Shape the (platform -> (sha, digest)) test fixtures into
+    the entry dicts render_history_entry/build_output consume."""
+    return {
+        p: {"sha256": sha, "manifest_digest": dig}
+        for p, (sha, dig) in shas.items()
+    }
 
 
 def full_build(
@@ -516,6 +531,112 @@ class MainEdgeTests(unittest.TestCase):
             rc, out, err = run_main(repo, metadir)
             self.assertEqual(rc, 1)
             self.assertIn("ghost", out + err)
+
+
+class CommitFieldTests(unittest.TestCase):
+    """gh#121 item 3 Part A: a newly appended [[history]] entry
+    records the reviewed head SHA the binaries were built from
+    as ``commit``, placed right after ``version``. Old entries
+    predating the field carry none and must stay untouched."""
+
+    def test_render_emits_commit_after_version(self) -> None:
+        out = wb.render_history_entry(
+            "1.8.1-5", entries_from(THREE), COMMIT
+        )
+        lines = out.splitlines()
+        self.assertEqual(lines[0], "[[history]]")
+        self.assertEqual(lines[1], 'version = "1.8.1-5"')
+        self.assertEqual(lines[2], f'commit = "{COMMIT}"')
+
+    def test_render_omits_commit_when_empty(self) -> None:
+        out = wb.render_history_entry(
+            "1.8.1-5", entries_from(THREE), ""
+        )
+        self.assertNotIn("commit", out)
+
+    def test_render_omits_commit_by_default(self) -> None:
+        out = wb.render_history_entry("1.8.1-5", entries_from(THREE))
+        self.assertNotIn("commit", out)
+
+    def test_build_output_appends_entry_with_commit(self) -> None:
+        out = wb.build_output(
+            None, "1.8.1", 1, entries_from(THREE), COMMIT
+        )
+        doc = tomllib.loads(out)
+        self.assertEqual(doc["history"][0]["commit"], COMMIT)
+        # commit must sit between version and the platform tables.
+        body = out.split("[[history]]\n", 1)[1]
+        self.assertTrue(
+            body.startswith(
+                f'version = "1.8.1-1"\ncommit = "{COMMIT}"\n'
+            )
+        )
+
+    def test_preserved_entries_get_no_commit_injected(self) -> None:
+        # Existing ledger entry predates the commit field. A new
+        # version bump appends its own commit; the old entry must
+        # survive byte-identical, commit-free.
+        prior_history = (
+            "[[history]]\n"
+            'version = "1.8.0-1"\n'
+            f'darwin-arm64 = {{ sha256 = "{SHA_A}", '
+            f'manifest_digest = "{DIG_A}" }}\n'
+            f'linux-amd64 = {{ sha256 = "{SHA_B}", '
+            f'manifest_digest = "{DIG_B}" }}\n'
+            f'linux-arm64 = {{ sha256 = "{SHA_C}", '
+            f'manifest_digest = "{DIG_C}" }}\n'
+        )
+        existing = (
+            'version = "1.8.0"\n'
+            "\n[darwin-arm64]\n"
+            f'sha256 = "{SHA_A}"\n'
+            "\n[linux-amd64]\n"
+            f'sha256 = "{SHA_B}"\n'
+            "\n[linux-arm64]\n"
+            f'sha256 = "{SHA_C}"\n'
+            "\n" + prior_history
+        )
+        new = {
+            "darwin-arm64": ("d" * 64, "sha256:" + "4" * 64),
+            "linux-amd64": ("e" * 64, "sha256:" + "5" * 64),
+            "linux-arm64": ("f" * 64, "sha256:" + "6" * 64),
+        }
+        out = wb.build_output(
+            existing, "1.8.1", 1, entries_from(new), COMMIT
+        )
+        self.assertIn(prior_history, out)
+        doc = tomllib.loads(out)
+        self.assertNotIn("commit", doc["history"][0])
+        self.assertEqual(doc["history"][1]["commit"], COMMIT)
+
+    def test_cli_commit_lands_in_file(self) -> None:
+        with TemporaryDirectory() as tmp:
+            repo = make_repo(Path(tmp))
+            metadir = Path(tmp) / "meta"
+            make_recipe(repo, "jq", "1.8.1")
+            full_build(repo, metadir, "jq", THREE)
+            rc, _, _ = run_main(repo, metadir, commit=COMMIT)
+            self.assertEqual(rc, 0)
+            text = binaries_path(repo, "jq").read_text()
+            self.assertIn(f'commit = "{COMMIT}"\n', text)
+            doc = tomllib.loads(text)
+            self.assertEqual(doc["history"][0]["commit"], COMMIT)
+
+    def test_rerun_with_commit_is_byte_identical(self) -> None:
+        with TemporaryDirectory() as tmp:
+            repo = make_repo(Path(tmp))
+            metadir = Path(tmp) / "meta"
+            make_recipe(repo, "jq", "1.8.1")
+            full_build(repo, metadir, "jq", THREE)
+            rc, _, _ = run_main(repo, metadir, commit=COMMIT)
+            self.assertEqual(rc, 0)
+            before = binaries_path(repo, "jq").read_text()
+            rc, _, _ = run_main(repo, metadir, commit=COMMIT)
+            self.assertEqual(rc, 0)
+            after = binaries_path(repo, "jq").read_text()
+            self.assertEqual(before, after)
+            doc = tomllib.loads(after)
+            self.assertEqual(len(doc["history"]), 1)
 
 
 if __name__ == "__main__":

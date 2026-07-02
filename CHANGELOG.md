@@ -43,6 +43,23 @@ All notable changes to gale-recipes are documented here.
   pre-0.16 minimum.
 
 ### Changed
+- `verify.yml` drops the second full compile per verify
+  job (#95). Verify never publishes an archive, so it no
+  longer runs `gale build`; a single `gale install --recipe`
+  now does the one build, populates the dependency farm, and
+  lands the binary at its real store path.
+  `scripts/check_install.py` scans that installed prefix
+  (`~/.gale/pkg/<name>/<version>-<revision>`, resolved from
+  the recipe when no `--prefix`/`--archive` is given) instead
+  of an extracted archive; the installed tree carries the same
+  files and baked rpaths, so the static rpath check is
+  equivalent. Because the restore-only dep cache repopulates
+  `~/.gale/pkg` and the installer returns MethodCached (no
+  build) when the target already exists, verify now evicts
+  `~/.gale/pkg/<recipe>` before the install so it always
+  exercises a real build; deps stay cached, halving
+  heavy-recipe verify time. `build-chunk.yml` keeps both
+  steps.
 - vibeutils: pinned build dep to `zig15` (revision 4).
   `build.zig.zon` declares `minimum_zig_version =
   0.15.1` and the source still uses `std.fs.cwd` etc.,
@@ -131,6 +148,36 @@ All notable changes to gale-recipes are documented here.
   learned to accept table-form dep declarations.
 
 ### Fixed
+- ledger-check: the `workflow_dispatch` run promote fires after
+  its GITHUB_TOKEN commits now posts a `ledger-check` commit
+  status on the PR head SHA instead of relying on the dispatch
+  check-run. GitHub does not link a dispatch-created check
+  suite to the open PR, so the required-check rollup ignored
+  the green check-run and the PR sat BLOCKED until a manual
+  empty commit re-fired a `pull_request` run (done by hand for
+  PR #136 and PR #145). A commit status carries no check-suite
+  linkage and is read straight off the head SHA, so it credits
+  ruleset 17473700's required `ledger-check` context whatever
+  event ran the check. Posted only on workflow_dispatch
+  (pull_request runs already produce a linked, credited
+  check-run, and a fork PR's read-only GITHUB_TOKEN cannot
+  POST a status), with the same 3-attempt retry as build.yml's
+  dispatch step (#146).
+- `build-chunk.yml`: retry the two `actions/attest`
+  provenance steps (file subject and manifest OCI
+  referrer) up to three times with backoff before
+  failing. Transient `Failed to persist attestation:
+  Requires authentication` 401s from the GitHub API had
+  been failing otherwise-green build legs and gating the
+  `update-recipes` publish, forcing manual reruns.
+  `actions/attest` is a `uses:` step and can't ride the
+  shell `for attempt` retry loop the build/oras-push
+  steps use, so the attempts chain via
+  `continue-on-error` + step-outcome guards; the final
+  attempt keeps no `continue-on-error`, so a persistent
+  failure still hard-fails the job (this absorbs
+  transient 401s, it does not make attestation
+  optional) (#78).
 - vibeutils, zls, zmx: added `-Dcpu=baseline` to the
   `zig build` steps so binaries don't bake in the CI
   runner's CPU-specific instructions. Without it,

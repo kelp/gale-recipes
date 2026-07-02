@@ -273,6 +273,21 @@ def check_prefix(
     return failures
 
 
+def resolve_prefix(name: str, version: str, revision: int) -> Path:
+    """Default gale store path: matches run_smoke/verify_binary.
+
+    $HOME/.gale/pkg/<name>/<version>-<revision>/, including the
+    -1 suffix when revision is 1. This is where `gale install`
+    writes the package, so the installed tree carries the same
+    files and the same baked rpaths as the built archive — the
+    static rpath check is equivalent against either.
+
+    Override $HOME to target a different store.
+    """
+    return (Path.home() / ".gale" / "pkg" / name
+            / f"{version}-{revision}")
+
+
 def extract_archive(archive: Path) -> Path:
     """Extract a tar.zst into a temp dir; return the dir.
 
@@ -291,9 +306,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--recipe", required=True, type=Path,
                     help="path to recipe TOML")
-    src = ap.add_mutually_exclusive_group(required=True)
+    src = ap.add_mutually_exclusive_group(required=False)
     src.add_argument("--prefix", type=Path,
-                     help="installed prefix to scan")
+                     help="installed prefix to scan (defaults to "
+                          "~/.gale/pkg/<name>/<version>-<rev>)")
     src.add_argument("--archive", type=Path,
                      help="built tar.zst to extract and scan")
     ap.add_argument("--verbose", "-v", action="store_true")
@@ -303,6 +319,8 @@ def main() -> int:
         recipe = tomllib.load(f)
 
     name = recipe["package"]["name"]
+    version = recipe["package"]["version"]
+    revision = int(recipe["package"].get("revision", 1) or 1)
     # Deps can be bare strings or {name, version} tables.
     # Extract just the name for the allowed-deps set.
     runtime_deps = set()
@@ -316,8 +334,17 @@ def main() -> int:
     if args.archive:
         prefix = extract_archive(args.archive)
         cleanup = prefix
-    else:
+    elif args.prefix:
         prefix = args.prefix
+    else:
+        # No source given: scan the installed store prefix, the
+        # way verify.yml does after a single `gale install`.
+        prefix = resolve_prefix(name, version, revision)
+        if not prefix.is_dir():
+            print(f"check_install: prefix {prefix} does not "
+                  f"exist; install the package first",
+                  file=sys.stderr)
+            return 1
 
     try:
         failures = check_prefix(
