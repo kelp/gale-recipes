@@ -229,52 +229,56 @@ jobs:
           FILE="recipes/${LETTER}/${RECIPE_NAME}.toml"
           echo "file=${FILE}" >> "$GITHUB_OUTPUT"
 
-      - name: Build recipe
-        id: build
+      # The restore-only dep cache above repopulates ~/.gale/pkg,
+      # which includes any previously built revision of THIS recipe
+      # (the deps-<platform>- cache is saved by privileged
+      # build-chunk runs and keyed per-platform, not per-runner or
+      # per-PR). gale's installer short-circuits to MethodCached
+      # with NO build when ~/.gale/pkg/<name>/<version>-<revision>
+      # already exists, and `gale install --recipe` has no --force.
+      # Under the old two-step flow `gale build` never consulted the
+      # store, so it always compiled; the install-only flow does not,
+      # so on a cache hit it would compile nothing and every check
+      # below would validate a STALE cached binary. That breaks
+      # gh#95's own invariant ("both still exercise a real build")
+      # and the runner-override re-verify path (a recipe retargeted
+      # to a new runner with no version/revision bump). Evict just
+      # the target's store entries so the single install always does
+      # a real build; the deps stay cached, preserving the #95
+      # speedup. Do NOT remove this step — it is what makes
+      # install-only equivalent to the old build+install for verify.
+      - name: Evict target from restored store (force real build)
+        run: rm -rf "$HOME/.gale/pkg/${RECIPE_NAME}"
+
+      # Verify never publishes an archive, so it skips `gale build`
+      # entirely and does a SINGLE build via `gale install`. That
+      # one build populates the dependency farm and lands the
+      # binary at its real store path with the farm rpath baked
+      # correctly — the tree every check below scans. build-chunk
+      # keeps the separate `gale build` because its archive/sha256
+      # feed the GHCR push; verify has no such consumer, so the
+      # second full compile that step used to cost here is dropped
+      # (gh#95: install-only halves heavy-recipe verify time).
+      #
+      # The retry loop covers transient upstream/network flakes on
+      # the sole build, mirroring the former build step.
+      - name: Install recipe (single build, populate dep farm)
         env:
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
           for attempt in 1 2 3; do
-            OUTPUT=$(gale build "$RECIPE_FILE" \
-              2>&1 | tee /tmp/build.log)
-            ARCHIVE=$(echo "$OUTPUT" | grep '^archive:' \
-              | awk '{print $2}')
-
-            if [ -n "$ARCHIVE" ]; then
-              break
+            if gale install --global "${RECIPE_NAME}" \
+                --recipe "${RECIPE_FILE}" 2>&1 | tee /tmp/build.log
+            then
+              exit 0
             fi
-
-            echo "::warning::Build attempt $attempt failed, retrying..."
+            echo "::warning::Install attempt $attempt failed, retrying..."
             sleep $((attempt * 10))
           done
-
-          echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
-
-          if [ -z "$ARCHIVE" ]; then
-            echo "::error::Build failed after 3 attempts"
-            echo "--- build log ---"
-            cat /tmp/build.log || true
-            exit 1
-          fi
-
-      # Install the recipe (with its build+runtime deps) so the
-      # dependency farm is populated and the binary lands at its
-      # real store path with the farm rpath baked correctly. The
-      # next step then runs THAT installed binary — the way a
-      # user runs it. A relocated tar extract would dyld-abort on
-      # a dynamically-linked runtime-dep dylib (eza->libgit2,
-      # flac->libogg, git-delta, bat), even though the binary is
-      # correct, because the @loader_path-relative farm rpath
-      # only resolves at the install location. gale cannot
-      # install a pre-built archive, so this is a second build;
-      # correctness over the saved compile (see the build step's
-      # archive, still used by Check install below).
-      - name: Install recipe (populate dep farm)
-        env:
-          RECIPE_FILE: ${{ steps.recipe.outputs.file }}
-        run: |
-          gale install --global "${RECIPE_NAME}" \
-            --recipe "${RECIPE_FILE}"
+          echo "::error::Install failed after 3 attempts"
+          echo "--- build log ---"
+          cat /tmp/build.log || true
+          exit 1
 
       - name: Verify binary runs
         env:
@@ -283,17 +287,18 @@ jobs:
           python3 scripts/verify_binary.py \
             --recipe "${RECIPE_FILE}"
 
+      # Scan the INSTALLED store prefix, not an extracted archive.
+      # gale no longer rewrites rpaths at install (linking policy),
+      # so the installed tree has the same files and the same baked
+      # rpaths the archive would — the static rpath check is
+      # equivalent. Omitting --prefix/--archive makes check_install
+      # resolve ~/.gale/pkg/<name>/<version>-<revision> itself.
       - name: Check install (rpath vs runtime deps)
         env:
-          ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          CHECK_DIR=$(mktemp -d)
-          tar --zstd -xf "${ARCHIVE}" -C "${CHECK_DIR}"
           python3 scripts/check_install.py \
-            --recipe "${RECIPE_FILE}" \
-            --prefix "${CHECK_DIR}"
-          rm -rf "${CHECK_DIR}"
+            --recipe "${RECIPE_FILE}"
 
       - name: Install and smoke test
         env:
