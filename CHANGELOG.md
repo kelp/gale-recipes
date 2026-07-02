@@ -131,6 +131,21 @@ All notable changes to gale-recipes are documented here.
   learned to accept table-form dep declarations.
 
 ### Fixed
+- ledger-check: the `workflow_dispatch` run promote fires after
+  its GITHUB_TOKEN commits now posts a `ledger-check` commit
+  status on the PR head SHA instead of relying on the dispatch
+  check-run. GitHub does not link a dispatch-created check
+  suite to the open PR, so the required-check rollup ignored
+  the green check-run and the PR sat BLOCKED until a manual
+  empty commit re-fired a `pull_request` run (done by hand for
+  PR #136 and PR #145). A commit status carries no check-suite
+  linkage and is read straight off the head SHA, so it credits
+  ruleset 17473700's required `ledger-check` context whatever
+  event ran the check. Posted only on workflow_dispatch
+  (pull_request runs already produce a linked, credited
+  check-run, and a fork PR's read-only GITHUB_TOKEN cannot
+  POST a status), with the same 3-attempt retry as build.yml's
+  dispatch step (#146).
 - `build-chunk.yml`: retry the two `actions/attest`
   provenance steps (file subject and manifest OCI
   referrer) up to three times with backoff before
