@@ -131,6 +131,21 @@ All notable changes to gale-recipes are documented here.
   learned to accept table-form dep declarations.
 
 ### Fixed
+- `build-chunk.yml`: retry the two `actions/attest`
+  provenance steps (file subject and manifest OCI
+  referrer) up to three times with backoff before
+  failing. Transient `Failed to persist attestation:
+  Requires authentication` 401s from the GitHub API had
+  been failing otherwise-green build legs and gating the
+  `update-recipes` publish, forcing manual reruns.
+  `actions/attest` is a `uses:` step and can't ride the
+  shell `for attempt` retry loop the build/oras-push
+  steps use, so the attempts chain via
+  `continue-on-error` + step-outcome guards; the final
+  attempt keeps no `continue-on-error`, so a persistent
+  failure still hard-fails the job (this absorbs
+  transient 401s, it does not make attestation
+  optional) (#78).
 - vibeutils, zls, zmx: added `-Dcpu=baseline` to the
   `zig build` steps so binaries don't bake in the CI
   runner's CPU-specific instructions. Without it,
