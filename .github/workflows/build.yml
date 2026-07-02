@@ -446,13 +446,15 @@ jobs:
       # so they cannot fire pull_request events — without
       # this explicit dispatch the required Ledger Check
       # would sit "Expected" forever and the promoted PR
-      # would stay unmergeable. The dispatched run attaches
-      # its check to the branch tip, which now includes the
-      # committed ledger. The gate reads `committed`, an
-      # output the commit step above explicitly writes —
-      # never gate this on outputs of steps that may not
-      # exist: GitHub evaluates a missing step output as ''
-      # and skips the dispatch silently.
+      # would stay unmergeable. The dispatched run verifies
+      # the freshly committed ledger on the branch tip and
+      # posts a `ledger-check` commit STATUS on that SHA; the
+      # status (not the dispatch check-run, which the PR rollup
+      # ignores) is what credits the required check (gh#146).
+      # The gate reads `committed`, an output the commit step
+      # above explicitly writes — never gate this on outputs of
+      # steps that may not exist: GitHub evaluates a missing
+      # step output as '' and skips the dispatch silently.
       - name: Report ledger check on PR branch
         if: >-
           steps.commit.outputs.committed == 'true'
