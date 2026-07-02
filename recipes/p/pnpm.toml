@@ -21,7 +21,7 @@ released_at = "2026-06-23"
 [build.darwin-arm64]
 steps = [
   "curl -sL -o /tmp/pnpm.tar.gz https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-darwin-arm64.tar.gz",
-  "echo 'c258310926cfaaa59b50296bc0defca66a466799eb045d4f76fe3fc3c5e6565d  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
+  "echo 'ca6f98a8911ec975509464026205e2b54aed74cecd36c5ae9932e5997bd7de2a  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
   "mkdir -p ${PREFIX}/bin",
   "tar xzf /tmp/pnpm.tar.gz -C ${PREFIX}/bin",
   "chmod +x ${PREFIX}/bin/pnpm",
@@ -31,7 +31,7 @@ steps = [
 [build.linux-amd64]
 steps = [
   "curl -sL -o /tmp/pnpm.tar.gz https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-x64.tar.gz",
-  "echo '8e5685c22bc05e8092adb056bb3d848c3d7926a2c909ed028052098d59db9e6e  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
+  "echo '8d987d82585453bcf260ea5d0bae346d298f1a5e71bcde8d99976521408ad895  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
   "mkdir -p ${PREFIX}/bin",
   "tar xzf /tmp/pnpm.tar.gz -C ${PREFIX}/bin",
   "chmod +x ${PREFIX}/bin/pnpm",
@@ -41,7 +41,7 @@ steps = [
 [build.linux-arm64]
 steps = [
   "curl -sL -o /tmp/pnpm.tar.gz https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-arm64.tar.gz",
-  "echo '35676a3dacc7e325dd6ac90db35fd425f17748ea8095c2ea6d47c2375a974fcd  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
+  "echo '7981d0109fffdf8f15b838243240c8c9f9114dd4b7111d4227c1453522d75b61  /tmp/pnpm.tar.gz' | shasum -a 256 -c",
   "mkdir -p ${PREFIX}/bin",
   "tar xzf /tmp/pnpm.tar.gz -C ${PREFIX}/bin",
   "chmod +x ${PREFIX}/bin/pnpm",
