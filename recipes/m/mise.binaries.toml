@@ -1,8 +1,8 @@
-version = "2026.4.0-3"
+version = "2026.6.14-3"
 
 [darwin-arm64]
-sha256 = "bc11cf6dc562f001d58eef804f7b5c4e5a9c8bc33c97fada5c15c8f47845f11f"
-manifest_digest = "sha256:45493c6b5406a17659e6ecfbffd94fb0d779ccc764f99d63bd68a2690b1512f2"
+sha256 = "011c907487f505a1affdd68600df64720cf39ce3ac3c2896cab9cbfff15e64b4"
+manifest_digest = "sha256:e62d504aec2a1e820c5d67cd263c765e2d2391b2e141710e15dd975a2ae80a13"
 deps = [
   { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "openssl", version = "3.6.1", revision = 4 },
@@ -11,8 +11,8 @@ deps = [
 ]
 
 [linux-amd64]
-sha256 = "12a441b98eda911bcab39ceb674c39584471f384a62350c8f778ce8c79ef052a"
-manifest_digest = "sha256:45c964bd745ab94f5ad53997cc4459b088d89a36c2ab994f951ae30513ac139f"
+sha256 = "771824a6da54735c785800b3fa0608dffe743f60b98c0a2801b051a3ab1f903a"
+manifest_digest = "sha256:8b8f1bbb909b5c28eced62d48a10fc08b17e2254410838b07059f23465e635cf"
 deps = [
   { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "openssl", version = "3.6.1", revision = 4 },
@@ -21,8 +21,8 @@ deps = [
 ]
 
 [linux-arm64]
-sha256 = "a3db5ffebcc8d13fd8c4e414d1d9a8f35d7a56d4b38193bb3099ac56b48e492f"
-manifest_digest = "sha256:69dc3425bcd90df5a94dfc2806b5314ad29b0e2756c8f8c574a3dcc3a7b0b0eb"
+sha256 = "fe01b2abeebd7ef1037eb9be592c3b1f7cc1c07ccf8ab38c48e3a14e13ebb21a"
+manifest_digest = "sha256:64732c7c5f59b1779d24b2fea4a87277782986d20146a6d36f51da3c0127ee9c"
 deps = [
   { name = "cmake", version = "4.3.3", revision = 2 },
   { name = "openssl", version = "3.6.1", revision = 4 },
@@ -35,3 +35,10 @@ version = "2026.4.0-3"
 darwin-arm64 = { sha256 = "bc11cf6dc562f001d58eef804f7b5c4e5a9c8bc33c97fada5c15c8f47845f11f", manifest_digest = "sha256:45493c6b5406a17659e6ecfbffd94fb0d779ccc764f99d63bd68a2690b1512f2" }
 linux-amd64 = { sha256 = "12a441b98eda911bcab39ceb674c39584471f384a62350c8f778ce8c79ef052a", manifest_digest = "sha256:45c964bd745ab94f5ad53997cc4459b088d89a36c2ab994f951ae30513ac139f" }
 linux-arm64 = { sha256 = "a3db5ffebcc8d13fd8c4e414d1d9a8f35d7a56d4b38193bb3099ac56b48e492f", manifest_digest = "sha256:69dc3425bcd90df5a94dfc2806b5314ad29b0e2756c8f8c574a3dcc3a7b0b0eb" }
+
+[[history]]
+version = "2026.6.14-3"
+commit = "22b300d1a02ef03e54e941f18c7e5dd27d6cb77c"
+darwin-arm64 = { sha256 = "011c907487f505a1affdd68600df64720cf39ce3ac3c2896cab9cbfff15e64b4", manifest_digest = "sha256:e62d504aec2a1e820c5d67cd263c765e2d2391b2e141710e15dd975a2ae80a13" }
+linux-amd64 = { sha256 = "771824a6da54735c785800b3fa0608dffe743f60b98c0a2801b051a3ab1f903a", manifest_digest = "sha256:8b8f1bbb909b5c28eced62d48a10fc08b17e2254410838b07059f23465e635cf" }
+linux-arm64 = { sha256 = "fe01b2abeebd7ef1037eb9be592c3b1f7cc1c07ccf8ab38c48e3a14e13ebb21a", manifest_digest = "sha256:64732c7c5f59b1779d24b2fea4a87277782986d20146a6d36f51da3c0127ee9c" }
