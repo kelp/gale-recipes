@@ -92,7 +92,7 @@ dependency conventions.
 Dev tools are managed by gale itself:
 
 ```sh
-gale sync --local    # install from local recipes
+gale sync --recipes recipes  # install from local recipes
 just lint            # gale lint + actionlint
 just update-gale     # rebuild gale from source
 ```
