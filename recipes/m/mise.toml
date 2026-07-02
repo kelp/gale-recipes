@@ -1,6 +1,6 @@
 [package]
 name = "mise"
-version = "2026.4.0"
+version = "2026.6.14"
 revision = 3
 description = "dev tools, env vars, task runner"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://mise.jdx.dev"
 
 [source]
 repo = "jdx/mise"
-url = "https://github.com/jdx/mise/archive/refs/tags/v2026.4.0.tar.gz"
-sha256 = "e171d6f00a6241fce51478d0dbbc4effd968419728e6ce08a331c44bb121cedd"
-released_at = "2025-01-15"
+url = "https://github.com/jdx/mise/archive/refs/tags/v2026.6.14.tar.gz"
+sha256 = "2480b1bd8ed693300551113b4dd7771828dcc65651e46edef8ec38e0e37a0fba"
+released_at = "2026-06-25"
 
 [dependencies]
 build = ["cmake", "pkgconf", "rust", "openssl"]
