@@ -1,14 +1,14 @@
 [package]
 name = "gale"
-version = "0.19.0"
+version = "0.20.0"
 description = "Package manager that replaces Homebrew, Nix, and home-manager"
 license = "MIT"
 homepage = "https://github.com/kelp/gale"
 
 [source]
 repo = "kelp/gale"
-url = "https://github.com/kelp/gale/archive/refs/tags/v0.19.0.tar.gz"
-sha256 = "1e54df3836a6bc8d9fc1eb7dfe3f54057f93b805fd979a92eed2554ff37ad9ef"
+url = "https://github.com/kelp/gale/archive/refs/tags/v0.20.0.tar.gz"
+sha256 = "4cdd47c0c07b39d5d886df7381705523d869fd1d77f95d97c0524fff91a77d1e"
 
 [dependencies]
 build = ["go"]
@@ -16,6 +16,6 @@ build = ["go"]
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin ${PREFIX}/man/man1",
-  "go build -ldflags \"-X main.version=v${VERSION}\" -o ${PREFIX}/bin/gale ./cmd/gale/",
+  "CGO_ENABLED=0 go build -ldflags \"-X main.version=v${VERSION}\" -o ${PREFIX}/bin/gale ./cmd/gale/",
   "cp gale.1 ${PREFIX}/man/man1/",
 ]

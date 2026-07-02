@@ -3,7 +3,7 @@
 [package]
 name = "ripgrep"
 version = "15.1.0"
-revision = 4
+revision = 5
 description = "Search tool like grep and The Silver Searcher"
 license = "Unlicense"
 homepage = "https://github.com/BurntSushi/ripgrep"

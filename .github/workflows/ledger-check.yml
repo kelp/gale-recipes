@@ -17,10 +17,16 @@ name: Ledger Check
 # workflow_dispatch exists because promote's GITHUB_TOKEN
 # GraphQL commits suppress pull_request events: build.yml
 # (and auto-update.sh for bot PRs) dispatch this workflow on
-# the PR branch explicitly. The dispatched run's check
-# attaches to the branch-tip SHA — the PR head after promote
-# commits — so it satisfies the required check. No inputs:
-# the run's --ref selects the branch.
+# the PR branch explicitly. The dispatched run's check-run
+# attaches to the branch-tip SHA, but GitHub does NOT link a
+# dispatch-created check suite to the open PR, so the required-
+# check rollup never credits it and the PR sat BLOCKED
+# (gh#146). A dispatched run therefore also posts a
+# `ledger-check` commit STATUS on that SHA (final step):
+# commit statuses carry no check-suite linkage and are read
+# straight off the PR head, so they credit the required
+# context whatever event ran the check. No inputs: the run's
+# --ref selects the branch.
 #
 # Deliberately NO `paths:` filter on pull_request. GitHub
 # cannot path-scope a required status check, so a filtered-
@@ -37,6 +43,9 @@ on:
 
 permissions:
   contents: read
+  # Post the `ledger-check` commit status that credits the
+  # required context on a dispatched run's head SHA (gh#146).
+  statuses: write
 
 jobs:
   ledger-check:
@@ -59,3 +68,35 @@ jobs:
         run: |
           python3 scripts/check_ledger.py \
             --base "origin/${{ github.base_ref || 'main' }}"
+
+      # Credit the required `ledger-check` context via a commit
+      # STATUS on the PR head. A workflow_dispatch check-run
+      # attaches to the head SHA but its check suite is not
+      # linked to the open PR, so the rollup ignores it (gh#146);
+      # a commit status is read directly off the head SHA and is
+      # credited whatever event ran the check. Dispatch-only:
+      # pull_request runs already produce a linked, credited
+      # check-run, and a fork PR's read-only GITHUB_TOKEN cannot
+      # POST a status. github.sha here is the dispatched branch
+      # tip — the PR head after promote's GraphQL commits.
+      - name: Credit required ledger-check status on head
+        if: github.event_name == 'workflow_dispatch' && success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        # Same 3-attempt treatment as build.yml's dispatch step:
+        # a transient failure here leaves the required check
+        # uncredited and the promoted PR stuck.
+        run: |
+          for attempt in 1 2 3; do
+            if gh api -X POST "repos/${REPO}/statuses/${SHA}" \
+              -f state=success -f context=ledger-check \
+              -f description='Ledger append-only and platform-complete'; then
+              exit 0
+            fi
+            echo "::warning::ledger-check status POST attempt ${attempt} failed"
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          echo "::error::ledger-check status POST failed after 3 attempts; required check uncredited on ${SHA}"
+          exit 1

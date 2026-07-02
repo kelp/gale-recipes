@@ -1,25 +1,16 @@
-version = "0.19.0"
+version = "0.20.0"
 
 [darwin-arm64]
-sha256 = "d2c5d80750919febe5c1a3bd26b7bac85b8021233c8938f45c0016f606e71195"
-manifest_digest = "sha256:f114d0cb8b4fd67dd4e13c5f4a58ce097af6c04a0bece699ce42a9820bd5c92c"
-deps = [
-  { name = "go", version = "1.26.1", revision = 2 },
-]
+sha256 = "b7b027917a3c914ba4783e42e101d44c37626ea6abc937c1870703f397811841"
+manifest_digest = "sha256:cdb516e8d11b5cd618467c14e3b83396666ed0acd60b6f57ca60ef522cbbe64b"
 
 [linux-amd64]
-sha256 = "c27cc852239e8188ebe7f5c6008e7ce026cdb02d034b2f69d10de9a92056e709"
-manifest_digest = "sha256:13a3727ba7a77466326975d4f660535b6099dc454a28a7abe7b48420ea878e09"
-deps = [
-  { name = "go", version = "1.26.1", revision = 2 },
-]
+sha256 = "d011707989947a2c178591ab2c059c50707667edc37478e979d541732bdfe08d"
+manifest_digest = "sha256:c2a0522e01b80fbd00a9ae859c94d518ebfed5eb724c68ab5dfb21d4321f2183"
 
 [linux-arm64]
-sha256 = "b681ea4cd56b8ca1a66047295a1f5b179ffe6e7916c7cb5dc1d49ff4b65bcc02"
-manifest_digest = "sha256:38ff5fed7baac001b2575e2022d39245d6e30ba26c9a16d57b9105813289a7fb"
-deps = [
-  { name = "go", version = "1.26.1", revision = 2 },
-]
+sha256 = "ef753b7d21a7fbe683921056255e02627fc7567fcff040e37c4fe8bcd070105e"
+manifest_digest = "sha256:c5c8c8237fabba8e38c7a3857caf38ba75c928b2359f884fe477689124f8e500"
 
 [[history]]
 version = "0.18.0-1"
@@ -32,3 +23,10 @@ version = "0.19.0-1"
 darwin-arm64 = { sha256 = "d2c5d80750919febe5c1a3bd26b7bac85b8021233c8938f45c0016f606e71195", manifest_digest = "sha256:f114d0cb8b4fd67dd4e13c5f4a58ce097af6c04a0bece699ce42a9820bd5c92c" }
 linux-amd64 = { sha256 = "c27cc852239e8188ebe7f5c6008e7ce026cdb02d034b2f69d10de9a92056e709", manifest_digest = "sha256:13a3727ba7a77466326975d4f660535b6099dc454a28a7abe7b48420ea878e09" }
 linux-arm64 = { sha256 = "b681ea4cd56b8ca1a66047295a1f5b179ffe6e7916c7cb5dc1d49ff4b65bcc02", manifest_digest = "sha256:38ff5fed7baac001b2575e2022d39245d6e30ba26c9a16d57b9105813289a7fb" }
+
+[[history]]
+version = "0.20.0-1"
+commit = "31b9f9af4ad8c3f2876c0505db3c71b3df12707f"
+darwin-arm64 = { sha256 = "b7b027917a3c914ba4783e42e101d44c37626ea6abc937c1870703f397811841", manifest_digest = "sha256:cdb516e8d11b5cd618467c14e3b83396666ed0acd60b6f57ca60ef522cbbe64b" }
+linux-amd64 = { sha256 = "d011707989947a2c178591ab2c059c50707667edc37478e979d541732bdfe08d", manifest_digest = "sha256:c2a0522e01b80fbd00a9ae859c94d518ebfed5eb724c68ab5dfb21d4321f2183" }
+linux-arm64 = { sha256 = "ef753b7d21a7fbe683921056255e02627fc7567fcff040e37c4fe8bcd070105e", manifest_digest = "sha256:c5c8c8237fabba8e38c7a3857caf38ba75c928b2359f884fe477689124f8e500" }

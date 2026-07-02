@@ -345,8 +345,8 @@ for their own variables, not shell expansion.
 ## Dev Environment
 
 `gale.toml` + `.envrc` provide dev tools via gale and
-direnv. Run `gale sync --local` to install from local
-recipes, or let direnv activate automatically on cd.
+direnv. Run `gale sync --recipes recipes` to install from
+local recipes, or let direnv activate automatically on cd.
 
 Update gale from source (use this when gale has been
 updated in the sibling repo):

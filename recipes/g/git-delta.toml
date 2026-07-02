@@ -3,7 +3,7 @@
 [package]
 name = "git-delta"
 version = "0.19.2"
-revision = 2
+revision = 3
 description = "Syntax-highlighting pager for git and diff output"
 license = "MIT"
 homepage = "https://github.com/dandavison/delta"
@@ -19,6 +19,10 @@ steps = [
   "cargo install --path . --root ${PREFIX}",
 ]
 
+# libgit2 is vendored statically by libgit2-sys: with no farm
+# libgit2 on PKG_CONFIG_PATH the crate builds its bundled copy,
+# so the binary is self-contained (no @rpath/libgit2.dylib that
+# dyld-aborts on darwin when run outside the install farm). See #92.
 [dependencies]
 build = ["pkgconf", "rust"]
-runtime = ["libgit2", "oniguruma", "zlib"]
+runtime = ["oniguruma", "zlib"]
