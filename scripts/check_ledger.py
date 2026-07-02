@@ -74,6 +74,7 @@ import tomllib
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 MANIFEST_DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 
 REMEDY_UNPUBLISHED = (
     "promote has not published this version yet — apply "
@@ -319,6 +320,43 @@ def check_append_only(
     return []
 
 
+def check_commit_field(
+    path: str, head_text: str | None
+) -> list[str]:
+    """Validate-if-present: a [[history]] entry MAY carry a
+    ``commit`` recording the reviewed head SHA its binaries
+    were built from (gh#121 item 3 Part A). Entries predating
+    the field carry none and pass. When present, the value must
+    be a 40-hex git SHA.
+
+    Deliberately additive-tolerant: this does NOT require a
+    commit on newly appended entries. Requiring it would brick
+    in-flight / idempotent republishes whose ledger predates the
+    field (and any reconcile run before --commit was wired in).
+    Future tightening (Part B): once every live promote path
+    stamps a commit, gate 'commit required on the appended
+    entry' here alongside the per-platform digest checks."""
+    if head_text is None:
+        return []
+    name = PurePosixPath(path).name.removesuffix(".binaries.toml")
+    try:
+        history = parse_history(head_text, f"{path}@HEAD")
+    except CheckError as exc:
+        return [str(exc)]
+    errors: list[str] = []
+    for entry in history:
+        if not isinstance(entry, dict) or "commit" not in entry:
+            continue
+        commit = entry.get("commit")
+        if not isinstance(commit, str) or not COMMIT_RE.match(commit):
+            errors.append(
+                f"{name}: [[history]] entry "
+                f"{entry.get('version')!r} commit must match "
+                f"^[0-9a-f]{{40}}$, got {commit!r}"
+            )
+    return errors
+
+
 def check_mirror_anchor(
     path: str, head_text: str | None
 ) -> tuple[list[str], str]:
@@ -503,6 +541,7 @@ def main(argv: list[str] | None = None) -> int:
             path, head_text
         )
         file_errors.extend(anchor_errors)
+        file_errors.extend(check_commit_field(path, head_text))
         if file_errors:
             errors.extend(file_errors)
         else:
