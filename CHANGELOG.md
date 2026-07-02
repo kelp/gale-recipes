@@ -43,6 +43,23 @@ All notable changes to gale-recipes are documented here.
   pre-0.16 minimum.
 
 ### Changed
+- `verify.yml` drops the second full compile per verify
+  job (#95). Verify never publishes an archive, so it no
+  longer runs `gale build`; a single `gale install --recipe`
+  now does the one build, populates the dependency farm, and
+  lands the binary at its real store path.
+  `scripts/check_install.py` scans that installed prefix
+  (`~/.gale/pkg/<name>/<version>-<revision>`, resolved from
+  the recipe when no `--prefix`/`--archive` is given) instead
+  of an extracted archive; the installed tree carries the same
+  files and baked rpaths, so the static rpath check is
+  equivalent. Because the restore-only dep cache repopulates
+  `~/.gale/pkg` and the installer returns MethodCached (no
+  build) when the target already exists, verify now evicts
+  `~/.gale/pkg/<recipe>` before the install so it always
+  exercises a real build; deps stay cached, halving
+  heavy-recipe verify time. `build-chunk.yml` keeps both
+  steps.
 - vibeutils: pinned build dep to `zig15` (revision 4).
   `build.zig.zon` declares `minimum_zig_version =
   0.15.1` and the source still uses `std.fs.cwd` etc.,
