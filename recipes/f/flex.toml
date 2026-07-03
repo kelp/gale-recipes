@@ -1,7 +1,7 @@
 [package]
 name = "flex"
 version = "2.6.4"
-revision = 3
+revision = 4
 description = "Fast lexical analyzer generator"
 license = "BSD-2-Clause"
 homepage = "https://github.com/westes/flex"
