@@ -15,17 +15,17 @@ on:
         description: 'Recipe name (blank = all)'
         required: false
 
+# GITHUB_TOKEN scope. Branch pushes and PR creation use the
+# gale-recipes-automation App token instead (minted below):
+# App-authored PRs fire pull_request natively, so verify and
+# ledger-check run as normal PR checks without the manual
+# "Approve workflow to run" click GitHub requires for
+# github-actions[bot] PRs (policy change 2026-06). contents
+# stays for the dashboard-data GraphQL commit, which
+# deliberately remains GITHUB_TOKEN-authored so it never
+# re-triggers workflows.
 permissions:
   contents: write
-  pull-requests: write
-  # The script dispatches verify.yml and ledger-check.yml
-  # onto each bot PR branch (GITHUB_TOKEN commits suppress
-  # the branch's own pull_request events). The dispatch
-  # endpoint requires `actions: write`; without it every
-  # `gh workflow run` here fails HTTP 403 ("Resource not
-  # accessible by integration") and bot PRs open with no CI
-  # and a required check stuck at "Expected".
-  actions: write
 
 jobs:
   update:
@@ -67,9 +67,22 @@ jobs:
             echo "dashboard-data branch absent; using main seed"
           fi
 
+      # Installation token for the gale-recipes-automation App
+      # (Contents + Pull requests + Issues, this repo only).
+      # The script's branch commits and PRs are App-authored so
+      # their pull_request events fire unheld; expires in 1h.
+      - name: Mint App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1  # v3.2.0
+        with:
+          # Numeric App ID; the client-id input accepts either
+          # (app-id is deprecated in v3).
+          client-id: ${{ vars.AUTOUPDATE_APP_ID }}
+          private-key: ${{ secrets.AUTOUPDATE_APP_PRIVATE_KEY }}
+
       - name: Check for updates
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           INPUT_RECIPE: ${{ inputs.recipe }}
         run: bash .github/scripts/auto-update.sh "$INPUT_RECIPE"
 

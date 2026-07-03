@@ -10,12 +10,13 @@ name: Verify Recipe
 # token, before any human has authorized the privileged build.
 #
 # Triggers:
-#   - pull_request: fires natively for HUMAN recipe PRs and
-#     attaches as a PR check.
-#   - workflow_dispatch: auto-update bot PRs cannot fire
-#     pull_request (their branch commit is GITHUB_TOKEN-authored,
-#     which GitHub suppresses), so auto-update.sh dispatches this
-#     explicitly via `gh workflow run verify.yml --ref <branch>`.
+#   - pull_request: fires natively for human PRs and for
+#     auto-update bot PRs (their branch commits are authored by
+#     the gale-recipes-automation App, whose events run unheld;
+#     GITHUB_TOKEN-authored commits would sit at
+#     action_required awaiting manual approval).
+#   - workflow_dispatch: ad-hoc manual run for a single recipe
+#     on any ref.
 #
 # Hardening against cache-poisoning into later privileged builds:
 #   - sccache's GHA backend is NOT enabled here (no

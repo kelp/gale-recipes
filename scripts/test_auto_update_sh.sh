@@ -74,6 +74,9 @@ write_shim() {
 #   MOCK_COMMIT_DATE                  — date returned by
 #                                       /commits/<sha> --jq
 #   PR_LOG                            — file path; pr-create argv recorded
+#   WORKFLOW_RUN_LOG                  — file path; any `gh workflow run`
+#                                       argv recorded (always a failure:
+#                                       the script must never dispatch)
 write_shim gh <<'GH'
 #!/bin/bash
 joined="$*"
@@ -137,23 +140,12 @@ case "$joined" in
     echo '{}'
     exit 0
     ;;
-  # verify.yml dispatch. VERIFY_LOG records attempts; the
-  # first MOCK_VERIFY_FAIL_COUNT attempts fail.
-  "workflow run verify.yml"*)
-    [ -z "${VERIFY_LOG:-}" ] && exit 0
-    printf '%s\n' "$*" >> "$VERIFY_LOG"
-    attempts=$(wc -l < "$VERIFY_LOG")
-    [ "${MOCK_VERIFY_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
-    exit 0
-    ;;
-  # ledger-check.yml dispatch. LEDGER_LOG records attempts;
-  # the first MOCK_LEDGER_FAIL_COUNT attempts fail.
-  "workflow run ledger-check.yml"*)
-    [ -z "${LEDGER_LOG:-}" ] && exit 0
-    printf '%s\n' "$*" >> "$LEDGER_LOG"
-    attempts=$(wc -l < "$LEDGER_LOG")
-    [ "${MOCK_LEDGER_FAIL_COUNT:-0}" -ge "$attempts" ] && exit 1
-    exit 0
+  # Workflow dispatch is a removed workaround (bot PRs are
+  # App-authored and fire pull_request natively). Record any
+  # attempt and fail it — the script must never dispatch.
+  "workflow run "*)
+    [ -n "${WORKFLOW_RUN_LOG:-}" ] && printf '%s\n' "$*" >> "$WORKFLOW_RUN_LOG"
+    exit 1
     ;;
 esac
 echo "unmocked gh call: $*" >&2
@@ -312,15 +304,26 @@ jq --arg t "$old_iso" \
   && mv _data/upstream.json.new _data/upstream.json
 
 PR_LOG="$WORK/pr.log"
+WFRUN_LOG="$WORK/workflow_run.log"
+rm -f "$WFRUN_LOG"
 MOCK_TAG="v1.1.0" MOCK_SHA256="bbbb" MOCK_REPO_ID=12345 \
 MOCK_OWNER_ID=44444 MOCK_SWH_CODE=200 \
 MOCK_TAG_OBJECT_SHA=deadbeef PR_LOG="$PR_LOG" \
+WORKFLOW_RUN_LOG="$WFRUN_LOG" \
 run_case >/dev/null 2>&1
 
 grep -q 'ownership-change' "$PR_LOG" \
   && echo "PASS 6_ownership_change_label" \
   || { echo "FAIL 6_ownership_change_label"; \
        cat "$PR_LOG"; exit 1; }
+
+# The PR path must not dispatch any workflow: the App-authored
+# branch commit fires pull_request natively, so verify and
+# ledger-check run as normal PR checks.
+[ ! -f "$WFRUN_LOG" ] \
+  && echo "PASS 6a_no_workflow_dispatch" \
+  || { echo "FAIL 6a_no_workflow_dispatch"; \
+       cat "$WFRUN_LOG"; exit 1; }
 
 # ---------------------------------------------------------
 # 7. GHSA hit on upstream — PR opened as draft + label.
@@ -653,169 +656,5 @@ jq -e '.recipes.testpkg.latest_version == "1.2.0"' \
   && echo "PASS 17a_name_prefixed_version" \
   || { echo "FAIL 17a_name_prefixed_version"; \
        jq . _data/upstream.json; exit 1; }
-
-# ---------------------------------------------------------
-# 18. verify dispatch retry — first two dispatches fail,
-#     third succeeds. PR path must attempt up to 3 times.
-# ---------------------------------------------------------
-rm -f _data/upstream.json
-reset_recipe "1.0.0"
-# Prime first observation, then age it past the cooldown.
-MOCK_TAG="v1.3.0" MOCK_SHA256="eeee" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha6 \
-run_case >/dev/null 2>&1
-old_iso3=$(python3 -c "
-from datetime import datetime, timedelta, timezone
-print((datetime.now(timezone.utc) - timedelta(days=30))
-        .strftime('%Y-%m-%dT%H:%M:%SZ'))")
-jq --arg t "$old_iso3" \
-   '.recipes.testpkg.first_observed_at = $t' \
-   _data/upstream.json > _data/upstream.json.new \
-  && mv _data/upstream.json.new _data/upstream.json
-
-VLOG="$WORK/verify.log"
-rm -f "$VLOG"
-MOCK_TAG="v1.3.0" MOCK_SHA256="eeee" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha6 \
-VERIFY_LOG="$VLOG" MOCK_VERIFY_FAIL_COUNT=2 \
-VERIFY_DISPATCH_RETRY_DELAY=0 \
-run_case >/dev/null 2>&1
-
-[ -f "$VLOG" ] && [ "$(wc -l < "$VLOG")" -eq 3 ] \
-  && echo "PASS 18_verify_retry" \
-  || { echo "FAIL 18_verify_retry"; \
-       cat "$VLOG" 2>/dev/null; exit 1; }
-
-# ---------------------------------------------------------
-# 19. verify dispatch exhausted — all attempts fail; the
-#     failure must surface in GITHUB_STEP_SUMMARY instead
-#     of scrolling away as a log line.
-# ---------------------------------------------------------
-rm -f _data/upstream.json
-reset_recipe "1.0.0"
-MOCK_TAG="v1.4.0" MOCK_SHA256="abcd" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha7 \
-run_case >/dev/null 2>&1
-jq --arg t "$old_iso3" \
-   '.recipes.testpkg.first_observed_at = $t' \
-   _data/upstream.json > _data/upstream.json.new \
-  && mv _data/upstream.json.new _data/upstream.json
-
-VLOG2="$WORK/verify2.log"
-SUMMARY="$WORK/step_summary.md"
-rm -f "$VLOG2" "$SUMMARY"
-MOCK_TAG="v1.4.0" MOCK_SHA256="abcd" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha7 \
-VERIFY_LOG="$VLOG2" MOCK_VERIFY_FAIL_COUNT=99 \
-VERIFY_DISPATCH_RETRY_DELAY=0 \
-GITHUB_STEP_SUMMARY="$SUMMARY" \
-run_case >/dev/null 2>&1
-
-grep -q 'verify.yml dispatch failed' "$SUMMARY" 2>/dev/null \
-  && echo "PASS 19_verify_failure_summary" \
-  || { echo "FAIL 19_verify_failure_summary"; \
-       cat "$SUMMARY" 2>/dev/null; exit 1; }
-
-# ---------------------------------------------------------
-# 20. ledger-check dispatch — the bot PR's branch commit is
-#     GITHUB_TOKEN-authored, so its pull_request event is
-#     suppressed; without an explicit dispatch the required
-#     Ledger Check would sit "Expected" forever. The PR path
-#     must dispatch ledger-check.yml on the new branch.
-# ---------------------------------------------------------
-rm -f _data/upstream.json
-reset_recipe "1.0.0"
-MOCK_TAG="v1.6.0" MOCK_SHA256="beef" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha8 \
-run_case >/dev/null 2>&1
-jq --arg t "$old_iso3" \
-   '.recipes.testpkg.first_observed_at = $t' \
-   _data/upstream.json > _data/upstream.json.new \
-  && mv _data/upstream.json.new _data/upstream.json
-
-LLOG="$WORK/ledger.log"
-rm -f "$LLOG"
-MOCK_TAG="v1.6.0" MOCK_SHA256="beef" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha8 \
-LEDGER_LOG="$LLOG" VERIFY_DISPATCH_RETRY_DELAY=0 \
-run_case >/dev/null 2>&1
-
-grep -q -- '--ref auto-update/testpkg-1.6.0' "$LLOG" 2>/dev/null \
-  && echo "PASS 20_ledger_check_dispatch" \
-  || { echo "FAIL 20_ledger_check_dispatch"; \
-       cat "$LLOG" 2>/dev/null; exit 1; }
-
-# ---------------------------------------------------------
-# 21. ledger-check dispatch retry — auto-update.yml's
-#     GITHUB_TOKEN dispatches fail transiently (and failed
-#     with HTTP 403 in production before actions: write was
-#     granted). First two attempts fail, the third succeeds;
-#     the PR path must attempt up to 3 times, same as the
-#     verify dispatch.
-# ---------------------------------------------------------
-rm -f _data/upstream.json
-reset_recipe "1.0.0"
-MOCK_TAG="v1.7.0" MOCK_SHA256="feed" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha9 \
-run_case >/dev/null 2>&1
-jq --arg t "$old_iso3" \
-   '.recipes.testpkg.first_observed_at = $t' \
-   _data/upstream.json > _data/upstream.json.new \
-  && mv _data/upstream.json.new _data/upstream.json
-
-LLOG2="$WORK/ledger2.log"
-rm -f "$LLOG2"
-MOCK_TAG="v1.7.0" MOCK_SHA256="feed" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha9 \
-LEDGER_LOG="$LLOG2" MOCK_LEDGER_FAIL_COUNT=2 \
-VERIFY_DISPATCH_RETRY_DELAY=0 \
-run_case >/dev/null 2>&1
-
-[ -f "$LLOG2" ] && [ "$(wc -l < "$LLOG2")" -eq 3 ] \
-  && echo "PASS 21_ledger_dispatch_retry" \
-  || { echo "FAIL 21_ledger_dispatch_retry"; \
-       cat "$LLOG2" 2>/dev/null; exit 1; }
-
-# ---------------------------------------------------------
-# 22. ledger-check dispatch exhausted — all attempts fail;
-#     the failure must surface in GITHUB_STEP_SUMMARY (a
-#     required check stuck at "Expected" with no visible
-#     cause is the exact failure mode this dispatch exists
-#     to prevent), not scroll away as a WARN log line.
-# ---------------------------------------------------------
-rm -f _data/upstream.json
-reset_recipe "1.0.0"
-MOCK_TAG="v1.8.0" MOCK_SHA256="face" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha10 \
-run_case >/dev/null 2>&1
-jq --arg t "$old_iso3" \
-   '.recipes.testpkg.first_observed_at = $t' \
-   _data/upstream.json > _data/upstream.json.new \
-  && mv _data/upstream.json.new _data/upstream.json
-
-LLOG3="$WORK/ledger3.log"
-LSUMMARY="$WORK/ledger_step_summary.md"
-rm -f "$LLOG3" "$LSUMMARY"
-MOCK_TAG="v1.8.0" MOCK_SHA256="face" MOCK_REPO_ID=12345 \
-MOCK_OWNER_ID=67890 MOCK_SWH_CODE=200 \
-MOCK_TAG_OBJECT_SHA=tagsha10 \
-LEDGER_LOG="$LLOG3" MOCK_LEDGER_FAIL_COUNT=99 \
-VERIFY_DISPATCH_RETRY_DELAY=0 \
-GITHUB_STEP_SUMMARY="$LSUMMARY" \
-run_case >/dev/null 2>&1
-
-grep -q 'ledger-check.yml dispatch failed' "$LSUMMARY" 2>/dev/null \
-  && echo "PASS 22_ledger_failure_summary" \
-  || { echo "FAIL 22_ledger_failure_summary"; \
-       cat "$LSUMMARY" 2>/dev/null; exit 1; }
 
 echo "All smoke cases passed."
