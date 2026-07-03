@@ -1,20 +1,20 @@
-version = "5.8.2-2"
+version = "5.8.2-3"
 
 [linux-amd64]
-sha256 = "e805b66a22f02eb6d7721e30436bbf5906659651767387d9d3cd6cc235db5103"
-deps = [
-  { name = "gnumake", version = "4.4.1", revision = 2 },
-  { name = "go", version = "1.26.1", revision = 2 },
-]
+sha256 = "9352761cb6251ab21dfae7c78e5955aefcd5b1e37383c513f3c445923ef2401e"
+manifest_digest = "sha256:a954781b7d262901c376339e4b312ed899293b776224b5dbc67029ce6c058066"
 
 [linux-arm64]
-sha256 = "ef3f7e3ea18f0fa257c983dd3a50d61b93b2bb5f92e0cc4539a233c9eca7a045"
-deps = [
-  { name = "gnumake", version = "4.4.1", revision = 2 },
-  { name = "go", version = "1.26.1", revision = 2 },
-]
+sha256 = "697c5e2c2052c6b7aaa44b4d2488a8086cc7f66efaf5c6b6654ff4df0f43db5f"
+manifest_digest = "sha256:6e361946ecfcf32e9c1163ace1b9bcceeb03f482c5b0a1881bc710c609813232"
 
 [[history]]
 version = "5.8.2-2"
 linux-amd64 = { sha256 = "e805b66a22f02eb6d7721e30436bbf5906659651767387d9d3cd6cc235db5103", manifest_digest = "sha256:a13f5821bf6c377a71964c6663544cb91fb085f74e0c1774fa8a4cbc582c3752" }
 linux-arm64 = { sha256 = "ef3f7e3ea18f0fa257c983dd3a50d61b93b2bb5f92e0cc4539a233c9eca7a045", manifest_digest = "sha256:6fd54ce65c25f26546614cf900a8ae6790977bc8cd97316b77d968f4cc2abf70" }
+
+[[history]]
+version = "5.8.2-3"
+commit = "a5a19bd3ee6b73367c753b17305f1588812d21e4"
+linux-amd64 = { sha256 = "9352761cb6251ab21dfae7c78e5955aefcd5b1e37383c513f3c445923ef2401e", manifest_digest = "sha256:a954781b7d262901c376339e4b312ed899293b776224b5dbc67029ce6c058066" }
+linux-arm64 = { sha256 = "697c5e2c2052c6b7aaa44b4d2488a8086cc7f66efaf5c6b6654ff4df0f43db5f", manifest_digest = "sha256:6e361946ecfcf32e9c1163ace1b9bcceeb03f482c5b0a1881bc710c609813232" }
