@@ -3,7 +3,7 @@
 [package]
 name = "zoxide"
 version = "0.9.9"
-revision = 2
+revision = 3
 description = "Shell extension to navigate your filesystem faster"
 license = "MIT"
 homepage = "https://github.com/ajeetdsouza/zoxide"
