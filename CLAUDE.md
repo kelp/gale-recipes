@@ -145,6 +145,14 @@ Build steps run in a clean shell with these variables:
 - `${ARCH}` — `arm64` or `amd64`
 - `${PLATFORM}` — `darwin-arm64` or `linux-amd64`
 
+Substitution is textual over the whole build step, and
+only the six variables above are defined. Any other
+`${...}` in a step — pkg-config-internal vars, shell
+vars written as `${var}` — expands to nothing and breaks
+the build silently (root cause of the lua no-op-fix
+saga, 11c902a → ec7b024). Write shell variables as
+`$var` without braces, or inline the value.
+
 ### sccache passthrough
 
 If `sccache` is on the host PATH (e.g. installed in CI via
@@ -382,6 +390,13 @@ runtimes, or packages that are intended to be linked
 against by other packages. See
 `docs/dev/linking-policy.md`.
 
+"Runs on the build host" is not evidence of correct
+linkage: a dynamically linked binary segfaults only on
+hosts whose glibc differs from the CI runner's (gh
+2.92.0-2, 8231a6e). For Go, set `CGO_ENABLED=0`. Assert
+the linkage property itself in a smoke command (e.g.
+`file`/`ldd` output), not just a `--help` probe.
+
 **rpath / verifiability (gale 0.16.3+):** install no longer
 rewrites rpaths — the installed binary must equal the
 CI-built, hashed, attested artifact. gale bakes the
@@ -407,6 +422,13 @@ post-install hook or rely on install-time patching. Examples:
 - Cargo workspaces with virtual manifests need
   `--path <crate-dir>` not `--path .`. Check for
   `[workspace]` without `[package]` in root Cargo.toml.
+- Before a version bump, verify the upstream tag is the
+  artifact's own release, not a parent monorepo or SDK
+  tag (flarectl 7.2.0 was the Go SDK's release, b5f11ae).
+- Stage a major-version ABI break as a new recipe
+  (openssl → openssl4, b49de15) instead of bumping in
+  place; dependents that compile against the old ABI
+  break otherwise.
 - CI commits use GITHUB_TOKEN, which suppresses push,
   pull_request, and workflow_run events. That is why
   pages.yml hooks the scheduled Auto-Update run instead
