@@ -53,8 +53,8 @@ jobs:
         run: |
           VERSION=$(awk -F'"' '/^version *=/ {print $2; exit}' \
             recipes/g/gale.toml)
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Using gale ${VERSION}"
+          echo "version=v${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Using gale v${VERSION}"
 
       - name: Download gale release binary
         env:
