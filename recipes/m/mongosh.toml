@@ -3,7 +3,7 @@
 [package]
 name = "mongosh"
 version = "2.8.3"
-revision = 2
+revision = 3
 description = "MongoDB Shell to connect, configure, query, and work with your MongoDB database"
 license = "Apache-2.0"
 homepage = "https://github.com/mongodb-js/mongosh"
