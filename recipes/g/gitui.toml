@@ -18,5 +18,5 @@ build = ["rust", "zlib"]
 [build]
 system = "cargo"
 steps = [
-  "cargo install --path . --root ${PREFIX}",
+  "cargo install --locked --path . --root ${PREFIX}",
 ]
