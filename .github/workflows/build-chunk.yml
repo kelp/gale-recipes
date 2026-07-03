@@ -217,17 +217,23 @@ jobs:
           python3 scripts/verify_binary.py \
             --recipe "${RECIPE_FILE}"
 
+      # Scan the INSTALLED store prefix, not an extracted archive —
+      # same rationale as verify.yml. The relocatable farm rpath
+      # (@executable_path/../../../../lib) is calibrated to the
+      # store depth, so from a mktemp extraction it resolves to
+      # nowhere and every dynamically linked external dep reads as
+      # an unresolvable @rpath (false positive; fish was the first
+      # recipe to trip it). gale does not rewrite rpaths at
+      # install, so the installed tree carries the same files and
+      # baked rpaths the archive would — the check is equivalent
+      # and correct about farm-resolved deps. The install step
+      # above already populated the store.
       - name: Check install (rpath vs runtime deps)
         env:
-          ARCHIVE: ${{ steps.build.outputs.archive }}
           RECIPE_FILE: ${{ steps.recipe.outputs.file }}
         run: |
-          CHECK_DIR=$(mktemp -d)
-          tar --zstd -xf "${ARCHIVE}" -C "${CHECK_DIR}"
           python3 scripts/check_install.py \
-            --recipe "${RECIPE_FILE}" \
-            --prefix "${CHECK_DIR}"
-          rm -rf "${CHECK_DIR}"
+            --recipe "${RECIPE_FILE}"
 
       - name: Install and smoke test
         env:
