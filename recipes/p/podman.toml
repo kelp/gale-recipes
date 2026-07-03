@@ -1,6 +1,6 @@
 [package]
 name = "podman"
-version = "5.8.2"
+version = "6.0.0"
 revision = 2
 platforms = ["linux-amd64", "linux-arm64"]
 description = "Tool for managing OCI containers and pods"
@@ -9,8 +9,8 @@ homepage = "https://podman.io/"
 
 [source]
 repo = "containers/podman"
-url = "https://github.com/containers/podman/archive/refs/tags/v5.8.2.tar.gz"
-sha256 = "b20ea65afc5a58ea1cea019bd51a5d84eb9042d25d3eb82c55010c8815732d84"
+url = "https://github.com/containers/podman/archive/refs/tags/v6.0.0.tar.gz"
+sha256 = "f35ac7c40f0fd01bfedfe627c23ff7a577b071d50f2b0726e4734d51810f5a7d"
 
 [build]
 steps = [
