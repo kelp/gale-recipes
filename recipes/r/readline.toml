@@ -1,7 +1,7 @@
 [package]
 name = "readline"
 version = "8.2"
-revision = 2
+revision = 3
 description = "Library for editing command lines as they are typed in"
 license = "GPL-3.0"
 homepage = "https://tiswww.case.edu/php/chet/readline/rltop.html"
