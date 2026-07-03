@@ -3,7 +3,7 @@
 [package]
 name = "awscli"
 version = "2.34.19"
-revision = 4
+revision = 3
 description = "Official Amazon AWS command-line interface"
 license = "Apache-2.0"
 homepage = "https://aws.amazon.com/cli/"
