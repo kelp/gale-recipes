@@ -3,7 +3,7 @@
 [package]
 name = "xh"
 version = "0.25.3"
-revision = 2
+revision = 3
 description = "Friendly and fast tool for sending HTTP requests"
 license = "MIT"
 homepage = "https://github.com/ducaale/xh"
