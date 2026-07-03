@@ -1,6 +1,6 @@
 [package]
 name = "doctl"
-version = "1.160.0"
+version = "1.163.0"
 revision = 2
 description = "Command-line tool for DigitalOcean"
 license = "Apache-2.0"
@@ -8,9 +8,9 @@ homepage = "https://github.com/digitalocean/doctl"
 
 [source]
 repo = "digitalocean/doctl"
-url = "https://github.com/digitalocean/doctl/archive/refs/tags/v1.160.0.tar.gz"
-sha256 = "dd5be822f0ec4a55d418f14acbccd2a4e127c514dfade78224fbd003309b57c9"
-released_at = "2026-05-26"
+url = "https://github.com/digitalocean/doctl/archive/refs/tags/v1.163.0.tar.gz"
+sha256 = "8cc7acd78114eea8409f86b11843d1298d9b12cc984c277f594802acbb3c972a"
+released_at = "2026-06-25"
 
 [build]
 steps = [
