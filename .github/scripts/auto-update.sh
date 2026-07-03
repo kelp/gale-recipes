@@ -58,13 +58,17 @@ jitter_sleep() {
 
 # Create a signed commit adding $file onto a NEW branch
 # $branch, forked from main's current tip. Uses the GraphQL
-# createCommitOnBranch path (auto-signed "Verified" with
-# GITHUB_TOKEN) so the commit satisfies the active
+# createCommitOnBranch path (auto-signed "Verified" with the
+# calling token — here the gale-recipes-automation App token,
+# see auto-update.yml) so the commit satisfies the active
 # signed-commit branch ruleset. A plain `git push` of a
 # locally-made commit is unsigned and the ruleset rejects it
 # with GH013 — the same reason build.yml and the
 # upstream.json commit already use this path. createCommitOnBranch
 # needs the branch to exist, so we create the ref first.
+# App authorship also means the branch's pull_request events
+# fire natively; GITHUB_TOKEN authorship would leave them
+# held at action_required (GitHub policy since 2026-06).
 signed_commit_to_branch() {
   local branch="$1" file="$2" message="$3"
   local repo="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
@@ -770,69 +774,13 @@ PRBODY
 
   echo "PR created for $name $new_version"
 
-  # Kick the UNPRIVILEGED verify build on the new branch so a
-  # human sees a build+smoke result before authorizing the
-  # privileged build. The bot PR's own `pull_request` event is
-  # suppressed (its branch commit is GITHUB_TOKEN-authored), so
-  # this explicit dispatch is the only way verify runs for it.
-  # Args derive from our filename-based $name and $branch, never
-  # from upstream tag/url strings — no injection surface. Non-
-  # fatal: a failed dispatch must not abort the loop or undo the
-  # already-created PR — but it must not vanish into the log
-  # either (every pre-2026-06-07 branch shipped without CI
-  # because this dispatch failed silently), so retry, then
-  # surface exhaustion in the step summary.
-  local attempt dispatched=0
-  for attempt in 1 2 3; do
-    if gh workflow run verify.yml --ref "$branch" -f recipe="$name"; then
-      dispatched=1
-      break
-    fi
-    echo "WARN $name: verify dispatch attempt ${attempt} failed"
-    [ "$attempt" -lt 3 ] && sleep "${VERIFY_DISPATCH_RETRY_DELAY:-10}"
-  done
-  if [ "$dispatched" -eq 0 ]; then
-    echo "ERROR $name: verify dispatch failed after 3 attempts (PR open, NO CI)"
-    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
-      {
-        echo "- :warning: \`${name}\`: verify.yml dispatch failed for \`${branch}\` — PR is open with no CI." \
-             "Dispatch manually: \`gh workflow run verify.yml --ref ${branch} -f recipe=${name}\`"
-      } >> "$GITHUB_STEP_SUMMARY"
-    fi
-  fi
-
-  # Dispatch the required Ledger Check the same way, and for
-  # the same reason: the branch commit is GITHUB_TOKEN-
-  # authored, so the PR's own pull_request event is
-  # suppressed and the required check would sit "Expected"
-  # forever. The dispatched run is RED until promote
-  # publishes and commits the ledger — that visible red (with
-  # its explanatory failure text) is the design working, not
-  # flakiness. Same retry + step-summary treatment as the
-  # verify dispatch above: a dispatch failure here leaves the
-  # required check stuck at "Expected" with no visible cause,
-  # which must not vanish as a WARN log line. Needs
-  # `actions: write` on auto-update.yml's GITHUB_TOKEN — the
-  # dispatch endpoint 403s without it (every verify dispatch
-  # did, in production, until the scope was granted).
-  local ledger_dispatched=0
-  for attempt in 1 2 3; do
-    if gh workflow run ledger-check.yml --ref "$branch"; then
-      ledger_dispatched=1
-      break
-    fi
-    echo "WARN $name: ledger-check dispatch attempt ${attempt} failed"
-    [ "$attempt" -lt 3 ] && sleep "${VERIFY_DISPATCH_RETRY_DELAY:-10}"
-  done
-  if [ "$ledger_dispatched" -eq 0 ]; then
-    echo "ERROR $name: ledger-check dispatch failed after 3 attempts (required check stuck at Expected)"
-    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
-      {
-        echo "- :warning: \`${name}\`: ledger-check.yml dispatch failed for \`${branch}\` — the required check sits at Expected with no run." \
-             "Dispatch manually: \`gh workflow run ledger-check.yml --ref ${branch}\`"
-      } >> "$GITHUB_STEP_SUMMARY"
-    fi
-  fi
+  # No workflow dispatch: the branch commit is App-authored
+  # (auto-update.yml runs this script under an installation
+  # token for the gale-recipes-automation App), so the PR's
+  # pull_request event fires natively and unheld — verify and
+  # ledger-check attach as normal PR checks. Ledger Check runs
+  # RED until promote publishes and commits the ledger; that
+  # visible red is the design working, not flakiness.
 }
 
 # Allow tests to source this file for its functions without

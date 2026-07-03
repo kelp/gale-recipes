@@ -284,7 +284,10 @@ each recipe with a `[source].repo`, queries the upstream's
 latest GitHub release. All status (up_to_date / outdated /
 tampered / untracked) is written to `_data/upstream.json`
 for the dashboard; version-bump PRs are opened under the
-`auto-update/<name>-<version>` branch name.
+`auto-update/<name>-<version>` branch name, authored by
+the `gale-recipes-automation` GitHub App (installation
+token minted in auto-update.yml) so their `pull_request`
+CI runs start without manual workflow approval.
 
 The 7-day cooldown is a supply-chain gate, not a
 scheduling delay. Its timestamp comes from our own
@@ -429,13 +432,21 @@ post-install hook or rely on install-time patching. Examples:
   (openssl → openssl4, b49de15) instead of bumping in
   place; dependents that compile against the old ABI
   break otherwise.
-- CI commits use GITHUB_TOKEN, which suppresses push,
-  pull_request, and workflow_run events. That is why
-  pages.yml hooks the scheduled Auto-Update run instead
-  of build runs, and why bot PR branches need explicit
-  `gh workflow run verify.yml` dispatch. Keep it that
-  way — a PAT or App token would re-trigger workflows
-  from CI's own commits.
+- github-actions[bot] PR events are HELD, not run: since
+  GitHub's 2026-06 policy change, GITHUB_TOKEN-authored PR
+  commits create pull_request runs stuck at
+  action_required (before that they were suppressed
+  outright), and no API can approve non-fork held runs.
+  That is why auto-update's branch pushes and PR creation
+  use the gale-recipes-automation App token — App-authored
+  events run unheld. Everything else stays on
+  GITHUB_TOKEN deliberately: pages.yml hooks the scheduled
+  Auto-Update run because build-run events don't fire, and
+  build.yml's post-promote commit-back produces one
+  ignorable held run pair per PR while the required
+  ledger-check is credited via its dispatched run's commit
+  status (gh#146). Don't widen the App token's use to
+  build.yml's commits.
 - build.yml's update-recipes job commits binaries onto
   the PR branch, never main. After a promote, pull the
   PR branch before pushing more commits to it; any push

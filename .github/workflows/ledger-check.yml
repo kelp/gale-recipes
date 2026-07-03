@@ -15,9 +15,11 @@ name: Ledger Check
 # that red is the design working, not flakiness.
 #
 # workflow_dispatch exists because promote's GITHUB_TOKEN
-# GraphQL commits suppress pull_request events: build.yml
-# (and auto-update.sh for bot PRs) dispatch this workflow on
-# the PR branch explicitly. The dispatched run's check-run
+# GraphQL commits never produce a runnable pull_request event:
+# build.yml dispatches this workflow on the PR branch
+# explicitly after committing the ledger. (Auto-update bot PRs
+# no longer need this — their commits are App-authored and
+# fire pull_request natively.) The dispatched run's check-run
 # attaches to the branch-tip SHA, but GitHub does NOT link a
 # dispatch-created check suite to the open PR, so the required-
 # check rollup never credits it and the PR sat BLOCKED
