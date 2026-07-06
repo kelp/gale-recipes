@@ -2,7 +2,7 @@
 
 [package]
 name = "fastfetch"
-version = "2.63.1"
+version = "2.65.2"
 revision = 2
 description = "Like neofetch, but much faster because written mostly in C"
 license = "MIT"
@@ -10,8 +10,8 @@ homepage = "https://github.com/fastfetch-cli/fastfetch"
 
 [source]
 repo = "fastfetch-cli/fastfetch"
-url = "https://github.com/fastfetch-cli/fastfetch/archive/refs/tags/2.63.1.tar.gz"
-sha256 = "6e124699ea20fb02c5bc402c0012543303ee75ca55ad664f96bc6cd414d7e6b3"
+url = "https://github.com/fastfetch-cli/fastfetch/archive/refs/tags/2.65.2.tar.gz"
+sha256 = "d0b318c33cf6c8bbae1162325f91624762a040a60f748941cbf1b4b99a75fa30"
 
 [build]
 steps = [
