@@ -1,6 +1,6 @@
 [package]
 name = "git"
-version = "2.54.0"
+version = "2.55.0"
 revision = 2
 description = "Distributed revision control system"
 license = "GPL-2.0-only"
@@ -8,8 +8,8 @@ homepage = "https://git-scm.com"
 
 [source]
 repo = "git/git"
-url = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.54.0.tar.xz"
-sha256 = "f689162364c10de79ef89aa8dbf48731eb057e34edbbd20aca510ce0154681a3"
+url = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.55.0.tar.xz"
+sha256 = "457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357"
 
 # Statically link curl, expat, pcre2, zstd, and libidn2 so
 # git-remote-http does not depend on @rpath dylibs for these
