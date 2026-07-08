@@ -19,6 +19,16 @@ Walks every Mach-O / ELF file under a prefix. For each file:
    references — dyld aborts at runtime with "Library not
    loaded: @rpath/libX.dylib".
 
+3. (ELF only) Resolves every DT_NEEDED soname against the
+   binary's RUNPATH ($ORIGIN-expanded, including the
+   ~/.gale/lib farm). A soname that is neither on the system
+   allowlist (glibc family) nor found via RUNPATH is reported.
+   Catches the class of bug where a shipped binary references
+   a dep dylib that is missing at runtime — ld.so aborts with
+   "error while loading shared libraries: libX.so: cannot open
+   shared object file" (gh#160: awscli's bundled python missing
+   libpython3.14, gale corrupted by patchelf).
+
 Exits nonzero on failure.
 """
 
@@ -50,6 +60,43 @@ MACHO_MAGICS = {
     b"\xca\xfe\xba\xbe",
 }
 ELF_MAGIC = b"\x7fELF"
+
+# Sonames the host system provides on Linux (glibc family plus
+# the GCC/C++ runtimes). ld.so resolves these from its default
+# search path, never through the gale farm, so a DT_NEEDED on
+# one of them is not a packaging bug. This mirrors the linking
+# policy's "keep glibc dynamic" rule (see CLAUDE.md, Linking
+# Policy). libgcc_s / libstdc++ are host-resolvable on any glibc
+# box, so listing them avoids false positives; the policy's
+# prefer-static-C++ preference is a separate quality concern,
+# not a runtime-resolution failure.
+SYSTEM_SONAMES = {
+    "libc.so.6",
+    "libm.so.6",
+    "libpthread.so.0",
+    "libdl.so.2",
+    "librt.so.1",
+    "libresolv.so.2",
+    "libutil.so.1",
+    "libcrypt.so.1",
+    "libnsl.so.1",
+    "libgcc_s.so.1",
+    "libstdc++.so.6",
+}
+# The dynamic loader is arch-suffixed (ld-linux-x86-64.so.2,
+# ld-linux-aarch64.so.1, ...); match it by prefix.
+SYSTEM_SONAME_PREFIXES = ("ld-linux",)
+
+
+def is_system_soname(soname: str) -> bool:
+    """Report whether an ELF DT_NEEDED soname is host-provided.
+
+    Host-provided sonames resolve via ld.so's default search
+    path, not the gale farm, so they never count as unresolved.
+    """
+    if soname in SYSTEM_SONAMES:
+        return True
+    return soname.startswith(SYSTEM_SONAME_PREFIXES)
 
 
 def sniff(path: Path) -> str | None:
@@ -101,7 +148,15 @@ def macho_refs(path: Path) -> tuple[list[str], list[str]]:
 
 
 def elf_refs(path: Path) -> tuple[list[str], list[str]]:
-    """Return (needed, runpath) for an ELF file."""
+    """Return (needed, search_path) for an ELF file.
+
+    search_path prefers DT_RUNPATH and falls back to DT_RPATH —
+    it never merges them. glibc's loader ignores DT_RPATH
+    entirely once DT_RUNPATH is present, so merging would let a
+    soname reachable only via the obsolete DT_RPATH pass this
+    check while ld.so still fails at runtime. Mirrors the gale
+    inspector (internal/inspect/binary_linux.go).
+    """
     try:
         out = subprocess.run(
             ["readelf", "-d", str(path)],
@@ -112,15 +167,20 @@ def elf_refs(path: Path) -> tuple[list[str], list[str]]:
 
     needed = []
     runpath: list[str] = []
+    rpath: list[str] = []
     for line in out.splitlines():
         m = re.search(r"\(NEEDED\)\s+Shared library: \[(.+)\]", line)
         if m:
             needed.append(m.group(1))
             continue
-        m = re.search(r"\((?:RUNPATH|RPATH)\)\s+.*\[(.+)\]", line)
+        m = re.search(r"\(RUNPATH\)\s+.*\[(.+)\]", line)
         if m:
             runpath.extend(p for p in m.group(1).split(":") if p)
-    return needed, runpath
+            continue
+        m = re.search(r"\(RPATH\)\s+.*\[(.+)\]", line)
+        if m:
+            rpath.extend(p for p in m.group(1).split(":") if p)
+    return needed, runpath or rpath
 
 
 def store_name(path: str) -> str | None:
@@ -130,17 +190,19 @@ def store_name(path: str) -> str | None:
 
 
 def expand_rpath(rp: str, binary: Path) -> str:
-    """Expand @executable_path / @loader_path in an rpath
-    entry to an absolute path rooted at the binary's dir.
+    """Expand loader-relative tokens in an rpath entry to an
+    absolute path rooted at the binary's dir.
 
-    Handles both the bare token ("@loader_path") and the
-    path-prefixed form ("@loader_path/../lib"). For main
-    executables the two tokens mean the same thing. For
-    dylibs, @loader_path is the loading dylib's own dir,
-    which matches the binary arg here because we resolve each
-    file relative to itself.
+    Handles the Mach-O tokens @executable_path / @loader_path
+    and the ELF token $ORIGIN (also spelled ${ORIGIN}), in both
+    the bare form ("$ORIGIN") and the path-prefixed form
+    ("$ORIGIN/../lib"). For main executables the Mach-O tokens
+    mean the same thing. For dylibs, @loader_path / $ORIGIN is
+    the loading file's own dir, which matches the binary arg
+    here because we resolve each file relative to itself.
     """
-    for token in ("@executable_path", "@loader_path"):
+    for token in ("@executable_path", "@loader_path",
+                  "${ORIGIN}", "$ORIGIN"):
         if rp == token:
             return str(binary.parent)
         if rp.startswith(token + "/"):
@@ -200,6 +262,37 @@ def unresolvable_rpath_refs(
     return unresolved
 
 
+def unresolvable_elf_needed(
+    binary: Path, needed: list[str], runpath: list[str]
+) -> list[tuple[str, list[str]]]:
+    """Return (soname, tried_dirs) for each DT_NEEDED soname
+    that ld.so would fail to load.
+
+    A soname is fine if it is host-provided (system allowlist)
+    or if it resolves to an existing file through one of the
+    binary's RUNPATH entries ($ORIGIN-expanded, which reaches
+    both the package's own lib/ and the ~/.gale/lib farm). Any
+    other soname is unresolvable: ld.so aborts at runtime with
+    "cannot open shared object file". tried_dirs lists the
+    expanded RUNPATH dirs searched, for the failure message.
+    """
+    problems: list[tuple[str, list[str]]] = []
+    for soname in needed:
+        if is_system_soname(soname):
+            continue
+        tried: list[str] = []
+        found = False
+        for rp in runpath:
+            resolved = expand_rpath(rp, binary)
+            tried.append(resolved)
+            if Path(resolved, soname).exists():
+                found = True
+                break
+        if not found:
+            problems.append((soname, tried))
+    return problems
+
+
 def walk_binaries(root: Path):
     """Yield (path, kind) for every Mach-O / ELF file."""
     for dp, _dn, fn in os.walk(root):
@@ -233,18 +326,30 @@ def check_prefix(
 
         rel = path.relative_to(prefix)
 
-        # Only Mach-O carries @rpath/ install names that we
-        # can fully resolve with LC_RPATH. ELF DT_NEEDED
-        # goes through the system linker (ld.so) which
-        # searches standard paths in addition to DT_RUNPATH,
-        # so the same check there would false-positive on
-        # libc, libm, etc.
+        # Mach-O carries @rpath/ install names resolved against
+        # LC_RPATH; ELF carries bare DT_NEEDED sonames resolved
+        # against DT_RUNPATH plus ld.so's default search path.
+        # Both are checked, but the ELF side must first exempt
+        # the system allowlist (libc, libm, ...) that ld.so
+        # supplies outside RUNPATH — otherwise every glibc dep
+        # would false-positive.
         if kind == "macho":
             for lib in unresolvable_rpath_refs(path, deps, rpaths):
                 failures.append(
                     f"{rel}: references @rpath/{lib} but no "
                     f"rpath entry resolves to a file "
                     f"(dyld would abort at runtime)"
+                )
+        else:
+            for soname, tried in unresolvable_elf_needed(
+                path, deps, rpaths
+            ):
+                where = ", ".join(tried) if tried else "none"
+                failures.append(
+                    f"{rel}: DT_NEEDED '{soname}' not found on "
+                    f"the system allowlist or via RUNPATH "
+                    f"[{where}] (ld.so would fail to load it "
+                    f"at runtime)"
                 )
 
         used_pkgs: dict[str, str] = {}
@@ -361,9 +466,10 @@ def main() -> int:
         print(
             f"\nhint: undeclared-dep — add the package to "
             f"[dependencies].runtime in {args.recipe}; "
-            f"unresolvable @rpath — stop linking the lib, or "
-            f"declare+keep its provider so the dylib is "
-            f"present at runtime",
+            f"unresolvable @rpath / DT_NEEDED — stop linking the "
+            f"lib (static-link it), or declare+keep its provider "
+            f"so the dylib is present at runtime and reachable "
+            f"via the binary's RUNPATH",
             file=sys.stderr)
         return 1
 
