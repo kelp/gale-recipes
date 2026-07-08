@@ -148,7 +148,15 @@ def macho_refs(path: Path) -> tuple[list[str], list[str]]:
 
 
 def elf_refs(path: Path) -> tuple[list[str], list[str]]:
-    """Return (needed, runpath) for an ELF file."""
+    """Return (needed, search_path) for an ELF file.
+
+    search_path prefers DT_RUNPATH and falls back to DT_RPATH —
+    it never merges them. glibc's loader ignores DT_RPATH
+    entirely once DT_RUNPATH is present, so merging would let a
+    soname reachable only via the obsolete DT_RPATH pass this
+    check while ld.so still fails at runtime. Mirrors the gale
+    inspector (internal/inspect/binary_linux.go).
+    """
     try:
         out = subprocess.run(
             ["readelf", "-d", str(path)],
@@ -159,15 +167,20 @@ def elf_refs(path: Path) -> tuple[list[str], list[str]]:
 
     needed = []
     runpath: list[str] = []
+    rpath: list[str] = []
     for line in out.splitlines():
         m = re.search(r"\(NEEDED\)\s+Shared library: \[(.+)\]", line)
         if m:
             needed.append(m.group(1))
             continue
-        m = re.search(r"\((?:RUNPATH|RPATH)\)\s+.*\[(.+)\]", line)
+        m = re.search(r"\(RUNPATH\)\s+.*\[(.+)\]", line)
         if m:
             runpath.extend(p for p in m.group(1).split(":") if p)
-    return needed, runpath
+            continue
+        m = re.search(r"\(RPATH\)\s+.*\[(.+)\]", line)
+        if m:
+            rpath.extend(p for p in m.group(1).split(":") if p)
+    return needed, runpath or rpath
 
 
 def store_name(path: str) -> str | None:

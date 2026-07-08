@@ -22,6 +22,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPTS = Path(__file__).resolve().parent
 SCRIPT = SCRIPTS / "check_install.py"
@@ -96,6 +97,36 @@ class IsSystemSonameTests(unittest.TestCase):
             self.assertFalse(check_install.is_system_soname(soname), soname)
 
 
+class ElfRefsRunpathPreferenceTests(unittest.TestCase):
+    """elf_refs prefers DT_RUNPATH and falls back to DT_RPATH,
+    never merging — glibc ignores DT_RPATH when RUNPATH is set."""
+
+    def _run_elf_refs(self, readelf_stdout: str):
+        completed = subprocess.CompletedProcess(
+            args=["readelf"], returncode=0, stdout=readelf_stdout)
+        with mock.patch.object(check_install.subprocess, "run",
+                               return_value=completed):
+            return check_install.elf_refs(Path("/x/bin/foo"))
+
+    def test_runpath_wins_over_rpath(self) -> None:
+        out = (
+            " 0x0001 (NEEDED)   Shared library: [libfoo.so.1]\n"
+            " 0x000f (RPATH)    Library rpath: [/legacy/lib]\n"
+            " 0x001d (RUNPATH)  Library runpath: [$ORIGIN/../lib]\n"
+        )
+        needed, search = self._run_elf_refs(out)
+        self.assertEqual(needed, ["libfoo.so.1"])
+        self.assertEqual(search, ["$ORIGIN/../lib"])
+
+    def test_rpath_used_when_no_runpath(self) -> None:
+        out = (
+            " 0x0001 (NEEDED)   Shared library: [libfoo.so.1]\n"
+            " 0x000f (RPATH)    Library rpath: [/legacy/lib]\n"
+        )
+        needed, search = self._run_elf_refs(out)
+        self.assertEqual(search, ["/legacy/lib"])
+
+
 class UnresolvableElfNeededTests(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
@@ -152,22 +183,30 @@ def _first_dynamic_elf(*candidates: str) -> Path | None:
     return None
 
 
-def _elf_with_foreign_needed(*candidates: str):
-    """Return (path, foreign_sonames) for the first candidate ELF
-    whose NEEDED contains a non-allowlisted soname that its own
-    RUNPATH cannot resolve — i.e. one the check must flag once the
-    binary is copied into a bare prefix. Returns (None, None)."""
+def _elf_with_unresolvable_needed(*candidates: str):
+    """Return (path, unresolvable_sonames) for the first candidate
+    ELF that carries a non-allowlisted DT_NEEDED soname its own
+    RUNPATH does NOT resolve — i.e. one check_install must flag.
+
+    The resolvability is decided by the function under test
+    (unresolvable_elf_needed) at the binary's real location, so a
+    candidate whose (often absolute) RUNPATH still finds the lib is
+    skipped rather than producing a flaky pass. Returns
+    (None, None) if no candidate qualifies. Note: absolute RUNPATH
+    entries resolve the same after the copy into the bare test
+    prefix, and an empty RUNPATH resolves nothing anywhere, so a
+    match here reliably fails once copied."""
     for cand in candidates:
         p = Path(cand)
         if not p.exists() or p.is_symlink():
             continue
         if check_install.sniff(p) != "elf":
             continue
-        needed, _ = check_install.elf_refs(p)
-        foreign = [s for s in needed
-                   if not check_install.is_system_soname(s)]
-        if foreign:
-            return p, foreign
+        needed, runpath = check_install.elf_refs(p)
+        problems = check_install.unresolvable_elf_needed(
+            p, needed, runpath)
+        if problems:
+            return p, [soname for soname, _ in problems]
     return None, None
 
 
@@ -206,18 +245,19 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn("foo OK", r.stdout)
 
     def test_unresolvable_soname_fails(self) -> None:
-        """A binary whose NEEDED carries a non-system soname with
-        no RUNPATH to resolve it must fail, naming the soname."""
-        src, foreign = _elf_with_foreign_needed(
+        """A binary whose NEEDED carries a non-system soname its
+        RUNPATH cannot resolve must fail, naming the soname."""
+        src, unresolved = _elf_with_unresolvable_needed(
             "/bin/ls", "/usr/bin/ls", "/bin/grep", "/usr/bin/grep")
         if src is None:
-            self.skipTest("no ELF with a non-allowlisted NEEDED found")
+            self.skipTest(
+                "no ELF with an unresolvable non-allowlisted NEEDED found")
         self._install(src)
         r = self._run()
         self.assertEqual(r.returncode, 1,
                          msg=f"stdout={r.stdout}\nstderr={r.stderr}")
         self.assertIn("DT_NEEDED", r.stderr)
-        self.assertIn(foreign[0], r.stderr)
+        self.assertIn(unresolved[0], r.stderr)
 
 
 if __name__ == "__main__":
