@@ -1,16 +1,26 @@
-version = "29.3.1-2"
+version = "29.6.1-2"
 
 [darwin-arm64]
-sha256 = "ef035fab9e1ae184dc3d6224f19ed70d30f399eeb143ebc13f16bf56130b47c1"
+sha256 = "0105664e9e61637f746c53cd7d649257ed87c05f5f0b7712163414bf018ae11b"
+manifest_digest = "sha256:db1629738085628eb2b79db6c250ffc050493df1cee2bc1dba956aad6b1e081b"
 
 [linux-amd64]
-sha256 = "d437d30d3cd3153081263b4f13ce624c72689da5a18e7fab6cfdbb3dad56e4ce"
+sha256 = "8c83a3fb735f00d9c549f5d5db9811341ccd41ca13c2abcc463af8b55602afc4"
+manifest_digest = "sha256:156f306c8c26b2a9bb9bb5022f26e466a6c37ebf3bf49d5459643fe0210696e4"
 
 [linux-arm64]
-sha256 = "565318618d84cf2bbaaf73f2d1c8c61fed8bc2b4734626246ef348cbbca2e06c"
+sha256 = "79d15ac9fa6aefca815109f4d9db49ffe88c1af7e387b873be74facd20c02298"
+manifest_digest = "sha256:f3fc1759ec7f34d965cbc2aa4462ba82d5c391b93da214c323c2630270a7ac8f"
 
 [[history]]
 version = "29.3.1-2"
 darwin-arm64 = { sha256 = "ef035fab9e1ae184dc3d6224f19ed70d30f399eeb143ebc13f16bf56130b47c1", manifest_digest = "sha256:31448e4dc895c835c6912a750cae3d2316430442917233545d5fd2044e9a4df3" }
 linux-amd64 = { sha256 = "d437d30d3cd3153081263b4f13ce624c72689da5a18e7fab6cfdbb3dad56e4ce", manifest_digest = "sha256:43faa94c69fba723df5573c077b808c99ab09af5cad8609056a0f36b8453c076" }
 linux-arm64 = { sha256 = "565318618d84cf2bbaaf73f2d1c8c61fed8bc2b4734626246ef348cbbca2e06c", manifest_digest = "sha256:1ffda6741a491f0e9ca6c82039caa10cdfef0e09ed50736e1da1e1f0f881b63b" }
+
+[[history]]
+version = "29.6.1-2"
+commit = "9c50bab187138c5cd272740492a5595a88f4b86d"
+darwin-arm64 = { sha256 = "0105664e9e61637f746c53cd7d649257ed87c05f5f0b7712163414bf018ae11b", manifest_digest = "sha256:db1629738085628eb2b79db6c250ffc050493df1cee2bc1dba956aad6b1e081b" }
+linux-amd64 = { sha256 = "8c83a3fb735f00d9c549f5d5db9811341ccd41ca13c2abcc463af8b55602afc4", manifest_digest = "sha256:156f306c8c26b2a9bb9bb5022f26e466a6c37ebf3bf49d5459643fe0210696e4" }
+linux-arm64 = { sha256 = "79d15ac9fa6aefca815109f4d9db49ffe88c1af7e387b873be74facd20c02298", manifest_digest = "sha256:f3fc1759ec7f34d965cbc2aa4462ba82d5c391b93da214c323c2630270a7ac8f" }
