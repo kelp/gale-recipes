@@ -1,7 +1,9 @@
 [package]
 name = "scc"
 version = "3.7.0"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Fast and accurate code counter with complexity and COCOMO estimates"
 license = "MIT"
 homepage = "https://github.com/boyter/scc"
@@ -15,8 +17,17 @@ released_at = "2026-03-04"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/scc",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/scc",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/scc | grep -q 'statically linked'; fi",
+]

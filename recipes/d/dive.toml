@@ -1,7 +1,9 @@
 [package]
 name = "dive"
 version = "0.13.1"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "A tool for exploring each layer in a docker image"
 license = "MIT"
 homepage = "https://github.com/wagoodman/dive"
@@ -16,8 +18,17 @@ released_at = "2025-01-15"
 system = "go"
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/dive .",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/dive .",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/dive | grep -q 'statically linked'; fi",
+]

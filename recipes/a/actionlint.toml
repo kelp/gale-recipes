@@ -1,7 +1,9 @@
 [package]
 name = "actionlint"
 version = "1.7.12"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Static checker for GitHub Actions workflow files"
 license = "MIT"
 homepage = "https://github.com/rhysd/actionlint"
@@ -14,8 +16,17 @@ sha256 = "454800bd4f854592bcfe79b161f71d56e35940eb7016e48a26dd356adc9d400a"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/actionlint ./cmd/actionlint",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/actionlint ./cmd/actionlint",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/actionlint | grep -q 'statically linked'; fi",
+]

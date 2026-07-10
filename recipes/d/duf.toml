@@ -3,7 +3,9 @@
 [package]
 name = "duf"
 version = "0.9.1"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Disk Usage/Free Utility - a better 'df' alternative"
 license = "MIT"
 homepage = "https://github.com/muesli/duf"
@@ -16,8 +18,17 @@ sha256 = "1334d8c1a7957d0aceebe651e3af9e1c1e0c6f298f1feb39643dd0bd8ad1e955"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/duf",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/duf",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/duf | grep -q 'statically linked'; fi",
+]
