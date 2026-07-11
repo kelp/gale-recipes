@@ -1,7 +1,9 @@
 [package]
 name = "gopls"
 version = "0.22.0"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "The official Go language server"
 license = "BSD-3-Clause"
 homepage = "https://pkg.go.dev/golang.org/x/tools/gopls"
@@ -16,5 +18,14 @@ build = ["go"]
 
 [build]
 steps = [
-  "cd gopls && mkdir -p ${PREFIX}/bin && go build -ldflags \"-s -w -X main.version=v${VERSION}\" -o ${PREFIX}/bin/gopls .",
+  "cd gopls && mkdir -p ${PREFIX}/bin && CGO_ENABLED=0 go build -ldflags \"-s -w -X main.version=v${VERSION}\" -o ${PREFIX}/bin/gopls .",
+]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/gopls | grep -q 'statically linked'; fi",
 ]

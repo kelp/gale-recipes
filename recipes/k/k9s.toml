@@ -1,7 +1,9 @@
 [package]
 name = "k9s"
 version = "0.50.18"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Kubernetes CLI To Manage Your Clusters In Style!"
 license = "Apache-2.0"
 homepage = "https://k9scli.io/"
@@ -14,8 +16,17 @@ sha256 = "4a438b4bc480c05ba6f78a1573ee7e1dad7956ef3e30912ae22c744cea031f96"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/k9s",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/k9s",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/k9s | grep -q 'statically linked'; fi",
+]
