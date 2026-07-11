@@ -3,7 +3,9 @@
 [package]
 name = "chezmoi"
 version = "2.70.4"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Manage your dotfiles across multiple diverse machines, securely"
 license = "MIT"
 homepage = "https://chezmoi.io/"
@@ -20,5 +22,14 @@ build = ["go"]
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -ldflags \"-s -w -X main.version=v2.70.0 -X main.builtBy=gale\" -o ${PREFIX}/bin/chezmoi .",
+  "CGO_ENABLED=0 go build -ldflags \"-s -w -X main.version=v2.70.0 -X main.builtBy=gale\" -o ${PREFIX}/bin/chezmoi .",
+]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/chezmoi | grep -q 'statically linked'; fi",
 ]

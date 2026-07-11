@@ -3,7 +3,9 @@
 [package]
 name = "yq"
 version = "4.53.2"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Process YAML, JSON, XML, CSV and properties documents from the CLI"
 license = "MIT"
 homepage = "https://github.com/mikefarah/yq"
@@ -17,8 +19,17 @@ released_at = "2026-04-17"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/yq",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/yq",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/yq | grep -q 'statically linked'; fi",
+]

@@ -1,7 +1,9 @@
 [package]
 name = "kubectl"
 version = "1.36.1"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Kubernetes command-line interface"
 license = "Apache-2.0"
 homepage = "https://kubernetes.io/docs/reference/kubectl/"
@@ -14,8 +16,17 @@ sha256 = "1ebfa65cc95fbeb2ef4aad6832a3fae4edb88516e43b6437b69a40895803e0e8"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/kubectl ./cmd/kubectl",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/kubectl ./cmd/kubectl",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/kubectl | grep -q 'statically linked'; fi",
+]

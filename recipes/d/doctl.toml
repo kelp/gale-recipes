@@ -1,7 +1,9 @@
 [package]
 name = "doctl"
 version = "1.163.0"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Command-line tool for DigitalOcean"
 license = "Apache-2.0"
 homepage = "https://github.com/digitalocean/doctl"
@@ -15,8 +17,17 @@ released_at = "2026-06-25"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/doctl ./cmd/doctl",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/doctl ./cmd/doctl",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/doctl | grep -q 'statically linked'; fi",
+]

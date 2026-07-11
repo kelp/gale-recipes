@@ -1,7 +1,9 @@
 [package]
 name = "helm"
 version = "4.2.0"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Kubernetes package manager"
 license = "Apache-2.0"
 homepage = "https://helm.sh/"
@@ -14,8 +16,17 @@ sha256 = "98d6b09a7dce667d0638bd293b6ef768cfc6ba51afda42b0fe0be1c7a021ceb7"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/helm ./cmd/helm",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/helm ./cmd/helm",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/helm | grep -q 'statically linked'; fi",
+]

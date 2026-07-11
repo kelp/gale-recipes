@@ -1,7 +1,9 @@
 [package]
 name = "git-lfs"
 version = "3.7.1"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Git extension for versioning large files"
 license = "MIT"
 homepage = "https://git-lfs.com/"
@@ -14,8 +16,17 @@ sha256 = "0e83566a9e2477e03627e7fd6bf81f01fadbf93dcaf6abd2686fca90f6bac7dd"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -trimpath -ldflags \"-s -w\" -o ${PREFIX}/bin/git-lfs ./git-lfs.go",
+  "CGO_ENABLED=0 go build -trimpath -ldflags \"-s -w\" -o ${PREFIX}/bin/git-lfs ./git-lfs.go",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/git-lfs | grep -q 'statically linked'; fi",
+]

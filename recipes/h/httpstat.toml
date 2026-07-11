@@ -1,7 +1,9 @@
 [package]
 name = "httpstat"
 version = "1.2.1"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "It's like curl -v, with colours"
 license = "MIT"
 homepage = "https://github.com/davecheney/httpstat"
@@ -14,8 +16,17 @@ sha256 = "be3f191a0b07ef3a38b94c0bb9a821b2fc33ea347525a193a167173a2198191c"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/httpstat .",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/httpstat .",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/httpstat | grep -q 'statically linked'; fi",
+]

@@ -1,7 +1,9 @@
 [package]
 name = "terraform"
 version = "1.15.7"
-revision = 2
+# rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
+# build linked the CI runner's glibc (see gale-recipes#189)
+revision = 3
 description = "Tool to build, change, and version infrastructure"
 license = "MPL-2.0"
 homepage = "https://www.terraform.io/"
@@ -14,8 +16,17 @@ sha256 = "1b2904281ec8746a1ba2fa9ebeadbcb1f73d306cc31cdef2f08857f9d2f7f3b1"
 [build]
 steps = [
   "mkdir -p ${PREFIX}/bin",
-  "go build -o ${PREFIX}/bin/terraform",
+  "CGO_ENABLED=0 go build -o ${PREFIX}/bin/terraform",
 ]
 
 [dependencies]
 build = ["go"]
+
+# Runtime probes pass on the build host even for a
+# dynamically linked binary (same libc) — only a
+# build-product property check catches a dropped
+# CGO_ENABLED=0. See recipes/g/gh.toml.
+[smoke]
+commands = [
+  "if [ \"$OS\" = linux ]; then file ${PREFIX}/bin/terraform | grep -q 'statically linked'; fi",
+]
