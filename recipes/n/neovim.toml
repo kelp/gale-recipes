@@ -1,6 +1,6 @@
 [package]
 name = "neovim"
-version = "0.12.2"
+version = "0.12.4"
 revision = 5
 description = "Ambitious Vim-fork focused on extensibility and agility"
 license = "Apache-2.0"
@@ -8,8 +8,8 @@ homepage = "https://neovim.io/"
 
 [source]
 repo = "neovim/neovim"
-url = "https://github.com/neovim/neovim/archive/refs/tags/v0.12.2.tar.gz"
-sha256 = "ef9f58da7d687ed4d1dad9715542bf0dabdeedbfe8089e2ce17fff21b920a268"
+url = "https://github.com/neovim/neovim/archive/refs/tags/v0.12.4.tar.gz"
+sha256 = "2727da95d2b8b809bc7c71e085452e47dfe1d8aa7cfaa15c68004e23f6f0a6dd"
 
 # Neovim bundles all its deps (luajit, libuv, luv, lpeg,
 # unibilium, utf8proc, tree-sitter) via USE_BUNDLED=ON.
