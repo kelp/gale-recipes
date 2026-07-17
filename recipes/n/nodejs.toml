@@ -1,6 +1,6 @@
 [package]
 name = "nodejs"
-version = "26.1.0"
+version = "26.5.0"
 revision = 2
 description = "Open-source, cross-platform JavaScript runtime environment"
 license = "MIT"
@@ -8,8 +8,8 @@ homepage = "https://nodejs.org/"
 
 [source]
 repo = "nodejs/node"
-url = "https://nodejs.org/dist/v26.1.0/node-v26.1.0.tar.xz"
-sha256 = "779a1364889575d44e0215adc381806bbd0d9437557b59893e172f5b9d35a990"
+url = "https://nodejs.org/dist/v26.5.0/node-v26.5.0.tar.xz"
+sha256 = "0e179470097e247a0c0769b77cc1359fc3e1baf0686df89bafe1fb48cb1887f4"
 
 [build]
 steps = [
