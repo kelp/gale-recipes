@@ -2,7 +2,7 @@
 
 [package]
 name = "just"
-version = "1.55.1"
+version = "1.56.0"
 revision = 3
 description = "Handy way to save and run project-specific commands"
 license = "CC0-1.0"
@@ -10,9 +10,9 @@ homepage = "https://github.com/casey/just"
 
 [source]
 repo = "casey/just"
-url = "https://github.com/casey/just/archive/refs/tags/1.55.1.tar.gz"
-sha256 = "40a2d3725480523ffebb762669cafe2b0135a00383946eec3d47adf5e9be6345"
-released_at = "2026-06-30"
+url = "https://github.com/casey/just/archive/refs/tags/1.56.0.tar.gz"
+sha256 = "145cb76ccd858da30ee56de884dad9241b2706140bcf9ae189dfda5e5a62ed52"
+released_at = "2026-07-10"
 
 [build]
 steps = [
