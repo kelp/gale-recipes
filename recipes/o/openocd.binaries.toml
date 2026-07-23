@@ -1,24 +1,24 @@
-version = "0.12.0"
+version = "0.12.0-2"
 
 [darwin-arm64]
-sha256 = "43a58453fce475cd543cffa63696d765076156f909ae5c87a68a5c54c77da62f"
+sha256 = "a63358468786cd8eb3e860609ddebfe9a50e885fa475b086b18a7b8946d07968"
+manifest_digest = "sha256:155c2f6aa6250b412a83316bc3fd3c28e07453699ddc3fa037db9673909b68c7"
 deps = [
   { name = "libusb", version = "1.0.30", revision = 1 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-amd64]
-sha256 = "5bef42550daf5f02b18db90b91d1cd1d9e2bbd7ddf526e6596e9d56bbd12cb6e"
+sha256 = "b498a366296fcb8ec44723858ac23d1e291996528dc27f8a7ff1904c1d733eed"
+manifest_digest = "sha256:7ee663c8d9427a91e2f2f5435a47aed7107291c9ba9f99356fffcb42e03e926d"
 deps = [
   { name = "libusb", version = "1.0.30", revision = 1 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [linux-arm64]
-sha256 = "18c33184d00fdf03c88e87bed9b27c78a77d05b8be17c20546257dcd4a09f120"
+sha256 = "4838c95aafb9dafb4886625d27dc5781293bb77eaf7996269af4a24ee5f776f2"
+manifest_digest = "sha256:769d08ae95dfc26652526f7ee6bc5fc3c9abc4c8a793cb35ee76e0e9f0385b76"
 deps = [
   { name = "libusb", version = "1.0.30", revision = 1 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
 ]
 
 [[history]]
@@ -26,3 +26,10 @@ version = "0.12.0-1"
 darwin-arm64 = { sha256 = "43a58453fce475cd543cffa63696d765076156f909ae5c87a68a5c54c77da62f", manifest_digest = "sha256:4a77f26d833a98cb9eed88fef46043a474bcb60dc25f0789bd892e82e6b740fd" }
 linux-amd64 = { sha256 = "5bef42550daf5f02b18db90b91d1cd1d9e2bbd7ddf526e6596e9d56bbd12cb6e", manifest_digest = "sha256:c55fc1c01483e62c17370e120f80fb9fcca0ae3ff1a5d44b3acc84bae8ea097f" }
 linux-arm64 = { sha256 = "18c33184d00fdf03c88e87bed9b27c78a77d05b8be17c20546257dcd4a09f120", manifest_digest = "sha256:86698299833ee2eaa643d2e4e26c3e720c3f71f2783329c0eed1e67a3034e733" }
+
+[[history]]
+version = "0.12.0-2"
+commit = "b10002094d0b80fc2db86e62ec88b89319d04a09"
+darwin-arm64 = { sha256 = "a63358468786cd8eb3e860609ddebfe9a50e885fa475b086b18a7b8946d07968", manifest_digest = "sha256:155c2f6aa6250b412a83316bc3fd3c28e07453699ddc3fa037db9673909b68c7" }
+linux-amd64 = { sha256 = "b498a366296fcb8ec44723858ac23d1e291996528dc27f8a7ff1904c1d733eed", manifest_digest = "sha256:7ee663c8d9427a91e2f2f5435a47aed7107291c9ba9f99356fffcb42e03e926d" }
+linux-arm64 = { sha256 = "4838c95aafb9dafb4886625d27dc5781293bb77eaf7996269af4a24ee5f776f2", manifest_digest = "sha256:769d08ae95dfc26652526f7ee6bc5fc3c9abc4c8a793cb35ee76e0e9f0385b76" }
