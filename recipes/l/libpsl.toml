@@ -15,7 +15,7 @@ released_at = "2026-07-12"
 [build]
 system = "autotools"
 steps = [
-  "./configure --prefix=${PREFIX} --disable-docs --disable-man",
+  "./configure --prefix=${PREFIX} --disable-docs --disable-man --enable-runtime=libidn2",
   "make -j${JOBS}",
   "make install",
 ]
@@ -28,4 +28,5 @@ steps = [
 ]
 
 [dependencies]
-build = []
+build = ["libidn2", "pkgconf"]
+runtime = ["libidn2"]
