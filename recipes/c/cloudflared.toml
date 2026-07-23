@@ -1,6 +1,6 @@
 [package]
 name = "cloudflared"
-version = "2026.5.2"
+version = "2026.7.2"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,9 +10,9 @@ homepage = "https://github.com/cloudflare/cloudflared"
 
 [source]
 repo = "cloudflare/cloudflared"
-url = "https://github.com/cloudflare/cloudflared/archive/refs/tags/2026.5.2.tar.gz"
-sha256 = "84a439b101b7fda1f5312640d5c2fe0cc37ae43e553e1ab2c71e3d0d9ce54b25"
-released_at = "2026-05-27"
+url = "https://github.com/cloudflare/cloudflared/archive/refs/tags/2026.7.2.tar.gz"
+sha256 = "7c437dcf6c2b2efb25b93eaca4724f9be582d48fa97e020a11a177b36d14d606"
+released_at = "2026-07-15"
 
 [build]
 steps = [
