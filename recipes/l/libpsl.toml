@@ -28,5 +28,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["libidn2", "pkgconf"]
-runtime = ["libidn2"]
+build = ["libidn2", "libunistring", "pkgconf"]
+runtime = ["libidn2", "libunistring"]
