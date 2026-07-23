@@ -24,4 +24,5 @@ steps = [
 # so the binary is self-contained (no @rpath/libgit2.dylib that
 # dyld-aborts on darwin when run outside the install farm). See #92.
 [dependencies]
-build = ["rust"]
+build = ["pkgconf", "rust"]
+runtime = ["zlib"]
