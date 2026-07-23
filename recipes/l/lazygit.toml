@@ -1,6 +1,6 @@
 [package]
 name = "lazygit"
-version = "0.61.1"
+version = "0.63.1"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,8 +10,8 @@ homepage = "https://github.com/jesseduffield/lazygit"
 
 [source]
 repo = "jesseduffield/lazygit"
-url = "https://github.com/jesseduffield/lazygit/archive/refs/tags/v0.61.1.tar.gz"
-sha256 = "2a550c9b609c5eb0e1c2640e8114ac05b94c671803f77e08a9dcdbd66372e2c4"
+url = "https://github.com/jesseduffield/lazygit/archive/refs/tags/v0.63.1.tar.gz"
+sha256 = "227ff262138440ff68e893f6c95c4e586e954c46913106d84fff78d220e18b6c"
 
 [dependencies]
 build = ["go"]
