@@ -1,52 +1,26 @@
-version = "0.26.9-2"
+version = "0.26.10-2"
 
 [darwin-arm64]
-sha256 = "d5c0db8a405dd6bd8b30449bf155e76fa4fa4504d6c7ea8fb1f49aafd071acd7"
-manifest_digest = "sha256:65624525c5d47f0a3e85fd7723f2b8269e2cececf3d9dae9761d2c5cfd98fa79"
-deps = [
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "libyaml", version = "0.2.5", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "ruby", version = "4.0.5", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "6a3f0fcfcc978a6b0f723939bbd12c061500ea2af1838522c2ff3c28f5e37eae"
+manifest_digest = "sha256:b35e1043356b240242235a602422e12df8be3aced4175cd099d9892d7010e530"
 
 [linux-amd64]
-sha256 = "62eff92a4b6536596a5022ed5e1a8f778bad96228e535b53eb21018a225c145e"
-manifest_digest = "sha256:899c386c6d58abe518bdd671a87b896dd0ca2146a95ca05ab58352c7c1cab379"
-deps = [
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "libyaml", version = "0.2.5", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "ruby", version = "4.0.5", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "c2b7fc6d02b6bcb54e2d64a5e93d8f244b2db016351142d51a5fe7413eb71301"
+manifest_digest = "sha256:3f026a898fa5f31a408da38ad281f0e333ed3c7b09b0f9327097f8bdfa335aad"
 
 [linux-arm64]
-sha256 = "62eff92a4b6536596a5022ed5e1a8f778bad96228e535b53eb21018a225c145e"
-manifest_digest = "sha256:101f17d1cf2936194b282441fffc3ade15ee1bdecf989b98e8f8b039bd3db589"
-deps = [
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "libyaml", version = "0.2.5", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "pkgconf", version = "2.5.1", revision = 2 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "ruby", version = "4.0.5", revision = 1 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "c2b7fc6d02b6bcb54e2d64a5e93d8f244b2db016351142d51a5fe7413eb71301"
+manifest_digest = "sha256:6502e196658c44cbb965271c8ca7ed87a87b1b2f13b7191dd061f228b501bd9e"
 
 [[history]]
 version = "0.26.9-2"
 darwin-arm64 = { sha256 = "d5c0db8a405dd6bd8b30449bf155e76fa4fa4504d6c7ea8fb1f49aafd071acd7", manifest_digest = "sha256:65624525c5d47f0a3e85fd7723f2b8269e2cececf3d9dae9761d2c5cfd98fa79" }
 linux-amd64 = { sha256 = "62eff92a4b6536596a5022ed5e1a8f778bad96228e535b53eb21018a225c145e", manifest_digest = "sha256:899c386c6d58abe518bdd671a87b896dd0ca2146a95ca05ab58352c7c1cab379" }
 linux-arm64 = { sha256 = "62eff92a4b6536596a5022ed5e1a8f778bad96228e535b53eb21018a225c145e", manifest_digest = "sha256:101f17d1cf2936194b282441fffc3ade15ee1bdecf989b98e8f8b039bd3db589" }
+
+[[history]]
+version = "0.26.10-2"
+commit = "b08c0c0c1b98ae0d138c7cc1eb45470f544dc74b"
+darwin-arm64 = { sha256 = "6a3f0fcfcc978a6b0f723939bbd12c061500ea2af1838522c2ff3c28f5e37eae", manifest_digest = "sha256:b35e1043356b240242235a602422e12df8be3aced4175cd099d9892d7010e530" }
+linux-amd64 = { sha256 = "c2b7fc6d02b6bcb54e2d64a5e93d8f244b2db016351142d51a5fe7413eb71301", manifest_digest = "sha256:3f026a898fa5f31a408da38ad281f0e333ed3c7b09b0f9327097f8bdfa335aad" }
+linux-arm64 = { sha256 = "c2b7fc6d02b6bcb54e2d64a5e93d8f244b2db016351142d51a5fe7413eb71301", manifest_digest = "sha256:6502e196658c44cbb965271c8ca7ed87a87b1b2f13b7191dd061f228b501bd9e" }
