@@ -1,55 +1,26 @@
-version = "2026.03.17-3"
+version = "2026.07.04-3"
 
 [darwin-arm64]
-sha256 = "1cf3bee8643eacaed343f26eb4cee942decffe262968bf7fd09a3becfa39a60f"
-manifest_digest = "sha256:a1daf2506c01d9e28ad00e589cd70b24535fab98f1223d2bb7079d556b8b3442"
-deps = [
-  { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "python", version = "3.14.5", revision = 3 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "e3add292bd9cd94419b3ad34cc1d1a6ea212a4de9643808ef5f5bf0c4d3eed83"
+manifest_digest = "sha256:4ac1d2555a2aba64ea1d0805f6397853bdec28c5d9a3446d04625a7fe7d994a9"
 
 [linux-amd64]
-sha256 = "e018d4ffbb4a25f12040059d922de81c02ac8e395af47724661b934f8f056c65"
-manifest_digest = "sha256:d03bfcf1370cad0f657658ab433c8176c54bc60fe19b3a92274a38d087251129"
-deps = [
-  { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "python", version = "3.14.5", revision = 3 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "8aa4f5dc10f960a559f880143b43affc7d016426ca76a4ba4cb3f5714f592b82"
+manifest_digest = "sha256:69222f0670819ee979ff157efe3bbd006fde7d88b0be9c4e9d9cf66b80f6b2df"
 
 [linux-arm64]
-sha256 = "7f5f5a6040f4e49c9ba473d074a56f88d978b8bb6e7969ed709bd7ee4bfaff5a"
-manifest_digest = "sha256:9e11432641dc4efdc62d19f5bedd124f8bd5a0ab4653aa5005b01647758528c7"
-deps = [
-  { name = "bzip2", version = "1.0.8", revision = 2 },
-  { name = "cmake", version = "4.3.3", revision = 2 },
-  { name = "libffi", version = "3.5.2", revision = 2 },
-  { name = "ncurses", version = "6.4", revision = 2 },
-  { name = "openssl", version = "3.6.1", revision = 4 },
-  { name = "python", version = "3.14.5", revision = 3 },
-  { name = "readline", version = "8.2", revision = 2 },
-  { name = "sqlite", version = "3.48.0", revision = 2 },
-  { name = "xz", version = "5.8.3", revision = 2 },
-  { name = "zlib", version = "1.3.2", revision = 3 },
-]
+sha256 = "d390f7533f7fcb53868299b822752bef5dcd9959b7e34a6c56de9b2a6e6e0c1b"
+manifest_digest = "sha256:bc5fadfee5f744300c1a0c1b15649f16ff1937c1a2eb368011142ce5ceb7364a"
 
 [[history]]
 version = "2026.03.17-3"
 darwin-arm64 = { sha256 = "1cf3bee8643eacaed343f26eb4cee942decffe262968bf7fd09a3becfa39a60f", manifest_digest = "sha256:a1daf2506c01d9e28ad00e589cd70b24535fab98f1223d2bb7079d556b8b3442" }
 linux-amd64 = { sha256 = "e018d4ffbb4a25f12040059d922de81c02ac8e395af47724661b934f8f056c65", manifest_digest = "sha256:d03bfcf1370cad0f657658ab433c8176c54bc60fe19b3a92274a38d087251129" }
 linux-arm64 = { sha256 = "7f5f5a6040f4e49c9ba473d074a56f88d978b8bb6e7969ed709bd7ee4bfaff5a", manifest_digest = "sha256:9e11432641dc4efdc62d19f5bedd124f8bd5a0ab4653aa5005b01647758528c7" }
+
+[[history]]
+version = "2026.07.04-3"
+commit = "2ab612f5e0fb078d41c38fae587b179bb8d6738a"
+darwin-arm64 = { sha256 = "e3add292bd9cd94419b3ad34cc1d1a6ea212a4de9643808ef5f5bf0c4d3eed83", manifest_digest = "sha256:4ac1d2555a2aba64ea1d0805f6397853bdec28c5d9a3446d04625a7fe7d994a9" }
+linux-amd64 = { sha256 = "8aa4f5dc10f960a559f880143b43affc7d016426ca76a4ba4cb3f5714f592b82", manifest_digest = "sha256:69222f0670819ee979ff157efe3bbd006fde7d88b0be9c4e9d9cf66b80f6b2df" }
+linux-arm64 = { sha256 = "d390f7533f7fcb53868299b822752bef5dcd9959b7e34a6c56de9b2a6e6e0c1b", manifest_digest = "sha256:bc5fadfee5f744300c1a0c1b15649f16ff1937c1a2eb368011142ce5ceb7364a" }
