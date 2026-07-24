@@ -1,6 +1,6 @@
 [package]
 name = "docker"
-version = "29.3.1"
+version = "29.6.2"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,8 +10,8 @@ homepage = "https://www.docker.com/"
 
 [source]
 repo = "docker/cli"
-url = "https://github.com/docker/cli/archive/refs/tags/v29.3.1.tar.gz"
-sha256 = "76a1b916e21c3ade3031fb416025fcdf360c4ab006c5b435585322da36e94dac"
+url = "https://github.com/docker/cli/archive/refs/tags/v29.6.2.tar.gz"
+sha256 = "11aef3484c38d39d291a54a73a4d9dd2bb3c000d9a3fc3862bd03fe899594f2c"
 
 [build]
 steps = [
