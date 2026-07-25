@@ -1,6 +1,6 @@
 [package]
 name = "croc"
-version = "10.4.4"
+version = "10.4.13"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,9 +10,9 @@ homepage = "https://schollz.com/software/croc6"
 
 [source]
 repo = "schollz/croc"
-url = "https://github.com/schollz/croc/archive/refs/tags/v10.4.4.tar.gz"
-sha256 = "33e9160829705942178a017ce055196c4a66c9ef5cdfe8029e840be835e756d4"
-released_at = "2026-05-20"
+url = "https://github.com/schollz/croc/archive/refs/tags/v10.4.13.tar.gz"
+sha256 = "6c65f5c60d2cc3e189edcdeb791e83f7ee6cf398c5c4437273320d0221d0fff8"
+released_at = "2026-07-09"
 
 [build]
 system = "go"
