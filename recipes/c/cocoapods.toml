@@ -1,6 +1,6 @@
 [package]
 name = "cocoapods"
-version = "1.16.2"
+version = "1.17.0"
 revision = 3
 description = "The Cocoa Dependency Manager."
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://cocoapods.org/"
 
 [source]
 repo = "CocoaPods/CocoaPods"
-url = "https://github.com/CocoaPods/CocoaPods/archive/refs/tags/1.16.2.tar.gz"
-sha256 = "3067f21a0025aedb5869c7080b6c4b3fa55d397b94fadc8c3037a28a6cee274c"
-released_at = "2025-01-15"
+url = "https://github.com/CocoaPods/CocoaPods/archive/refs/tags/1.17.0.tar.gz"
+sha256 = "1a3e63e815e61ad7661326d6e6ba2593328a596ceb94953d4388e3fe01e27f90"
+released_at = "2026-07-06"
 
 [dependencies]
 build = ["ruby"]
