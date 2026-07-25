@@ -1,28 +1,26 @@
-version = "0.15.13-2"
+version = "0.15.20-2"
 
 [darwin-arm64]
-sha256 = "574ffac4f4dd91ede4ac148a5828fa1077314de4af0936cb634a367015b3b47d"
-manifest_digest = "sha256:c39fb6d15f4a8bba4f928bb8ccd9bb041c2fdd5ef4959d270256bd04cc1c6f2e"
-deps = [
-  { name = "rust", version = "1.96.0", revision = 1 },
-]
+sha256 = "3233821fa44f37c731b47fe2f9b4e36027b024567a457d88b6b31902ad500330"
+manifest_digest = "sha256:20f06beb6dc0ad99e7b7fa129030dae386bdaefad099427eb23eaf34541925e8"
 
 [linux-amd64]
-sha256 = "f1ac8488b19a2a6e60f15d3bbc3bee7ca5d76b2bf7ab6d88ab618151cde84bc9"
-manifest_digest = "sha256:da17a1cd3407eea1ca90b46b950eb53642f6c568ff16cc62ea7b407c1c6bf7f4"
-deps = [
-  { name = "rust", version = "1.96.0", revision = 1 },
-]
+sha256 = "464359e5a1d39341b88ece60eb0552dda3c6221cff603c0248fcb9e1548d98e9"
+manifest_digest = "sha256:557a282dedd99374a17fe3275e183349d97ac2d73e2bc34c5e790981a718ea9f"
 
 [linux-arm64]
-sha256 = "3ff10b6757523a2725ef25cfc31b7c10dfbb2c41f7d1f236a3d06a3f6910ac63"
-manifest_digest = "sha256:7d75361bb05b7e1d702501a0fe8c4232615a119fcb4dff733672fdfcd8d6d519"
-deps = [
-  { name = "rust", version = "1.96.0", revision = 1 },
-]
+sha256 = "3f56c212853d9337f328ba53257f50934940262b1b9bc2a3d0368510daa0fc78"
+manifest_digest = "sha256:97e9d048b9ef1aebbe5183c4de256ef51cf3a92a64ca1fa01dafa5ffe16d14c7"
 
 [[history]]
 version = "0.15.13-2"
 darwin-arm64 = { sha256 = "574ffac4f4dd91ede4ac148a5828fa1077314de4af0936cb634a367015b3b47d", manifest_digest = "sha256:c39fb6d15f4a8bba4f928bb8ccd9bb041c2fdd5ef4959d270256bd04cc1c6f2e" }
 linux-amd64 = { sha256 = "f1ac8488b19a2a6e60f15d3bbc3bee7ca5d76b2bf7ab6d88ab618151cde84bc9", manifest_digest = "sha256:da17a1cd3407eea1ca90b46b950eb53642f6c568ff16cc62ea7b407c1c6bf7f4" }
 linux-arm64 = { sha256 = "3ff10b6757523a2725ef25cfc31b7c10dfbb2c41f7d1f236a3d06a3f6910ac63", manifest_digest = "sha256:7d75361bb05b7e1d702501a0fe8c4232615a119fcb4dff733672fdfcd8d6d519" }
+
+[[history]]
+version = "0.15.20-2"
+commit = "1c7c07e726af67733b6ed494dd9449abef2891a9"
+darwin-arm64 = { sha256 = "3233821fa44f37c731b47fe2f9b4e36027b024567a457d88b6b31902ad500330", manifest_digest = "sha256:20f06beb6dc0ad99e7b7fa129030dae386bdaefad099427eb23eaf34541925e8" }
+linux-amd64 = { sha256 = "464359e5a1d39341b88ece60eb0552dda3c6221cff603c0248fcb9e1548d98e9", manifest_digest = "sha256:557a282dedd99374a17fe3275e183349d97ac2d73e2bc34c5e790981a718ea9f" }
+linux-arm64 = { sha256 = "3f56c212853d9337f328ba53257f50934940262b1b9bc2a3d0368510daa0fc78", manifest_digest = "sha256:97e9d048b9ef1aebbe5183c4de256ef51cf3a92a64ca1fa01dafa5ffe16d14c7" }
