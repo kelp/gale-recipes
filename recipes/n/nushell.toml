@@ -1,6 +1,6 @@
 [package]
 name = "nushell"
-version = "0.113.1"
+version = "0.114.1"
 revision = 3
 description = "A new type of shell"
 license = "MIT"
@@ -8,9 +8,9 @@ homepage = "https://www.nushell.sh/"
 
 [source]
 repo = "nushell/nushell"
-url = "https://github.com/nushell/nushell/archive/refs/tags/0.113.1.tar.gz"
-sha256 = "d2b514b9ec7c1cc5930025528987d730cadcaa0f063227691c837516093328fd"
-released_at = "2026-05-30"
+url = "https://github.com/nushell/nushell/archive/refs/tags/0.114.1.tar.gz"
+sha256 = "48ef2fb6bb3ec2b1dcff87a792aeebdfab10b29f3119a62291075b17e4ad25d5"
+released_at = "2026-07-11"
 
 [build]
 system = "cargo"
@@ -19,4 +19,5 @@ steps = [
 ]
 
 [dependencies]
-build = ["rust"]
+build = ["pkgconf", "rust"]
+runtime = ["zlib"]
