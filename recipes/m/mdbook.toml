@@ -1,6 +1,6 @@
 [package]
 name = "mdbook"
-version = "0.5.3"
+version = "0.5.4"
 revision = 2
 description = "Create modern online books from Markdown files"
 license = "MPL-2.0"
@@ -8,9 +8,9 @@ homepage = "https://rust-lang.github.io/mdBook/"
 
 [source]
 repo = "rust-lang/mdBook"
-url = "https://github.com/rust-lang/mdBook/archive/refs/tags/v0.5.3.tar.gz"
-sha256 = "7c3e2907c0482fc9721a46ac42d7954600d795ce2152bed418553999ec1ee8f1"
-released_at = "2026-05-19"
+url = "https://github.com/rust-lang/mdBook/archive/refs/tags/v0.5.4.tar.gz"
+sha256 = "107614330c35c77d53b6f6ce7826c50eed087650efe5646a4d0a16ca6bf5544b"
+released_at = "2026-07-06"
 
 [build]
 steps = [
