@@ -1,6 +1,6 @@
 [package]
 name = "terraform"
-version = "1.15.7"
+version = "1.15.8"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,8 +10,8 @@ homepage = "https://www.terraform.io/"
 
 [source]
 repo = "hashicorp/terraform"
-url = "https://github.com/hashicorp/terraform/archive/refs/tags/v1.15.7.tar.gz"
-sha256 = "1b2904281ec8746a1ba2fa9ebeadbcb1f73d306cc31cdef2f08857f9d2f7f3b1"
+url = "https://github.com/hashicorp/terraform/archive/refs/tags/v1.15.8.tar.gz"
+sha256 = "7dcc43701dc10c2dfdd3704eb5c910337c858e2565417a7fe15430508938c2c0"
 
 [build]
 steps = [
