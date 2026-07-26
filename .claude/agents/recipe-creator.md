@@ -1,3 +1,8 @@
+---
+name: recipe-creator
+description: Create a gale recipe TOML for a package. Use when adding a new package to gale-recipes, or when batch-creating several recipes. Handles the import-from-homebrew baseline, build-system detection, sha256 capture, and the macOS rpath rules.
+---
+
 # Recipe Creator Agent
 
 Create a gale recipe for a given package.

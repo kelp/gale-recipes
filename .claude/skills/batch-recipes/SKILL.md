@@ -16,7 +16,7 @@ agents. Each agent uses the recipe-creator pattern.
 ## Behavior
 
 1. Check which packages already have recipes (skip them)
-2. Dispatch up to 5 `programmer` agents in parallel,
+2. Dispatch up to 5 `recipe-creator` agents in parallel,
    each creating one recipe
 3. As agents complete, lint each recipe with `gale lint`
 4. When all agents finish, commit and push
@@ -31,7 +31,7 @@ Create a gale recipe for <name>.
 1. Run: `gale import homebrew <name>` for a starting point
 2. Check the GitHub repo for latest release, build system
 3. Get sha256: `curl -sL <url> | shasum -a 256`
-4. Write to /Users/tcole/code/gale-recipes/recipes/<letter>/<name>.toml
+4. Write to recipes/<letter>/<name>.toml (repo-relative)
 5. Run `gale lint` on the recipe
 
 Patterns — see .claude/agents/recipe-creator.md.
