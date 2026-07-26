@@ -2,7 +2,7 @@
 
 [package]
 name = "fzf"
-version = "0.74.0"
+version = "0.74.1"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -12,9 +12,9 @@ homepage = "https://github.com/junegunn/fzf"
 
 [source]
 repo = "junegunn/fzf"
-url = "https://github.com/junegunn/fzf/archive/refs/tags/v0.74.0.tar.gz"
-sha256 = "55ab5f2256edd8890f81d407b63d3a3e81cffe10e318cd196031dc85efdeb079"
-released_at = "2026-07-06"
+url = "https://github.com/junegunn/fzf/archive/refs/tags/v0.74.1.tar.gz"
+sha256 = "ba37120bbe45966c6eba6a00c8ea64b86c3c57e349cb55b1c3e0f522976fd978"
+released_at = "2026-07-18"
 
 [build]
 steps = [
