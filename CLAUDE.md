@@ -369,9 +369,38 @@ just update-gale
 Do NOT use `gale remove gale` — it removes the binary
 from PATH and you can't run gale to reinstall.
 
-Note: this project has a local `.gale/` with an old
-binary. Use `$HOME/.gale/current/bin/gale` if the
-local one is stale.
+Note: on a dev machine this project may have a local
+`.gale/` with an old binary; use
+`$HOME/.gale/current/bin/gale` if the local one is
+stale. Neither path exists in an agent container —
+see the section below.
+
+## Agent Sandbox Environment
+
+Agent containers (Claude Code on the web and similar)
+have no `gale`, `just`, `actionlint` or `direnv`, so
+`just lint` and the recipe-lint hook cannot run out of
+the box. A `SessionStart` hook runs
+`scripts/agent-bootstrap.sh` in the background to
+install them. Full reference:
+[`docs/dev/agent-environment.md`](docs/dev/agent-environment.md).
+
+Three things to know before the first command:
+
+- **The bootstrap is async.** To wait for it, run it
+  again — `just agent-bootstrap` takes an flock and
+  blocks until the in-flight run finishes.
+  `just agent-status` shows what landed.
+- **Recipes cannot be built in the sandbox.** `gale
+  build` and `gale install` need hosts the egress
+  policy blocks (GHCR's blob host, go.dev, gnu.org,
+  codeload), and they burn minutes before failing. A
+  PreToolUse hook blocks them. `gale lint` is fully
+  offline and is the local gate; `verify.yml` is the
+  real one. Never weaken a recipe to make something
+  pass locally.
+- `gh` and `api.github.com` are unavailable; GitHub
+  work goes through the GitHub MCP tools.
 
 ## Recipe Quality
 

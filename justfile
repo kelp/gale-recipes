@@ -1,7 +1,26 @@
 # Lint recipes and workflows
 lint:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for tool in gale actionlint; do
+      command -v "$tool" >/dev/null || {
+        echo "$tool not found — run 'just agent-bootstrap'" >&2
+        exit 1
+      }
+    done
     gale lint recipes/**/*.toml
     actionlint
+
+# Install the agent-sandbox toolchain (gale, just, actionlint).
+# Blocks until the background SessionStart bootstrap finishes,
+# so it doubles as "wait for it".
+# See docs/dev/agent-environment.md.
+agent-bootstrap:
+    scripts/agent-bootstrap.sh --force
+
+# Show what the agent bootstrap installed, and what failed.
+agent-status:
+    @cat ~/.cache/gale-agent-bootstrap/status-recipes 2>/dev/null || echo "agent bootstrap has not run — try 'just agent-bootstrap'"
 
 # Check a built/installed package: scan Mach-O/ELF files
 # and verify every gale store path referenced is declared

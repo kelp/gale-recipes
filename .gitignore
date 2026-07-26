@@ -5,6 +5,6 @@
 .pi-lens/
 docs/superpowers/
 *.lock
-.claude/
+.claude/settings.local.json
 _site/
 __pycache__/
