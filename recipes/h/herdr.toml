@@ -1,6 +1,6 @@
 [package]
 name = "herdr"
-version = "0.7.3"
+version = "0.7.5"
 description = "Terminal workspace manager for AI coding agents"
 license = "AGPL-3.0-or-later"
 homepage = "https://herdr.dev"
@@ -16,9 +16,9 @@ platforms = ["darwin-arm64", "linux-amd64", "linux-arm64"]
 
 [source]
 repo = "ogulcancelik/herdr"
-url = "https://github.com/ogulcancelik/herdr/archive/refs/tags/v0.7.3.tar.gz"
-sha256 = "86f4ade98e4fa048b99ad59d1453da00b691dcdf559bbd18441f495b448c02fc"
-released_at = "2026-07-07"
+url = "https://github.com/ogulcancelik/herdr/archive/refs/tags/v0.7.5.tar.gz"
+sha256 = "5ea0f1003af1801a6a85d201b6fa7e1de46686fccb7df1d3fa3a03c4ec2be68c"
+released_at = "2026-07-21"
 
 # build.rs compiles the vendored libghostty-vt with `zig build`
 # and statically links it. libghostty-vt requires zig 0.15.2 exactly
