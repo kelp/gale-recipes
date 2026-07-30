@@ -1,6 +1,6 @@
 [package]
 name = "probe-rs"
-version = "0.31.0"
+version = "0.32.0"
 description = "Rust-based Cortex-M flasher and RTT debugger (probe-rs, cargo-flash, cargo-embed)"
 license = "MIT OR Apache-2.0"
 homepage = "https://probe.rs"
@@ -11,8 +11,8 @@ homepage = "https://probe.rs"
 
 [source]
 repo = "probe-rs/probe-rs"
-url = "https://github.com/probe-rs/probe-rs/releases/download/v0.31.0/probe-rs-tools-aarch64-apple-darwin.tar.xz"
-sha256 = "ade07f1172a5cc17f8d465bc3d2651e7d06212ef79d150d5b10c7a867a192151"
+url = "https://github.com/probe-rs/probe-rs/releases/download/v0.32.0/probe-rs-tools-aarch64-apple-darwin.tar.xz"
+sha256 = "c39631679b83d0c94dc442d05cc4ca974a87c02907a6ddbfce46746ed503152c"
 
 [build.darwin-arm64]
 steps = [
