@@ -1,6 +1,6 @@
 [package]
 name = "pscale"
-version = "0.283.0"
+version = "0.307.0"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,8 +10,8 @@ homepage = "https://www.planetscale.com/"
 
 [source]
 repo = "planetscale/cli"
-url = "https://github.com/planetscale/cli/archive/refs/tags/v0.283.0.tar.gz"
-sha256 = "734a407ab65e52bacc1b1bb9c46a0b429ce65463d031acc28ee87c695f1f20db"
+url = "https://github.com/planetscale/cli/archive/refs/tags/v0.307.0.tar.gz"
+sha256 = "2d3563c455dbe021b3854ccea47cbca9e156ddd045082faee91d1bb637dbea77"
 
 [build]
 steps = [
