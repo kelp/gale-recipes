@@ -1,6 +1,6 @@
 [package]
 name = "gofumpt"
-version = "0.10.0"
+version = "0.11.0"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,8 +10,8 @@ homepage = "https://github.com/mvdan/gofumpt"
 
 [source]
 repo = "mvdan/gofumpt"
-url = "https://github.com/mvdan/gofumpt/archive/refs/tags/v0.10.0.tar.gz"
-sha256 = "5f3158f665d1d49a19f3ed48981366c892b68904b2b34cb893c6fe3ff8346929"
+url = "https://github.com/mvdan/gofumpt/archive/refs/tags/v0.11.0.tar.gz"
+sha256 = "9151983838fa3fbca5a83e3b302e81c68c61e393cb9d3b7e4c297df311bbf394"
 
 [dependencies]
 build = ["go"]
