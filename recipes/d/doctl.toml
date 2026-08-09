@@ -1,6 +1,6 @@
 [package]
 name = "doctl"
-version = "1.163.0"
+version = "1.166.0"
 # rev 3: CGO_ENABLED=0 static rebuild — the default-cgo
 # build linked the CI runner's glibc (see gale-recipes#189)
 revision = 3
@@ -10,9 +10,9 @@ homepage = "https://github.com/digitalocean/doctl"
 
 [source]
 repo = "digitalocean/doctl"
-url = "https://github.com/digitalocean/doctl/archive/refs/tags/v1.163.0.tar.gz"
-sha256 = "8cc7acd78114eea8409f86b11843d1298d9b12cc984c277f594802acbb3c972a"
-released_at = "2026-06-25"
+url = "https://github.com/digitalocean/doctl/archive/refs/tags/v1.166.0.tar.gz"
+sha256 = "6a8c7ea59105f6274be9efeda947c275cd64b0e1f9f3112c9b2d6385d7994007"
+released_at = "2026-07-31"
 
 [build]
 steps = [
