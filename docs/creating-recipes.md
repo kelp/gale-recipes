@@ -112,6 +112,48 @@ runtime = []
   gale from other recipes)
 - `runtime` — libraries needed at run time
 
+Each list accepts entries in either of two forms:
+
+```toml
+[dependencies]
+build = ["curl", "expat", "gnumake", "pkgconf"]
+runtime = [
+  "zlib",
+  { name = "openssl", version = ">=3.6.0-1" },
+]
+```
+
+- **Bare string** — resolves to whatever the current
+  registry says is latest. No constraint; the installer
+  accepts any version the resolver returns. This is the
+  default for everything the catalog ships today.
+- **Inline table** — pins the dep against a version
+  constraint. Keys: `name` (required) and `version`
+  (optional constraint expression). The expression uses
+  the same syntax as `.gale-deps.toml` range
+  constraints: `"=1.2.3-2"` (exact), `">=1.2.3-2"`
+  (floor), `"<2.0.0"` (ceiling), or any of `>`, `>=`,
+  `<`, `<=`, `=`. A bare `"1.2.3"` means `=1.2.3-1`.
+
+The constraint is enforced at install time. If the
+resolved dep's version doesn't satisfy it, the install
+fails with a message naming the dep, the required
+constraint, and the version actually found. Bare deps
+skip the check entirely.
+
+Pin a dep when a soname or ABI change in it would
+require rebuilding the dependent. Leave it bare when the
+dep is ABI-stable across revisions, or when the
+dependent statically links it.
+
+CI records the resolved (name, version, revision)
+closure each build was linked against into a
+per-platform `deps` array-of-tables inside
+`.binaries.toml`. That block is informational — the
+archive's own `.gale-deps.toml` stays authoritative for
+staleness detection. See
+[`../../gale/docs/revisions.md`](../../gale/docs/revisions.md).
+
 ### [binary.<platform>] (CI-managed)
 
 ```toml
@@ -122,6 +164,28 @@ sha256 = "..."
 
 Do not write these by hand. CI adds them after a
 successful build and push to GHCR.
+
+#### Binary trust policy
+
+A recipe that ships an *inline* `[binary.<platform>]`
+section — rare, since CI-produced binaries go through
+the separate `.binaries.toml` path — may declare a
+`trust` field:
+
+- `trust = "sigstore"` (**default when omitted**) — the
+  binary must be served from `ghcr.io` and carry a
+  Sigstore attestation tied to gale-recipes CI. This is
+  the fail-safe default: forgetting the field enforces
+  attestation, it does not bypass it.
+- `trust = "sha256-only"` — the binary comes from an
+  upstream host that doesn't publish attestations keyed
+  to our signing identity (a vendor CDN, a language
+  toolchain release artifact). Only the SHA256 is
+  verified, and a recipe must opt in explicitly.
+
+Typos in `[binary.<platform>]` field names fail parsing,
+the same strict-schema rule that applies to `[package]`
+and `[source]`.
 
 ## Build Patterns by Language
 
@@ -225,6 +289,12 @@ tarfile.open('<name>-<ver>.tar.zst','r:*').extractall('$tmpdir')
 "
 $tmpdir/bin/<name> --version
 rm -rf $tmpdir
+```
+
+Install straight from the local recipe:
+
+```
+gale install <name> --recipe recipes/<letter>/<name>.toml
 ```
 
 ## Importing from Homebrew

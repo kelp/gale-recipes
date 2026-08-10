@@ -1,8 +1,9 @@
 # CLAUDE.md — .github
 
-Guidance for the workflows in this directory. The root
-`CLAUDE.md` holds the CI flow summary, the bridge
-invariants, and the auto-merge prohibition; this file
+Guidance for the workflows in this directory.
+`../docs/dev/ci-architecture.md` holds the merge flow,
+the bridge invariants, and the ledger rules; the root
+`CLAUDE.md` holds the auto-merge prohibition; this file
 holds the auto-update mechanics.
 
 ## Auto-update workflow
