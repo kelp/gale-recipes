@@ -24,6 +24,30 @@
    the sibling recipes directory and resolves build deps
    locally. No external registry needed during builds.
 
+## Merge Flow
+
+One writer. Pre-merge, the unprivileged `verify.yml`
+builds and smoke-tests a PR's changed recipes with no
+write-capable token. A maintainer then applies the
+`approved-for-build` label, and `promote.yml` dispatches
+the privileged `build.yml` pinned to the reviewed head
+SHA. That run builds every eligible platform (the
+declared `[package].platforms` are authoritative — no
+skipped cells), attests provenance via Sigstore, pushes
+tar.zst to GHCR via ORAS, and commits `.binaries.toml`
+(the v0.16.5-readable head mirror plus the append-only
+`[[history]]` ledger) and `.versions` back onto the PR
+branch via GraphQL, auto-signed "Verified" and
+`expectedHeadOid`-locked to the reviewed SHA.
+
+Recipe, binaries, and ledger therefore merge to main
+atomically in the PR. CI never writes to main; the
+dashboard republishes from the merge push
+(`pages.yml`).
+
+A reconcile is the same flow done by hand: branch from
+main, dispatch `build.yml` at that branch, merge the PR.
+
 ## Workflow Structure
 
 ```
@@ -71,6 +95,63 @@ with per-platform SHA256 digests and appends
 `createCommitOnBranch` mutation (auto-signed "Verified").
 
 ## Non-Obvious Details
+
+### Bridge invariants (deployed v0.16.5 clients)
+
+Two invariants protect gale v0.16.5 clients in the field
+for exactly as long as `.versions` files exist:
+
+1. **Merge-commit-only.** Do not enable squash or rebase
+   merges on this repo.
+2. **The two-commit append.** Do not stop `build.yml`
+   from committing `.binaries.toml` and then `.versions`
+   as two commits.
+
+Both persist until the cutover PR *deletes* every
+`.versions` file. Deletion is the safe end shape;
+reformatting them in place would hard-fail old clients
+and is forbidden.
+
+### The ledger and the Ledger Check
+
+Each `.binaries.toml` carries an append-only
+`[[history]]` ledger below the v0.16.5-readable head
+mirror. The required Ledger Check
+(`.github/workflows/ledger-check.yml` →
+`scripts/check_ledger.py`) makes "version changed =>
+ledger entry appended" the sole merge gate, and rejects
+any rewrite of prior history.
+
+Expect this on version bumps: **verify green does not
+mean mergeable.** A version-bump PR's Ledger Check stays
+red until promote publishes and commits the ledger. That
+is the design working, not flakiness.
+
+The daily registry-coherence audit
+(`scripts/check_registry_coherence.py`, via
+`drift-check.yml`) covers the one gap in-tree checks
+cannot see: external mutation of GHCR content. Its
+"immutable tag conflict" failure ships its own recovery
+— bump the revision to republish.
+
+### sccache passthrough
+
+If `sccache` is on the host PATH (in CI it arrives via
+`mozilla-actions/sccache-action`), gale's build sandbox
+auto-sets `RUSTC_WRAPPER=sccache` and forwards these
+host env vars into the build:
+
+- any `SCCACHE_*` key (`SCCACHE_GHA_ENABLED`,
+  `SCCACHE_DIR`, `SCCACHE_BUCKET`, …)
+- `ACTIONS_CACHE_URL`, `ACTIONS_RUNTIME_TOKEN`,
+  `ACTIONS_RESULTS_URL`, `ACTIONS_CACHE_SERVICE_V2`
+
+The trigger condition is just `sccache` being
+resolvable on the host PATH. Nothing is needed in the
+recipe — `cargo install` picks up `RUSTC_WRAPPER`
+automatically. A recipe can set its own `RUSTC_WRAPPER`
+under `[build] env` (including `""` to opt out) to
+override the auto-wiring.
 
 ### Concurrency
 
