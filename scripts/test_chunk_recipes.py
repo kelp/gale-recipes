@@ -274,6 +274,67 @@ class LoadRunnerOverridesTests(unittest.TestCase):
                 c.load_runner_overrides(path)
 
 
+class RepoRunnerOverridesTests(unittest.TestCase):
+    """Pin the *checked-in* override map, not a synthetic one.
+
+    The tests above prove the loader honors whatever map it is
+    handed; these prove the map this repo actually ships routes
+    the cells we intend. Both recipes here need zig 0.15.2,
+    whose link step cannot resolve libSystem against the
+    macos-26 runner's SDK (gh#106, gh#194), so their darwin
+    cells must land on macos-15.
+
+    Scope note: this asserts the *routing*, which is all the
+    chunker decides. Whether zig 0.15.2 actually links on
+    macos-15 is a property of the runner image and is only
+    provable by a real CI run.
+    """
+
+    REPO_ROOT = Path(__file__).resolve().parent.parent
+
+    def _overrides(self) -> dict:
+        return c.load_runner_overrides(
+            self.REPO_ROOT / ".github" / "runner-overrides.json"
+        )
+
+    def test_shipped_map_passes_the_allowlist(self) -> None:
+        # load_runner_overrides raises on an unknown runner image,
+        # so a clean load is the allowlist assertion.
+        self.assertIsInstance(self._overrides(), dict)
+
+    def test_zmx_darwin_pinned_to_macos_15(self) -> None:
+        self.assertEqual(
+            self._overrides().get("zmx", {}).get("darwin-arm64"),
+            "macos-15",
+        )
+
+    def test_herdr_darwin_pinned_to_macos_15(self) -> None:
+        self.assertEqual(
+            self._overrides().get("herdr", {}).get("darwin-arm64"),
+            "macos-15",
+        )
+
+    def test_zmx_cells_route_through_build_cells(self) -> None:
+        # End-to-end through the same call verify.yml and
+        # build.yml make: real recipe, real platforms, real
+        # override map.
+        cells = c.build_cells(
+            ["zmx"],
+            c.load_platforms(
+                self.REPO_ROOT / ".github" / "platforms.json"
+            ),
+            recipes_dir=self.REPO_ROOT / "recipes",
+            overrides=self._overrides(),
+        )
+        by_platform = {x["platform"]: x["os"] for x in cells}
+        self.assertEqual(by_platform["darwin-arm64"], "macos-15")
+        # Linux cells build fine on the default runners and must
+        # not be redirected.
+        for platform, os_name in by_platform.items():
+            if platform != "darwin-arm64":
+                self.assertNotEqual(os_name, "macos-15")
+
+
 class BuildCellsOverrideTests(unittest.TestCase):
     """An override only swaps which runner a cell runs on; it
     never adds or removes cells."""

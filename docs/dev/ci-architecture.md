@@ -134,6 +134,43 @@ cannot see: external mutation of GHCR content. Its
 "immutable tag conflict" failure ships its own recovery
 — bump the revision to republish.
 
+### Per-recipe runner overrides
+
+`.github/runner-overrides.json` maps
+`{recipe: {platform: runner_os}}` and redirects a single
+`(recipe, platform)` cell onto a different GitHub-hosted
+runner image. `load_runner_overrides` in
+`scripts/chunk_recipes.py` parses it and `build_cells`
+applies it, so `build.yml` and `verify.yml` — both of
+which route through the chunker — agree by construction.
+`reproducibility.yml` does not consult it (its matrix is
+hardcoded; see the comment there).
+
+Three properties worth remembering:
+
+- **Values are allowlisted** (`ALLOWED_RUNNER_OVERRIDES`).
+  `build.yml` picks `runs-on` from files at the reviewed
+  SHA, so the allowlist keeps a merged override on a known
+  hosted runner instead of an attacker-supplied label. An
+  unknown image is a hard error, not a silent fallback.
+- **An override never adds or removes a cell.** It only
+  swaps `os`. An override naming a platform the recipe is
+  not eligible for is a no-op.
+- **`verify.yml` triggers on the sidecar itself** and
+  re-verifies every recipe it names, so an override-only
+  PR still exercises the affected builds.
+
+Current entries — both zig 0.15.2 pins whose link step
+cannot resolve libSystem against the macos-26 runner's
+SDK, so their darwin cells run on `macos-15`:
+
+| Recipe | Platform | Runner | Why |
+|---|---|---|---|
+| herdr | darwin-arm64 | macos-15 | vendored libghostty-vt requires zig 0.15.2 (#106) |
+| zmx | darwin-arm64 | macos-15 | bundled ghostty requires zig 0.15.2 (#194) |
+
+Drop an entry once its upstream supports a newer zig.
+
 ### sccache passthrough
 
 If `sccache` is on the host PATH (in CI it arrives via
