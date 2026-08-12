@@ -1,6 +1,6 @@
 [package]
 name = "yt-dlp"
-version = "2026.03.17"
+version = "2026.07.04"
 revision = 3
 description = "A feature-rich command-line audio/video downloader"
 license = "Unlicense"
@@ -8,9 +8,9 @@ homepage = "https://github.com/yt-dlp/yt-dlp"
 
 [source]
 repo = "yt-dlp/yt-dlp"
-url = "https://github.com/yt-dlp/yt-dlp/archive/refs/tags/2026.03.17.tar.gz"
-sha256 = "924483986441d8a1e669a0e4371d753a9256ce4bdc06032394ccb7b793342434"
-released_at = "2025-01-27"
+url = "https://github.com/yt-dlp/yt-dlp/archive/refs/tags/2026.07.04.tar.gz"
+sha256 = "7fb7ca0509dd8f21263246d3d749a346e049fa9d3cfdef072e05c7bbd88d6fc0"
+released_at = "2026-07-04"
 
 [dependencies]
 build = ["python"]
