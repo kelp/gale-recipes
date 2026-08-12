@@ -2,7 +2,7 @@
 
 [package]
 name = "atuin"
-version = "18.16.1"
+version = "18.19.0"
 revision = 1
 description = "Improved shell history for zsh, bash, fish and nushell"
 license = "MIT"
@@ -10,9 +10,9 @@ homepage = "https://atuin.sh/"
 
 [source]
 repo = "atuinsh/atuin"
-url = "https://github.com/atuinsh/atuin/releases/download/v18.16.1/source.tar.gz"
-sha256 = "aec5c91207f080becc4b13593d5b7edc46685e8d4dbfbaef33d31f8058191bc6"
-released_at = "2026-05-12"
+url = "https://github.com/atuinsh/atuin/releases/download/v18.19.0/source.tar.gz"
+sha256 = "02fc084a925824f9b8ad899803da4c895341a6ae2fcb585ca8eac4fbe1fb454e"
+released_at = "2026-08-03"
 
 [build]
 steps = [
