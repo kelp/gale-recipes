@@ -134,15 +134,16 @@ missed. Auto-update mechanics live in
 
 ## Gotchas
 
-- **`recipes/*/*.versions` are frozen — never edit them.**
-  CI stopped *writing* them in step 3 of the cutover
-  (#100 / #94); reading has not stopped, so all 193 files
-  stay on disk deliberately, letting deployed v0.16.5
-  clients keep resolving through the soak window. Step 4
-  is a separate PR that *deletes* them wholesale —
-  reformatting or regenerating them in place hard-fails
-  old clients. Merge-commit-only stays in force until
-  that lands:
+- **`.versions` is gone — never recreate it.** The
+  cutover (#100 / #94) finished: step 3 stopped CI writing
+  the sidecars, step 4 deleted all 193. Neither writing
+  nor reading happens anywhere now. Version history lives
+  in the `[[history]]` ledger inside each
+  `.binaries.toml`, which is what clients (gale >=
+  v0.20.0) and `scripts/gen_status_page.py` resolve
+  against. Merge-commit-only lifted with the deletion —
+  it only ever protected the commit pins those files
+  contained:
   [`docs/dev/ci-architecture.md`](docs/dev/ci-architecture.md).
 - **A green `verify.yml` does not mean mergeable.** On a
   version bump the required Ledger Check stays red until

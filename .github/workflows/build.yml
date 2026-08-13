@@ -282,12 +282,9 @@ jobs:
       #
       # Every supported client (gale >= v0.20.0) resolves latest
       # and historical installs from the [[history]] ledger in
-      # .binaries.toml instead, so CI no longer writes .versions.
-      # The existing .versions files stay on disk, frozen at
-      # their last-written entry, until step 4 deletes them: a
-      # client still on the .versions path keeps resolving what
-      # it already could, it just never sees a newer version.
-      # Do not reformat or delete them here.
+      # .binaries.toml instead. Step 4 deleted the .versions
+      # files outright; the format is retired. Do not add a
+      # second commit here, and do not recreate a .versions file.
       #
       # GITHUB_TOKEN commits don't re-trigger workflows (no rebuild
       # loop). createCommitOnBranch auto-signs "Verified".
