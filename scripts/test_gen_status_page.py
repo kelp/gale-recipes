@@ -34,6 +34,8 @@ def _write_recipe(
     platforms: list[str] | None = None,
     binaries: dict[str, str] | None = None,
     binaries_version: str | None = None,
+    ledger: list[tuple[str, str | None]] | None = None,
+    versions_file: list[tuple[str, str]] | None = None,
 ) -> Path:
     """Materialize a recipe and (optionally) its binaries
     file. Returns the recipe TOML path."""
@@ -82,7 +84,21 @@ def _write_recipe(
             bl.append(f"[{plat}]")
             bl.append(f'sha256 = "{sha}"')
             bl.append("")
+        for entry_version, entry_commit in ledger or []:
+            bl.append("[[history]]")
+            bl.append(f'version = "{entry_version}"')
+            if entry_commit is not None:
+                bl.append(f'commit = "{entry_commit}"')
+            bl.append("")
         b.write_text("\n".join(bl))
+
+    if versions_file is not None:
+        v = letter_dir / f"{name}.versions"
+        v.write_text(
+            "".join(
+                f"{ver} {commit}\n" for ver, commit in versions_file
+            )
+        )
     return recipe
 
 
@@ -692,6 +708,120 @@ class VulnerabilityPillLinkTests(unittest.TestCase):
             g.vulnerability_pill_html(r, link_target="#security"),
             "",
         )
+
+
+class LedgerHistoryTests(unittest.TestCase):
+    """Version history comes from the ``[[history]]`` ledger in
+    ``.binaries.toml``, never from a ``.versions`` sidecar.
+
+    CI stopped writing ``.versions`` in the step-3 cutover
+    (#100/#94) and the files are deleted in step 4, so the
+    dashboard must render a complete history with no
+    ``.versions`` file anywhere on disk."""
+
+    def test_history_loads_from_ledger_without_versions_file(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "ledgered",
+                version="1.2.0",
+                binaries={"linux-amd64": "a" * 64},
+                ledger=[
+                    ("1.0.0", "b" * 40),
+                    ("1.1.0", "c" * 40),
+                    ("1.2.0", "d" * 40),
+                ],
+            )
+            self.assertEqual(
+                list(root.glob("recipes/*/*.versions")), []
+            )
+            (r,) = g.load_all_recipes(root)
+        self.assertEqual(
+            [v.version for v in r.versions_history],
+            ["1.0.0", "1.1.0", "1.2.0"],
+        )
+        self.assertEqual(r.versions_history[0].commit, "b" * 40)
+
+    def test_recipe_page_renders_ledger_history(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "ledgered",
+                version="1.2.0",
+                binaries={"linux-amd64": "a" * 64},
+                ledger=[("1.0.0", "b" * 40), ("1.2.0", "d" * 40)],
+            )
+            (r,) = g.load_all_recipes(root)
+            page = g.render_recipe_page(r)
+        self.assertNotIn("no history recorded", page)
+        self.assertIn('<table class="history">', page)
+        self.assertIn("1.0.0", page)
+        self.assertIn(("b" * 40)[:7], page)
+        self.assertIn(f"/commit/{'d' * 40}", page)
+
+    def test_commitless_ledger_entry_renders_without_link(
+        self,
+    ) -> None:
+        """Entries written before #141 carry no ``commit``. They
+        still belong in the history table — just unlinked."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "oldledger",
+                version="2.0.0",
+                binaries={"linux-amd64": "a" * 64},
+                ledger=[("1.0.0", None), ("2.0.0", "e" * 40)],
+            )
+            (r,) = g.load_all_recipes(root)
+            page = g.render_recipe_page(r)
+        self.assertEqual(
+            [v.version for v in r.versions_history],
+            ["1.0.0", "2.0.0"],
+        )
+        self.assertEqual(r.versions_history[0].commit, "")
+        self.assertIn("1.0.0", page)
+        self.assertNotIn("/commit/</a>", page)
+
+    def test_versions_sidecar_is_not_read(self) -> None:
+        """A leftover ``.versions`` file is inert: the dashboard
+        reads the ledger only, so the soak-window files on disk
+        cannot resurrect the retired read path."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "leftover",
+                version="1.0.0",
+                binaries={"linux-amd64": "a" * 64},
+                ledger=[("1.0.0", "f" * 40)],
+                versions_file=[("0.9.0", "9" * 40)],
+            )
+            (r,) = g.load_all_recipes(root)
+            page = g.render_recipe_page(r)
+        self.assertEqual(
+            [v.version for v in r.versions_history], ["1.0.0"]
+        )
+        self.assertNotIn("0.9.0", page)
+        self.assertNotIn("9" * 7, page)
+
+    def test_no_ledger_renders_empty_history(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_recipe(
+                root,
+                "nohistory",
+                version="1.0.0",
+                binaries={"linux-amd64": "a" * 64},
+            )
+            (r,) = g.load_all_recipes(root)
+            page = g.render_recipe_page(r)
+        self.assertEqual(r.versions_history, [])
+        self.assertIn("no history recorded", page)
 
 
 if __name__ == "__main__":

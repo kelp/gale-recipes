@@ -43,6 +43,24 @@ All notable changes to gale-recipes are documented here.
   pre-0.16 minimum.
 
 ### Changed
+- **CI no longer writes `.versions`** — step 3 of the
+  bridge cutover (#100, #94). `build.yml`'s two-commit
+  append is gone: `update-recipes` commits
+  `.binaries.toml` and stops. The two-commit shape only
+  ever existed so a `.versions` entry could point at a
+  commit whose tree held both the recipe and its
+  binaries; every supported client (gale >= v0.20.0)
+  resolves latest *and* historical `@version` installs
+  from the `[[history]]` ledger instead.
+  `scripts/gen_status_page.py` now sources each recipe
+  page's version history from that ledger rather than
+  the `.versions` sidecar, and renders ledger entries
+  written before the per-entry `commit` field (#141)
+  with an unlinked commit cell.
+  **The 193 `.versions` files stay on disk, frozen and
+  deliberately untouched.** Deleting them is step 4, a
+  separate PR after the soak window; merge-commit-only
+  stays in force until then.
 - `verify.yml` drops the second full compile per verify
   job (#95). Verify never publishes an archive, so it no
   longer runs `gale build`; a single `gale install --recipe`
