@@ -96,38 +96,44 @@ with per-platform SHA256 digests and the appended
 
 ## Non-Obvious Details
 
-### Bridge invariants (deployed v0.16.5 clients)
+### The retired `.versions` bridge (historical)
 
-Two invariants protected gale v0.16.5 clients in the
-field. **Step 3 of the cutover (#100 / #94) has landed:
-CI no longer writes `.versions`**, so the second one is
-retired and the first now only has to survive the soak.
+`.versions` sidecars were a backward-compat bridge for
+deployed gale v0.16.5 clients: one `<version> <commit>`
+line per published version, letting an old client resolve
+"latest" and fetch any recorded version's recipe at a
+pinned commit. **The cutover (#100 / #94) is complete.**
+Step 3 stopped CI writing them; step 4 deleted all 193
+files. Neither writing nor reading happens anywhere in
+this repo now — there is no `.versions` file, and no
+workflow, script, or test reads one.
 
-1. **Merge-commit-only.** Still in force. Do not enable
-   squash or rebase merges on this repo while `.versions`
-   files exist — a squashed history breaks the commit
-   pins those files already contain.
-2. ~~**The two-commit append.**~~ Retired. `build.yml`
-   commits `.binaries.toml` only; there is no second
-   `.versions` commit to preserve. The old shape existed
-   so a `.versions` entry could point at a commit whose
-   tree held both the recipe and its binaries.
+Version history comes from the append-only `[[history]]`
+ledger in each `.binaries.toml` — that is what clients
+resolve against (latest and historical `@version` alike,
+gale >= v0.20.0) and what `scripts/gen_status_page.py`
+renders. Nothing may recreate a `.versions` file; the
+format is retired, not paused.
 
-**The 193 `.versions` files stay on disk, deliberately.**
-They are frozen — no new entries land — but a client
-still on the `.versions` path can keep resolving every
-version already recorded there. That is the whole point
-of the soak: stopping the writes fails *silently* for a
-stale client (it freezes at the last-written "latest"
-and stops seeing new versions), while deleting the files
-would strand it outright.
+Both bridge invariants are therefore lifted:
 
-**Step 4, a separate PR after the soak, *deletes* every
-`.versions` file.** Deletion is the safe end shape;
-reformatting them in place would hard-fail old clients
-and is forbidden. Do not touch `recipes/*/*.versions`
-for any other reason — not to tidy them, not to
-regenerate them. Merge-commit-only lifts with step 4.
+1. ~~**Merge-commit-only.**~~ Lifted. It existed solely
+   so the commit pins inside `.versions` lines stayed
+   reachable; with no such pins, squash and rebase merges
+   are safe. Nothing in-repo enforced it — it lives in
+   the repo's GitHub merge settings and branch
+   protection, so re-enabling squash/rebase is a
+   maintainer-side settings change.
+2. ~~**The two-commit append.**~~ Retired in step 3.
+   `build.yml` commits `.binaries.toml` only. The old
+   shape existed so a `.versions` entry could point at a
+   commit whose tree held both the recipe and its
+   binaries.
+
+The deleted files remain in git history, so reverting the
+step-4 commit restores them; clients fetch from
+`raw.githubusercontent.com/.../main`, so a revert restores
+resolution for any client still on that path.
 
 ### The ledger and the Ledger Check
 

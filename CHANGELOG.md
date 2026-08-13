@@ -57,10 +57,8 @@ All notable changes to gale-recipes are documented here.
   the `.versions` sidecar, and renders ledger entries
   written before the per-entry `commit` field (#141)
   with an unlinked commit cell.
-  **The 193 `.versions` files stay on disk, frozen and
-  deliberately untouched.** Deleting them is step 4, a
-  separate PR after the soak window; merge-commit-only
-  stays in force until then.
+  The files were left frozen on disk through a soak
+  window; step 4 (below) deleted them.
 - `verify.yml` drops the second full compile per verify
   job (#95). Verify never publishes an archive, so it no
   longer runs `gale build`; a single `gale install --recipe`
@@ -164,6 +162,36 @@ All notable changes to gale-recipes are documented here.
   dependent in one CI run instead of cascading into local
   source rebuilds for each user. `check_install.py` also
   learned to accept table-form dep declarations.
+
+### Removed
+- **All 193 `recipes/*/*.versions` files** — step 4, the
+  final step of the bridge cutover (#100, #94). Deletion,
+  never reformatting: rewriting them in place would have
+  hard-failed v0.16.5 clients, which is why every prior
+  step refused to touch them. Nothing read them: step 3
+  moved `scripts/gen_status_page.py` onto the
+  `[[history]]` ledger, and a repo-wide grep across
+  workflows, `scripts/`, tests, and docs found no
+  surviving reader. The dashboard still writes 193 recipe
+  pages with full history tables (297 ledger entries),
+  sourced entirely from `.binaries.toml`.
+
+  The soak between steps 3 and 4 was shortened by
+  maintainer decision. The adoption gate holds: every
+  active machine runs gale >= v0.20.0, which resolves
+  latest *and* historical `@version` installs from the
+  ledger (kelp/gale#148, #141). Recovery is a revert —
+  the files are in git history and clients fetch them
+  from `raw.githubusercontent.com/.../main`.
+- **Merge-commit-only** is lifted. It was load-bearing
+  only because `.versions` lines pinned commits that had
+  to stay reachable; with no such pins, squash and rebase
+  merges are safe. Nothing in-repo enforced it — the
+  in-repo change is documentation
+  (`docs/dev/ci-architecture.md`, `CLAUDE.md`,
+  `README.md`); re-enabling squash/rebase is a
+  maintainer-side change in the repo's GitHub merge
+  settings.
 
 ### Fixed
 - ledger-check: the `workflow_dispatch` run promote fires after
