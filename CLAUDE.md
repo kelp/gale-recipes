@@ -141,9 +141,13 @@ missed. Auto-update mechanics live in
   in the `[[history]]` ledger inside each
   `.binaries.toml`, which is what clients (gale >=
   v0.20.0) and `scripts/gen_status_page.py` resolve
-  against. Merge-commit-only lifted with the deletion —
-  it only ever protected the commit pins those files
-  contained:
+  against. **Merge-commit-only did *not* lift with the
+  deletion** — the commit pins moved into
+  `[[history]].commit` (104 of 297 entries carry one), and
+  a squash or rebase leaves those SHAs reachable only via
+  `refs/pull/N/head`, which raw.githubusercontent may or
+  may not serve; that is untested, so squash/rebase is not
+  provably safe:
   [`docs/dev/ci-architecture.md`](docs/dev/ci-architecture.md).
 - **A green `verify.yml` does not mean mergeable.** On a
   version bump the required Ledger Check stays red until
