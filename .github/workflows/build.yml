@@ -1,8 +1,8 @@
 name: Build Recipes
 
 # THE one writer. This workflow is the only thing that builds,
-# attests, pushes to GHCR, and commits .binaries.toml/.versions
-# — and it only ever commits onto a PR branch, never main.
+# attests, pushes to GHCR, and commits .binaries.toml — and it
+# only ever commits onto a PR branch, never main.
 #
 # It runs exclusively via workflow_dispatch:
 #   - promote.yml dispatches it after a human applies the
@@ -35,8 +35,8 @@ on:
         required: true
       target_branch:
         description: >-
-          PR branch the .binaries.toml/.versions commits land
-          on, so binaries merge atomically with the recipe.
+          PR branch the .binaries.toml commit lands on, so
+          binaries merge atomically with the recipe.
           Never main.
         required: true
 
@@ -226,10 +226,10 @@ jobs:
       && needs.build.result != 'skipped'
     # Serialize per target branch. Two promotes of the same
     # branch queue rather than cancel — dropping a run would
-    # lose its .versions / .binaries.toml writes. The GraphQL
-    # commits below use expectedHeadOid as an atomic
-    # optimistic lock; serialization keeps the loser's
-    # working-tree writes from being silently discarded.
+    # lose its .binaries.toml writes. The GraphQL commit
+    # below uses expectedHeadOid as an atomic optimistic
+    # lock; serialization keeps the loser's working-tree
+    # writes from being silently discarded.
     concurrency:
       group: update-recipes-${{ inputs.target_branch }}
       cancel-in-progress: false
@@ -269,27 +269,29 @@ jobs:
             --metadata-dir /tmp/metadata --repo-root . \
             --commit "${HEAD_SHA}"
 
-      # Commit .binaries.toml and .versions in TWO commits so the
-      # .versions entry can reference the commit that actually
-      # contains the matching binaries.
+      # Commit the regenerated .binaries.toml onto the PR branch.
       #
-      # The gale client (commit-pin resolution) reads .versions →
-      # latest version → commit C, then fetches recipe@C AND
-      # binaries@C. So C MUST be a commit whose tree holds both.
-      # We can't put C's own SHA inside C (self-reference), so:
-      #   1. commit the .binaries.toml files  -> capture oid C
-      #      (C's tree = recipe carried from the checked-out SHA
-      #      + the new binaries)
-      #   2. commit the .versions files with each entry pointing
-      #      at C
-      # Under the mandated merge-commit, both land on main and C
-      # is reachable, so binaries@C resolve. This two-commit
-      # append and the merge-commit setting persist for exactly
-      # as long as .versions files exist (the v0.16.5 bridge).
+      # This was deliberately TWO commits until the step-3
+      # cutover (#100 / #94): .binaries.toml first, then a
+      # .versions append whose entry pointed at the binaries
+      # commit. That shape existed only for the v0.16.5 bridge —
+      # those clients resolved latest through .versions → commit
+      # C and then fetched recipe@C AND binaries@C, so C had to
+      # be a commit whose tree held both, and C's own SHA could
+      # not be written inside C.
+      #
+      # Every supported client (gale >= v0.20.0) resolves latest
+      # and historical installs from the [[history]] ledger in
+      # .binaries.toml instead, so CI no longer writes .versions.
+      # The existing .versions files stay on disk, frozen at
+      # their last-written entry, until step 4 deletes them: a
+      # client still on the .versions path keeps resolving what
+      # it already could, it just never sees a newer version.
+      # Do not reformat or delete them here.
       #
       # GITHUB_TOKEN commits don't re-trigger workflows (no rebuild
       # loop). createCommitOnBranch auto-signs "Verified".
-      - name: Commit binaries then versions
+      - name: Commit binaries
         id: commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -297,8 +299,6 @@ jobs:
           BRANCH: ${{ inputs.target_branch }}
           HEAD_SHA: ${{ inputs.head_sha }}
         run: |
-          shopt -s nullglob
-
           QUERY='mutation($input:CreateCommitOnBranchInput!) {
             createCommitOnBranch(input:$input) {
               commit { oid url }
@@ -309,7 +309,7 @@ jobs:
           #   -> echoes new oid
           # expectedHeadOid is the atomic optimistic lock: the
           # mutation only lands if the branch tip still equals
-          # expected_oid. Commit 1 passes the reviewed HEAD_SHA,
+          # expected_oid. The call passes the reviewed HEAD_SHA,
           # so a branch that moved after approval fails the
           # mutation itself — the TOCTOU guard, atomic instead
           # of check-then-act. On failure the tip is re-read:
@@ -362,7 +362,7 @@ jobs:
           BIN_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.binaries.toml' || true)
           BIN_FILES=$(printf '%s\n%s' "$BIN_CHANGED" "$BIN_NEW" | sort -u | grep . || true)
 
-          # --- commit 1: binaries (locked to the reviewed SHA) ---
+          # --- commit the binaries (locked to the reviewed SHA) ---
           if [ -n "$BIN_FILES" ]; then
             mapfile -t BIN_ARR < <(printf '%s\n' "$BIN_FILES")
             BIN_OID=$(commit_to_branch "Update .binaries.toml from build" "$HEAD_SHA" "${BIN_ARR[@]}") || exit 1
@@ -371,66 +371,11 @@ jobs:
             # No binary changes — write_binaries.py regenerated
             # byte-identical files, so HEAD_SHA's tree already
             # holds binaries matching the metadata. Do NOT exit:
-            # a prior run may have landed commit 1 and died
-            # before commit 2 (crash window), leaving .versions
-            # missing the entry. Run the loop with the
-            # checked-out SHA as the pin; on a normal re-promote
-            # the ENTRY_KEY grep below makes it a no-op.
-            echo "No binary changes; checking .versions entries"
-            BIN_OID="$HEAD_SHA"
-          fi
-
-          # --- write .versions entries pointing at BIN_OID ---
-          # Entry key is the bare version for revision 1 and
-          # <version>-<revision> otherwise, matching the registry
-          # resolver. The SHA is the binaries commit so the client
-          # can fetch recipe@SHA + binaries@SHA consistently.
-          RECIPES=$(for META in /tmp/metadata/*.json; do
-            jq -r '.recipe' "$META"
-          done | sort -u)
-          for RECIPE in $RECIPES; do
-            LETTER="${RECIPE:0:1}"
-            RECIPE_FILE="recipes/${LETTER}/${RECIPE}.toml"
-            VERSIONS_FILE="recipes/${LETTER}/${RECIPE}.versions"
-
-            # One tomllib read for version+revision, same as
-            # build-chunk.yml's Resolve-immutable-tag step —
-            # grep/sed reimplementations drift from TOML
-            # semantics (e.g. any version*-prefixed key).
-            read -r VERSION REVISION < <(python3 - "$RECIPE_FILE" <<'PY'
-          import sys, tomllib
-          with open(sys.argv[1], "rb") as f:
-              pkg = tomllib.load(f)["package"]
-          print(pkg["version"], int(pkg.get("revision", 1) or 1))
-          PY
-            )
-            if [ "$REVISION" -le 1 ]; then
-              ENTRY_KEY="${VERSION}"
-            else
-              ENTRY_KEY="${VERSION}-${REVISION}"
-            fi
-
-            if [ -f "$VERSIONS_FILE" ] && \
-               grep -q "^${ENTRY_KEY} " "$VERSIONS_FILE"; then
-              echo "${ENTRY_KEY} already in ${VERSIONS_FILE}"
-              continue
-            fi
-            if [ -f "$VERSIONS_FILE" ] && \
-               [ -s "$VERSIONS_FILE" ] && \
-               [ -n "$(tail -c1 "$VERSIONS_FILE")" ]; then
-              printf '\n' >> "$VERSIONS_FILE"
-            fi
-            printf '%s %s\n' "$ENTRY_KEY" "$BIN_OID" >> "$VERSIONS_FILE"
-            echo "Appended ${ENTRY_KEY} -> ${BIN_OID} to ${VERSIONS_FILE}"
-          done
-
-          # --- commit 2: versions (on top of the binaries commit) ---
-          VER_CHANGED=$(git diff --name-only -- 'recipes/**/*.versions' || true)
-          VER_NEW=$(git ls-files --others --exclude-standard -- 'recipes/**/*.versions' || true)
-          VER_FILES=$(printf '%s\n%s' "$VER_CHANGED" "$VER_NEW" | sort -u | grep . || true)
-          if [ -n "$VER_FILES" ]; then
-            mapfile -t VER_ARR < <(printf '%s\n' "$VER_FILES")
-            commit_to_branch "Update .versions from build" "$BIN_OID" "${VER_ARR[@]}" >/dev/null || exit 1
+            # a prior run may have landed this commit and died
+            # before dispatching the ledger check below, and
+            # falling through is the documented recovery for
+            # that crash window.
+            echo "No binary changes; nothing to commit"
           fi
 
           # Explicit did-commit signal for the dispatch step

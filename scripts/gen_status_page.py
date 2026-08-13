@@ -2,8 +2,8 @@
 """Generate a static build-status dashboard for gale-recipes.
 
 Walks ``recipes/<letter>/<name>.toml``, reads each sibling
-``<name>.binaries.toml`` and ``<name>.versions``, and writes
-an ``_site/`` tree:
+``<name>.binaries.toml`` — head mirror plus the append-only
+``[[history]]`` ledger — and writes an ``_site/`` tree:
 
     _site/
       index.html
@@ -81,6 +81,11 @@ class Platform:
 
 @dataclass
 class VersionEntry:
+    """One ``[[history]]`` ledger entry from ``.binaries.toml``.
+
+    ``commit`` is the recipe commit that produced the entry, or
+    ``""`` for entries written before #141 added the field."""
+
     version: str
     commit: str
 
@@ -354,6 +359,7 @@ def load_recipe(
         )
         for p in PLATFORMS
     }
+    history: list[VersionEntry] = []
     if binaries_path.exists():
         try:
             with binaries_path.open("rb") as f:
@@ -371,25 +377,25 @@ def load_recipe(
                         platforms[p] = Platform(
                             state="ok", sha256=sha
                         )
+            # Version history comes from the append-only
+            # [[history]] ledger, never from a `.versions`
+            # sidecar: CI stopped writing those in the step-3
+            # cutover (#100/#94) and step 4 deletes them.
+            for entry in b.get("history") or []:
+                if not isinstance(entry, dict):
+                    continue
+                ev = entry.get("version")
+                if not isinstance(ev, str) or not ev:
+                    continue
+                ec = entry.get("commit")
+                history.append(
+                    VersionEntry(
+                        ev, ec if isinstance(ec, str) else ""
+                    )
+                )
         except (OSError, tomllib.TOMLDecodeError) as e:
             print(
                 f"warning: could not parse {binaries_path}: {e}",
-                file=sys.stderr,
-            )
-
-    versions_path = toml_path.with_name(f"{name}.versions")
-    history: list[VersionEntry] = []
-    if versions_path.exists():
-        try:
-            for line in versions_path.read_text().splitlines():
-                parts = line.strip().split()
-                if len(parts) >= 2:
-                    history.append(
-                        VersionEntry(parts[0], parts[1])
-                    )
-        except OSError as e:
-            print(
-                f"warning: could not read {versions_path}: {e}",
                 file=sys.stderr,
             )
 
@@ -812,12 +818,22 @@ def render_recipe_page(recipe: Recipe) -> str:
     if recipe.versions_history:
         hist_rows = []
         for v in recipe.versions_history:
-            short = v.commit[:7]
-            commit_url = f"{REPO_URL}/commit/{html.escape(v.commit)}"
+            if v.commit:
+                short = html.escape(v.commit[:7])
+                commit_url = (
+                    f"{REPO_URL}/commit/{html.escape(v.commit)}"
+                )
+                commit_cell = (
+                    f'<a href="{commit_url}">'
+                    f"<code>{short}</code></a>"
+                )
+            else:
+                # Ledger entries predating the per-entry commit
+                # field (#141) have nothing to link to.
+                commit_cell = '<span class="muted">—</span>'
             hist_rows.append(
                 f"<tr><td>{html.escape(v.version)}</td>"
-                f'<td><a href="{commit_url}">'
-                f"<code>{short}</code></a></td></tr>"
+                f"<td>{commit_cell}</td></tr>"
             )
         history_html = (
             "<table class=\"history\">"

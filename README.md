@@ -18,8 +18,13 @@ recipes/
   j/
     jq.toml             # recipe — human-authored
     jq.binaries.toml    # binary index + ledger — CI-managed
-    jq.versions         # version history
+    jq.versions         # frozen legacy index — do not edit
 ```
+
+`.versions` is the retired compat index for gale v0.16.5.
+CI no longer writes it; the files stay on disk, unchanged,
+until they are deleted wholesale
+([`docs/dev/ci-architecture.md`](docs/dev/ci-architecture.md)).
 
 Each `.binaries.toml` has two parts. The head mirror (a
 top-level `version` plus one `[<platform>]` table per

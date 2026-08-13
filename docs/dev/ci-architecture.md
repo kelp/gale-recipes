@@ -16,9 +16,9 @@
    Sigstore attestation proves provenance.
 
 4. **Clean separation.** Recipes are human-authored.
-   Binary metadata (`.binaries.toml`) and version
-   history (`.versions`) are CI-managed. CI never
-   modifies recipe files.
+   Binary metadata and version history (`.binaries.toml`,
+   head mirror plus `[[history]]` ledger) are CI-managed.
+   CI never modifies recipe files.
 
 5. **Self-contained builds.** `gale build` auto-detects
    the sibling recipes directory and resolves build deps
@@ -36,8 +36,8 @@ declared `[package].platforms` are authoritative — no
 skipped cells), attests provenance via Sigstore, pushes
 tar.zst to GHCR via ORAS, and commits `.binaries.toml`
 (the v0.16.5-readable head mirror plus the append-only
-`[[history]]` ledger) and `.versions` back onto the PR
-branch via GraphQL, auto-signed "Verified" and
+`[[history]]` ledger) back onto the PR branch via
+GraphQL, auto-signed "Verified" and
 `expectedHeadOid`-locked to the reviewed SHA.
 
 Recipe, binaries, and ledger therefore merge to main
@@ -90,27 +90,44 @@ for build jobs.
 ### update-recipes
 
 Runs after all builds. Writes `.binaries.toml` files
-with per-platform SHA256 digests and appends
-`.versions` entries. Commits via GraphQL
+with per-platform SHA256 digests and the appended
+`[[history]]` ledger entry. Commits via GraphQL
 `createCommitOnBranch` mutation (auto-signed "Verified").
 
 ## Non-Obvious Details
 
 ### Bridge invariants (deployed v0.16.5 clients)
 
-Two invariants protect gale v0.16.5 clients in the field
-for exactly as long as `.versions` files exist:
+Two invariants protected gale v0.16.5 clients in the
+field. **Step 3 of the cutover (#100 / #94) has landed:
+CI no longer writes `.versions`**, so the second one is
+retired and the first now only has to survive the soak.
 
-1. **Merge-commit-only.** Do not enable squash or rebase
-   merges on this repo.
-2. **The two-commit append.** Do not stop `build.yml`
-   from committing `.binaries.toml` and then `.versions`
-   as two commits.
+1. **Merge-commit-only.** Still in force. Do not enable
+   squash or rebase merges on this repo while `.versions`
+   files exist — a squashed history breaks the commit
+   pins those files already contain.
+2. ~~**The two-commit append.**~~ Retired. `build.yml`
+   commits `.binaries.toml` only; there is no second
+   `.versions` commit to preserve. The old shape existed
+   so a `.versions` entry could point at a commit whose
+   tree held both the recipe and its binaries.
 
-Both persist until the cutover PR *deletes* every
-`.versions` file. Deletion is the safe end shape;
+**The 193 `.versions` files stay on disk, deliberately.**
+They are frozen — no new entries land — but a client
+still on the `.versions` path can keep resolving every
+version already recorded there. That is the whole point
+of the soak: stopping the writes fails *silently* for a
+stale client (it freezes at the last-written "latest"
+and stops seeing new versions), while deleting the files
+would strand it outright.
+
+**Step 4, a separate PR after the soak, *deletes* every
+`.versions` file.** Deletion is the safe end shape;
 reformatting them in place would hard-fail old clients
-and is forbidden.
+and is forbidden. Do not touch `recipes/*/*.versions`
+for any other reason — not to tidy them, not to
+regenerate them. Merge-commit-only lifts with step 4.
 
 ### The ledger and the Ledger Check
 

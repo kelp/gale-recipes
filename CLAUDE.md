@@ -134,6 +134,16 @@ missed. Auto-update mechanics live in
 
 ## Gotchas
 
+- **`recipes/*/*.versions` are frozen — never edit them.**
+  CI stopped *writing* them in step 3 of the cutover
+  (#100 / #94); reading has not stopped, so all 193 files
+  stay on disk deliberately, letting deployed v0.16.5
+  clients keep resolving through the soak window. Step 4
+  is a separate PR that *deletes* them wholesale —
+  reformatting or regenerating them in place hard-fails
+  old clients. Merge-commit-only stays in force until
+  that lands:
+  [`docs/dev/ci-architecture.md`](docs/dev/ci-architecture.md).
 - **A green `verify.yml` does not mean mergeable.** On a
   version bump the required Ledger Check stays red until
   promote publishes and commits the ledger. That is the

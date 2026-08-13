@@ -5,7 +5,7 @@ name: Promote Recipe Build
 # A maintainer applies the `approved-for-build` label to a recipe
 # PR. This workflow then dispatches build.yml pinned to the exact
 # reviewed commit, which builds + pushes to GHCR + attests and
-# commits the .binaries.toml/.versions ONTO THE PR BRANCH. The
+# commits the .binaries.toml ONTO THE PR BRANCH. The
 # human then merges (merge-commit), flipping recipe + binaries
 # onto main atomically.
 #
