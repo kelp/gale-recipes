@@ -41,17 +41,45 @@ Rules enforced against ``merge-base(--base, HEAD)``:
    itself), and every mirror platform table's ``sha256`` (and
    ``manifest_digest``, when the mirror declares one — seeded
    legacy mirrors don't) must equal that entry's values.
-   Deployed v0.16.5 clients install FROM the mirror, so a PR
-   editing only a mirror digest — no recipe change, history
-   untouched — would otherwise silently repoint installs at a
-   different (e.g. older, real, published) blob. Files with
-   no history yet are skipped: bridge-era tolerance until
-   seed_ledger backfills them, and append-only (rule 2)
-   prevents stripping a ledger to reopen the gap.
+   Files with no history yet are skipped: bridge-era
+   tolerance until seed_ledger backfills them, and
+   append-only (rule 2) prevents stripping a ledger to
+   reopen the gap.
 
 A PR touching no recipe versions passes trivially. Exit 0
 with a per-recipe summary, 1 on any violation, 2 on usage
 error.
+
+What each rule is worth, post-attestation (#101)
+------------------------------------------------
+
+Rule 3 was written for deployed gale v0.16.5, which
+installed FROM the head mirror: a PR editing only a mirror
+digest — no recipe change, history untouched — silently
+repointed those installs at a different blob, and this
+check was the only thing in the way. **That unique claim is
+dead.** The v0.16.5 cohort is retired, and with fail-closed
+in-process attestation (gale#129 → PR #158) plus gale#121's
+``verifyManifestDigest`` manifest-to-blob binding, a
+repointed digest fails client-side: the blob carries no
+valid attestation for that ``recipe@version``. Rule 3 is
+kept as defence-in-depth — it still catches a mirror and a
+ledger that disagree, which is a corruption/mistake
+catcher, not a security boundary. Do not argue for it from
+the retired cohort.
+
+Rule 2 moved the other way. With ``.versions`` deleted
+(#100), ``[[history]]`` is the SOLE in-repo record of what
+was published and at which commit its recipe lives, so
+append-only is more load-bearing now than when it was
+written, not less.
+
+Rule 1 is unchanged and was never security: it stops a
+version bump merging before its binaries exist.
+
+This is why ``ledger-check`` stays a required check — on
+rule 2's strength, not rule 3's. Full verdict table:
+``docs/dev/ci-architecture.md``.
 
 Usage:
 
@@ -81,10 +109,17 @@ REMEDY_UNPUBLISHED = (
     "approved-for-build and wait for CI to commit the ledger"
 )
 REMEDY_APPEND_ONLY = "history is append-only"
+# Rule 3's remedy. Stated in current terms: since fail-closed
+# client attestation (gale#129 → PR #158) a repointed mirror
+# digest fails on the client, so this is defence-in-depth
+# against a mirror that disagrees with the ledger — no longer
+# the sole thing standing between a hand-edited sha256 and a
+# silently repointed install. Keep the word "mirror" in the
+# text; test_check_ledger.py asserts on it.
 REMEDY_MIRROR = (
-    "deployed clients install from the mirror; it must echo "
-    "a published [[history]] entry — republish via promote "
-    "instead of editing mirror digests by hand"
+    "the mirror must echo a published [[history]] entry — "
+    "republish via promote instead of editing mirror digests "
+    "by hand"
 )
 
 
@@ -335,7 +370,20 @@ def check_commit_field(
     field (and any reconcile run before --commit was wired in).
     Future tightening (Part B): once every live promote path
     stamps a commit, gate 'commit required on the appended
-    entry' here alongside the per-platform digest checks."""
+    entry' here alongside the per-platform digest checks.
+
+    Part B is COUPLED to the merge-commit-only question and
+    must not land until that is settled. The stamped SHA is
+    the PR branch head, and gale's fetchHistoricalAtCommit
+    resolves a historical @version by fetching the recipe at
+    it from raw.githubusercontent. A merge commit keeps that
+    SHA an ancestor of main; a squash or rebase leaves it
+    reachable only via refs/pull/N/head, which raw may or may
+    not serve — untested. Making `commit` required would turn
+    every ledger entry into a hard dependency on that
+    unverified reachability. Settle the merge-mode question
+    first (docs/dev/ci-architecture.md, "The retired
+    .versions bridge")."""
     if head_text is None:
         return []
     name = PurePosixPath(path).name.removesuffix(".binaries.toml")

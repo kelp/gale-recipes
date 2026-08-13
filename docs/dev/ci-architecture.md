@@ -115,15 +115,36 @@ gale >= v0.20.0) and what `scripts/gen_status_page.py`
 renders. Nothing may recreate a `.versions` file; the
 format is retired, not paused.
 
-Both bridge invariants are therefore lifted:
+One bridge invariant is lifted; the other is not:
 
-1. ~~**Merge-commit-only.**~~ Lifted. It existed solely
-   so the commit pins inside `.versions` lines stayed
-   reachable; with no such pins, squash and rebase merges
-   are safe. Nothing in-repo enforced it — it lives in
-   the repo's GitHub merge settings and branch
-   protection, so re-enabling squash/rebase is a
-   maintainer-side settings change.
+1. **Merge-commit-only — still in force.** An earlier
+   revision of this document said it was lifted because
+   it "only ever protected the commit pins those files
+   contained; with no such pins, squash and rebase merges
+   are safe." **That is wrong.** The pins did not vanish
+   with `.versions`; they *moved* into
+   `[[history]].commit`. `build.yml` stamps each appended
+   entry with `inputs.head_sha` — a commit on the **PR
+   branch** — and gale's `fetchHistoricalAtCommit`
+   (`internal/registry/registry.go`) fetches
+   `<repoBase>/<entry.Commit>/recipes/<l>/<name>.toml`
+   from `raw.githubusercontent.com` to resolve a
+   historical `@version`. As of this writing 104 of 297
+   `[[history]]` entries across 82 of 193
+   `.binaries.toml` files carry a `commit`.
+
+   A merge commit makes that PR-branch SHA an ancestor of
+   `main`, so raw serves it. A squash or rebase merge does
+   not: the stamped SHA survives only under
+   `refs/pull/N/head`, and whether raw.githubusercontent
+   serves blobs at a commit reachable *only* through that
+   ref is **untested here**. So squash/rebase is not
+   provably free — it is a live question about GitHub's
+   raw-content reachability, not a settled one. Settle it
+   (fetch a raw URL at a PR-only commit and see) before
+   changing the repo's merge settings. Nothing in-repo
+   enforces the invariant; it lives in GitHub merge
+   settings and branch protection.
 2. ~~**The two-commit append.**~~ Retired in step 3.
    `build.yml` commits `.binaries.toml` only. The old
    shape existed so a `.versions` entry could point at a
@@ -156,6 +177,35 @@ The daily registry-coherence audit
 cannot see: external mutation of GHCR content. Its
 "immutable tag conflict" failure ships its own recovery
 — bump the revision to republish.
+
+#### What the gate still buys, post-attestation (#101)
+
+#101 asked whether the ledger gate is still buying
+anything now that fail-closed client attestation
+(gale#129 → PR #158) is the boundary, and whether it can
+be simplified or dropped as a required check. The verdict
+below is the answer. It differs **per rule**, which is
+exactly why "simplify the gate" is the wrong shape — the
+three rules were never one control.
+
+| Rule | Verdict | Why |
+|---|---|---|
+| 1. version bump ⇒ complete published entry | **Unchanged.** Keep. | Never was a security control. It stops merging a version bump whose binaries were never published — a correctness/ops gate, unaffected by attestation. |
+| 2. append-only history | **More important than before.** Keep. | #101 assumed its value would evaporate with the cutover. The opposite happened: with `.versions` deleted (#100), `[[history]]` is the **sole** in-repo record of what was published and at which commit its recipe lives. Rewriting it is now the only way to erase that record. |
+| 3. mirror echoes ledger digests | **Unique security claim is dead.** Keep as defence-in-depth. | It existed for deployed v0.16.5 clients, which installed FROM the head mirror and so could be silently repointed by a hand-edited `sha256`. That cohort is retired, and post-#158 plus gale#121's `verifyManifestDigest` a repoint fails client-side: the blob has no valid attestation for that `recipe@version`, and the manifest↔blob binding is checked. What remains is real but secondary — it keeps the mirror and the ledger from disagreeing, which is a corruption/mistake catcher, not a boundary. |
+
+**`ledger-check` stays required.** Not on rule 3's
+strength but on rule 2's: it protects the record clients
+now resolve against. And per #99, the moment `main` has
+zero required checks is the moment "CI never writes to
+main" stops being enforced by anything at all. Dropping
+the required status to remove the "verify green ≠
+mergeable" confusion would trade a real invariant for a
+documentation problem.
+
+The coherence audit is separately **monitoring, not a
+boundary** — that framing in #101 is correct and already
+matches how it runs (daily, not on PRs).
 
 ### Per-recipe runner overrides
 
