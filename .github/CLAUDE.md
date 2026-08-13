@@ -35,6 +35,42 @@ against each downloaded tarball; repos listed in
 `.github/auto-update-attest-required.txt` require a
 valid attestation.
 
+### Where the clock lives, and why it fails closed
+
+The `dashboard-data` branch is **the** operational store
+for `_data/upstream.json` — not a workaround for main's
+required `ledger-check`, which is merely what forced the
+move (#99). main tracks **no** copy: a fossil reachable
+only on a failure path is worse than none, so
+`auto-update.yml` seeds the working tree from
+`dashboard-data` and nothing else, and `pages.yml` renders
+without upstream columns when it can't read it.
+
+Git is the right home for this file for the same reason it
+is the right home for the ledger: the clock is a security
+input, and a branch gives `git log` over every mutation —
+who wrote it, when, and what changed. Object storage would
+buy an unsigned mutable blob whose last writer cannot be
+reconstructed. That is the argument #102 itself makes
+against R2-for-the-integrity-index, and it applies here
+too; #102 is closed on that basis.
+
+**The seed step fails closed** (`exit 1`). Prior state that
+reads empty resets `first_observed_at` to *now* for every
+recipe, so the 7-day cooldown passes immediately across the
+whole corpus and `first_observed_sha256` /
+`first_observed_commit_sha` lose their baseline — a silent
+downgrade of a supply-chain gate. Two shapes previously
+caused exactly that and are now gone: `git show >
+_data/upstream.json` truncates the destination *before* git
+runs, so a failed read left a zero-byte clock (the step now
+redirects into a temp file and `mv`s on success), and a
+transient `git fetch` failure fell back to main's tracked
+copy, whose months-old `generated_at` made every cooldown
+pass. The fetch retries 3 times, then the run stops.
+Bootstrapping a fresh clock is a deliberate manual commit
+to `dashboard-data`, never an automatic fallback.
+
 For upstreams that publish tags without GitHub
 Releases (git/git, golang/go, python/cpython,
 postgres/postgres, sqlite/sqlite, etc.), the workflow

@@ -6,6 +6,46 @@ long ago that release dropped. Data lives in
 `_data/upstream.json`, rewritten daily by
 `.github/workflows/auto-update.yml`.
 
+## Where the file lives
+
+`_data/upstream.json` is stored on the **`dashboard-data`
+branch**, and only there. That branch is the operational
+store for it, not a workaround — main tracks no copy, and
+one must never be re-added. The move off main was forced by
+main's required `ledger-check` (#99), but the branch is
+where the file belongs on its own merits: the same file is
+the first-observation clock behind the 7-day cooldown and
+the sha256 / commit-SHA tamper gates, so it is a security
+input, and a git branch gives `git log` over every mutation
+— author, time, diff — where object storage (R2/KV, the
+direction floated in #102) gives an unsigned mutable blob
+whose last writer cannot be reconstructed. #102 is closed
+rejecting that move on merit. The alternatives fare no
+better: the Actions cache evicts after 7 days (a clock that
+evaporates weekly is worse than none), a repo variable caps
+at 48 KB against this file's ~95 KB, and GHCR works but is
+again an unsigned mutable blob in place of a signed
+versioned one.
+
+**Reading the clock fails closed.** `auto-update.yml`'s seed
+step retries the `git fetch` three times and then `exit 1`s
+rather than continuing without prior state; there is no
+fallback copy anywhere. Empty prior state resets
+`first_observed_at` to now for every recipe, which makes
+every cooldown pass immediately and voids the tamper
+baseline — stopping the run is the only safe response.
+`pages.yml` reads the same file but only to render, so it
+degrades softly: no file means the dashboard omits upstream
+columns, never that it shows stale ones. Both steps redirect
+`git show` into a temp file and `mv` on success, because
+redirecting straight at `_data/upstream.json` truncates it
+before git runs and a failed read leaves zero bytes behind.
+
+To bootstrap a clock from nothing, commit
+`{"generated_at":"","recipes":{}}` to `dashboard-data` by
+hand and accept that the corpus's first observation is that
+run — an explicit, reviewable act, which is the point.
+
 ## Data shape
 
 ```json
