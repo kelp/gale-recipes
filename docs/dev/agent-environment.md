@@ -96,8 +96,10 @@ CI-managed work by hand:
   There is no `/nix` here and no `direnv`. Do not source it or `direnv allow`.
 - `index.tsv` is vestigial — 48 rows against 193 recipes, and nothing reads or
   writes it. Do not try to keep it in sync.
-- The tracked `_data/upstream.json` is a seed. The live copy lives on the
-  `dashboard-data` branch; the in-tree one is weeks stale by design.
+- There is no tracked `_data/upstream.json`. Its one store is the
+  `dashboard-data` branch (`git show origin/dashboard-data:_data/upstream.json`
+  to read it). A copy on main would only ever be read on a failure path, where
+  its staleness would silently weaken the cooldown gate — do not re-add one.
 - `gale.toml` and `gale.lock` have drifted (`difftastic`, `fish`, `gh`,
   `git-delta` are pinned but unlocked). Neither file is used by the sandbox —
   the bootstrap puts tools on `PATH` directly.

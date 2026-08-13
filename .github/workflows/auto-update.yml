@@ -48,23 +48,50 @@ jobs:
 
       # upstream.json is the persistent first-observation clock
       # (timestamps, sha256, commit SHA for the cooldown and
-      # tamper gates). It lives on the dashboard-data branch, not
-      # main, so the daily commit never trips main's required
-      # ledger-check. Overlay the prior copy into the working tree
-      # so auto-update.sh reads the correct prior state; the main
-      # checkout's tracked copy is only a seed/fallback.
+      # tamper gates). The dashboard-data branch is its one
+      # operational store — main carries no copy at all. Load it
+      # into the working tree so auto-update.sh reads the correct
+      # prior state.
+      #
+      # This step FAILS CLOSED. The clock is a security input: an
+      # absent or unreadable prior state resets first_observed_at
+      # to now for every recipe, which silently lets the 7-day
+      # cooldown pass immediately on the entire corpus. Losing it
+      # must stop the run, not substitute a wrong one. The fetch
+      # gets 3 attempts first so a transient blip doesn't page
+      # anyone (same shape as ledger-check.yml's status POST and
+      # build.yml's dispatch).
+      #
+      # Note the temp file: `git show > _data/upstream.json`
+      # truncates the destination BEFORE git runs, so a failed
+      # read leaves a zero-byte clock behind. Redirect into
+      # $tmp and mv only on success.
       - name: Seed prior upstream.json from dashboard-data
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p _data
-          if git fetch origin dashboard-data 2>/dev/null; then
-            git show origin/dashboard-data:_data/upstream.json \
-              > _data/upstream.json 2>/dev/null \
-              && echo "seeded prior state from dashboard-data" \
-              || echo "dashboard-data has no upstream.json yet; using main seed"
+          fetched=""
+          for attempt in 1 2 3; do
+            if git fetch origin dashboard-data; then
+              fetched=yes
+              break
+            fi
+            echo "::warning::fetch of dashboard-data attempt ${attempt} failed"
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 10)); fi
+          done
+          if [ -z "$fetched" ]; then
+            echo "::error::could not fetch dashboard-data after 3 attempts; the first-observation clock is unreachable. Refusing to run with a reset clock — re-run once the branch is reachable."
+            exit 1
+          fi
+          tmp=$(mktemp)
+          if git show origin/dashboard-data:_data/upstream.json > "$tmp"; then
+            mv "$tmp" _data/upstream.json
+            echo "seeded prior state from dashboard-data ($(wc -c < _data/upstream.json) bytes)"
           else
-            echo "dashboard-data branch absent; using main seed"
+            rm -f "$tmp"
+            echo "::error::dashboard-data holds no _data/upstream.json; the first-observation clock is missing. Refusing to run with a reset clock — to bootstrap, commit a clock (or {\"generated_at\":\"\",\"recipes\":{}} to deliberately start one) to dashboard-data by hand."
+            exit 1
           fi
 
       # Installation token for the gale-recipes-automation App

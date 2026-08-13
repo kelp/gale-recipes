@@ -56,20 +56,33 @@ jobs:
         with:
           python-version: '3.13'
 
-      # upstream.json lives on the dashboard-data branch (kept off
-      # main so the daily auto-update commit doesn't trip main's
-      # required ledger-check). Overlay the live copy onto the main
-      # checkout before rendering; main's tracked copy is only a
-      # fallback, and the generator tolerates a missing file.
+      # upstream.json's one store is the dashboard-data branch
+      # (kept off main so the daily auto-update commit doesn't trip
+      # main's required ledger-check). Load it before rendering.
+      #
+      # Unlike auto-update.yml's seed step this is a soft failure —
+      # here the file is only dashboard copy, not a security input.
+      # The fallback is *absence*, not a stale main copy:
+      # load_upstream_map() returns {} for a missing file, so the
+      # page renders without upstream columns rather than with
+      # months-old status.
+      #
+      # Redirect into a temp file, never the destination: a failed
+      # `git show > _data/upstream.json` truncates its target
+      # before git runs and leaves a zero-byte file behind.
       - name: Overlay dashboard data from dashboard-data branch
         run: |
-          if git fetch origin dashboard-data 2>/dev/null; then
-            git show origin/dashboard-data:_data/upstream.json \
-              > _data/upstream.json 2>/dev/null \
-              && echo "overlaid upstream.json from dashboard-data" \
-              || echo "dashboard-data has no upstream.json; using main copy"
+          rm -f _data/upstream.json
+          tmp=$(mktemp)
+          if git fetch origin dashboard-data 2>/dev/null \
+            && git show origin/dashboard-data:_data/upstream.json \
+                 > "$tmp" 2>/dev/null; then
+            mkdir -p _data
+            mv "$tmp" _data/upstream.json
+            echo "loaded upstream.json from dashboard-data"
           else
-            echo "dashboard-data branch absent; using main copy"
+            rm -f "$tmp"
+            echo "::warning::no upstream.json on dashboard-data; rendering without upstream status"
           fi
 
       - name: Generate site
