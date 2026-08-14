@@ -1,6 +1,6 @@
 [package]
 name = "python"
-version = "3.14.5"
+version = "3.14.7"
 revision = 3
 description = "The Python programming language"
 license = "Python-2.0"
@@ -8,9 +8,9 @@ homepage = "https://www.python.org/"
 
 [source]
 repo = "python/cpython"
-url = "https://www.python.org/ftp/python/3.14.5/Python-3.14.5.tgz"
-sha256 = "9c22bfe9939a6c5418fc74b289a5f1cc41859ae82ac6b163016b5844bd0a86bc"
-released_at = "2026-05-10"
+url = "https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tgz"
+sha256 = "62859805f6fdf25e2bcbf3fa3217801e1996887ca33e6a2af80674bdfa2dbe07"
+released_at = "2026-08-05"
 
 [build]
 system = "autotools"
