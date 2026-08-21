@@ -15,7 +15,7 @@ class AdmitManifestTests(unittest.TestCase):
             names,
             [
                 "jq", "ripgrep", "fd", "just", "gh", "direnv",
-                "gofumpt", "golangci-lint", "uv",
+                "gofumpt", "golangci-lint", "go", "uv",
             ],
         )
 
@@ -82,6 +82,21 @@ class AdmitManifestTests(unittest.TestCase):
         self.assertIn("upstream-sha256sums", argv)
         self.assertIn(uv.sha256, argv)
 
+    def test_go_directory_map(self) -> None:
+        g = am.by_name("go")
+        argv = am.admit_argv(g, "/tmp/go.tgz")
+        self.assertIn("tar.gz", argv)
+        self.assertIn("--strip", argv)
+        self.assertIn("1", argv)
+        self.assertIn("https://go.dev/dl/go1.26.1.darwin-arm64.tar.gz", argv)
+        self.assertIn("upstream-sha256sums", argv)
+        self.assertIn(g.sha256, argv)
+        self.assertIn("bin:bin:755", argv)
+        self.assertIn("src:src:755", argv)
+        self.assertIn("pkg:pkg:755", argv)
+        self.assertIn("VERSION:VERSION:644", argv)
+        self.assertNotIn("src:src:644", argv)
+
     def test_golangci_lint_tarball(self) -> None:
         g = am.by_name("golangci-lint")
         argv = am.admit_argv(g, "/tmp/golangci.tgz")
@@ -107,7 +122,11 @@ class AdmitManifestTests(unittest.TestCase):
             self.assertIn("darwin", argv)
             self.assertIn("--arch", argv)
             self.assertIn("arm64", argv)
-            self.assertTrue(p.url.startswith("https://github.com/"))
+            self.assertTrue(
+                p.url.startswith("https://github.com/")
+                or p.url.startswith("https://go.dev/"),
+                p.url,
+            )
 
 
 if __name__ == "__main__":
