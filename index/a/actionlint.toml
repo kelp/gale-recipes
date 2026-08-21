@@ -1,0 +1,20 @@
+[package]
+name = "actionlint"
+description = "Static checker for GitHub Actions workflow files"
+license = "MIT"
+homepage = "https://github.com/rhysd/actionlint"
+repo = "rhysd/actionlint"
+latest = "1.7.12"
+
+[versions."1.7.12".artifacts."darwin/arm64"]
+url = "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_arm64.tar.gz"
+format = "tar.gz"
+sha256 = "aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f"
+tree_digest = "sha256:268968de69a184c20542f3cfc49eb9dfe93266beb67a0e0b279263bedb074e0d"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."1.7.12".artifacts."darwin/arm64".files]]
+src = "actionlint"
+dest = "bin/actionlint"
+mode = 0o755

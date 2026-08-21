@@ -1,0 +1,20 @@
+[package]
+name = "zoxide"
+description = "Shell extension to navigate your filesystem faster"
+license = "MIT"
+homepage = "https://github.com/ajeetdsouza/zoxide"
+repo = "ajeetdsouza/zoxide"
+latest = "0.10.0"
+
+[versions."0.10.0".artifacts."darwin/arm64"]
+url = "https://github.com/ajeetdsouza/zoxide/releases/download/v0.10.0/zoxide-0.10.0-aarch64-apple-darwin.tar.gz"
+format = "tar.gz"
+sha256 = "b55ae6f2f5f23d0a6ccb3bd4eeb2af9c7e0a6556e5255c82100e40305129bbb0"
+tree_digest = "sha256:cc0442a71f7b4caaf9f7b0323dc96719cc19f85a35766f1037af86954485c277"
+hash_source = "computed"
+strip = 0
+
+[[versions."0.10.0".artifacts."darwin/arm64".files]]
+src = "zoxide"
+dest = "bin/zoxide"
+mode = 0o755

@@ -1,0 +1,20 @@
+[package]
+name = "yq"
+description = "Process YAML, JSON, XML, CSV and properties documents from the CLI"
+license = "MIT"
+homepage = "https://github.com/mikefarah/yq"
+repo = "mikefarah/yq"
+latest = "4.53.6"
+
+[versions."4.53.6".artifacts."darwin/arm64"]
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_arm64"
+format = "binary"
+sha256 = "cceb0b8d71ea5294334121f8429f33f92b920e7217d904a2f9f35443968ac424"
+tree_digest = "sha256:d5fcf500bdeff9205c085d57a87fac3d869a29d9e554d810643ea7b946517a79"
+hash_source = "computed"
+strip = 0
+
+[[versions."4.53.6".artifacts."darwin/arm64".files]]
+src = "yq_darwin_arm64"
+dest = "bin/yq"
+mode = 0o755
