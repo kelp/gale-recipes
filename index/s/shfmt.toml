@@ -1,0 +1,20 @@
+[package]
+name = "shfmt"
+description = "Autoformat shell script source code"
+license = "BSD-3-Clause"
+homepage = "https://github.com/mvdan/sh"
+repo = "mvdan/sh"
+latest = "3.13.1"
+
+[versions."3.13.1".artifacts."darwin/arm64"]
+url = "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_darwin_arm64"
+format = "binary"
+sha256 = "9680526be4a66ea1ffe988ed08af58e1400fe1e4f4aef5bd88b20bb9b3da33f8"
+tree_digest = "sha256:785bfa0414e65d70fb7866cf96440f34863fa84e666dcce0a96028096b35a76f"
+hash_source = "computed"
+strip = 0
+
+[[versions."3.13.1".artifacts."darwin/arm64".files]]
+src = "shfmt_v3.13.1_darwin_arm64"
+dest = "bin/shfmt"
+mode = 0o755

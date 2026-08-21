@@ -14,6 +14,12 @@ All notable changes to gale-recipes are documented here.
   is `scripts/lint_index.sh` plus actionlint.
 
 ### Added
+- Darwin/arm64 catalog entries for `fzf` 0.74.3,
+  `age` 1.3.1 (`age` and `age-keygen`), `shfmt`
+  3.13.1, `actionlint` 1.7.12, `yq` 4.53.6,
+  `shellcheck` 0.11.0, `starship` 1.26.0, and
+  `zoxide` 0.10.0. Artifact tables are `gale
+  admit` stdout from macos-26.
 - Darwin/arm64 catalog entry for `go` 1.26.1
   (official `go.dev/dl` GOROOT). Artifact tables
   are `gale admit` stdout from macos-26.

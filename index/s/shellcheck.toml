@@ -1,0 +1,20 @@
+[package]
+name = "shellcheck"
+description = "Static analysis and lint tool, for (ba)sh scripts"
+license = "GPL-3.0-or-later"
+homepage = "https://www.shellcheck.net/"
+repo = "koalaman/shellcheck"
+latest = "0.11.0"
+
+[versions."0.11.0".artifacts."darwin/arm64"]
+url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.gz"
+format = "tar.gz"
+sha256 = "339b930feb1ea764467013cc1f72d09cd6b869ebf1013296ba9055ab2ffbd26f"
+tree_digest = "sha256:76a98138e02140fcc8506b840e34276610976e039d424f0cf04fe772bb4970d0"
+hash_source = "computed"
+strip = 1
+
+[[versions."0.11.0".artifacts."darwin/arm64".files]]
+src = "shellcheck"
+dest = "bin/shellcheck"
+mode = 0o755

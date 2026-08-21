@@ -1,0 +1,20 @@
+[package]
+name = "fzf"
+description = "Command-line fuzzy finder written in Go"
+license = "MIT"
+homepage = "https://github.com/junegunn/fzf"
+repo = "junegunn/fzf"
+latest = "0.74.3"
+
+[versions."0.74.3".artifacts."darwin/arm64"]
+url = "https://github.com/junegunn/fzf/releases/download/v0.74.3/fzf-0.74.3-darwin_arm64.tar.gz"
+format = "tar.gz"
+sha256 = "1f8501cea4f9c0c2d6110d0ff75d0ec9451cd9d7524d9a26244a154ea89f3bd5"
+tree_digest = "sha256:5bd9912d3a2cf30234a030a3796a1413b52c3b593d506b969a98670063761947"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."0.74.3".artifacts."darwin/arm64".files]]
+src = "fzf"
+dest = "bin/fzf"
+mode = 0o755
