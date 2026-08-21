@@ -5,9 +5,9 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
-- Darwin admit inputs for `uv` 0.12.5 (`uv` and
-  `uvx`). Catalog TOML waits on macos-26
-  `gale admit` fragments.
+- Darwin/arm64 catalog entry for `uv` 0.12.5
+  (`uv` and `uvx`). Artifact tables are
+  `gale admit` stdout from macos-26.
 - Darwin/arm64 catalog entries for `gofumpt`
   0.11.0 and `golangci-lint` 2.13.1. Artifact
   tables are `gale admit` stdout from macos-26.
