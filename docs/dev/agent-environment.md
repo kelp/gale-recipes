@@ -11,7 +11,7 @@ repo: what you can actually run, and what you cannot.
 ```sh
 just agent-bootstrap   # install gale, just, actionlint; blocks if already running
 just agent-status      # what landed, and what failed
-just lint              # gale lint on every recipe + actionlint
+just lint              # index lint + actionlint
 just test              # 218 python tests, ~3s
 ```
 
@@ -44,11 +44,11 @@ not fail fast: a measured `gale install just` spent 3m11s compiling rustc
 before dying. A `PreToolUse` hook blocks them; override with
 `GALE_ALLOW_NETWORK_INSTALL=1` if you have a reason.
 
-**This means you cannot validate a recipe by building it.** The local gate is
-`gale lint`, which is pure offline TOML validation. The real gate is CI:
-`verify.yml` rebuilds every changed recipe on all eligible platforms and
-smoke-tests the binary. Write the recipe carefully, lint it, and let CI build
-it — do not weaken a recipe to make something pass locally.
+**This means you cannot validate a leftover recipe by building it.**
+The local gate is `just lint`: `scripts/lint_index.sh` plus
+actionlint. Recipe lint is gone. Leftover source recipes stay
+until Milestone 5. Do not weaken a recipe to make something
+pass locally.
 
 The same applies to `scripts/check_install.py`, `scripts/run_smoke.py` and
 `scripts/verify_binary.py`: they inspect an **installed** package under
@@ -65,8 +65,8 @@ Everything below is offline and fast.
 | `bash scripts/test_auto_update_sh.sh` | end-to-end smoke of `auto-update.sh` via PATH shims |
 | `bash scripts/test_verify_upstream_attestation.sh` | attestation 404-classification unit test |
 | `python3 scripts/check_ledger.py --base origin/main` | the required merge gate |
-| `gale lint recipes/<letter>/<name>.toml` | recipe validation |
-| `just lint` | `gale lint` over every recipe, then `actionlint` |
+| `gale lint index/<letter>/<name>.toml` | index validation |
+| `just lint` | `scripts/lint_index.sh` then `actionlint` |
 | `just gen-pages` | build the dashboard into `_site/` |
 
 `test.yml` is the CI workflow that mirrors the first three. The rest of CI —
@@ -87,7 +87,8 @@ CI-managed work by hand:
   `.binaries.toml`, and any `[binary.<platform>]` section added to a recipe.
   Those are written only by `build.yml` via `scripts/write_binaries.py`.
 - **`lint-recipe.sh`** (PostToolUse) — parses every `.toml` you write, then
-  runs `gale lint` on recipes. It is skipped, not failed, while the bootstrap
+  runs `gale lint` on index documents. Leftover source recipes are
+  syntax-checked only. It is skipped, not failed, while the bootstrap
   is still installing `gale`.
 
 ## Stale artifacts to ignore

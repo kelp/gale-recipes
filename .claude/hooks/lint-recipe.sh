@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# PostToolUse(Edit|Write): parse every .toml, and `gale lint` every recipe.
+# PostToolUse(Edit|Write): parse every .toml, and `gale lint`
+# every index document. Leftover source recipes stay until
+# Milestone 5; recipe lint is gone.
 #
 # Two bugs fixed relative to the inline version this replaces:
 #
@@ -28,7 +30,7 @@ fi
 
 case "$file_path" in
   *.binaries.toml) exit 0 ;;
-  recipes/*/*.toml | */recipes/*/*.toml) ;;
+  index/*/*.toml | */index/*/*.toml) ;;
   *) exit 0 ;;
 esac
 

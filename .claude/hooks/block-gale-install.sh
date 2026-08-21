@@ -34,8 +34,8 @@ minutes and then fail. Details: docs/dev/agent-environment.md.
 
 Recipe changes are validated locally with `gale lint` and built in CI by
 verify.yml. What works here:
-  gale lint recipes/<letter>/<name>.toml   offline recipe validation
-  just lint                                gale lint + actionlint
+  gale lint index/<letter>/<name>.toml     offline index validation
+  just lint                                index lint + actionlint
   just test                                the python script suite
   python3 scripts/check_ledger.py --base origin/main
 
