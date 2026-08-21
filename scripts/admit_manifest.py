@@ -1,4 +1,4 @@
-"""First-four Darwin/arm64 admit inputs.
+"""Darwin/arm64 admit inputs for the first-ten heading.
 
 Argv only. gale admit on a Darwin host still has to
 print tree_digest. Do not invent hashes here.
@@ -81,6 +81,34 @@ PACKAGES: tuple[Package, ...] = (
         hash_source="upstream-sha256sums",
         sha256="50ae3e996c974a0bf32ea7d10f495070df33f1b43e0616b2769e3d4821ed8f48",
         files=("just:bin/just:755",),
+    ),
+    Package(
+        name="gh",
+        version="2.98.0",
+        description="GitHub command-line tool",
+        license="MIT",
+        homepage="https://cli.github.com/",
+        repo="cli/cli",
+        url="https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_macOS_arm64.zip",
+        format="zip",
+        strip=1,
+        hash_source="upstream-sha256sums",
+        sha256="8cfb027cc5310675f2b830eac8f9865c1155a45ffcf9757f699fdd5a22046ca4",
+        files=("bin/gh:bin/gh:755",),
+    ),
+    Package(
+        name="direnv",
+        version="2.37.1",
+        description="Per-directory environment variables",
+        license="MIT",
+        homepage="https://direnv.net",
+        repo="direnv/direnv",
+        url="https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-arm64",
+        format="binary",
+        strip=0,
+        hash_source="computed",
+        sha256="",
+        files=("direnv.darwin-arm64:bin/direnv:755",),
     ),
 )
 

@@ -1,6 +1,6 @@
 name: Admit Darwin
 
-# Runs gale admit on macos-26 for the first-four catalog.
+# Runs gale admit on macos-26 for the first-ten catalog.
 # Uploads fragments; does not commit. tree_digest comes
 # from admit stdout only.
 

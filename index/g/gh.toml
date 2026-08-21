@@ -1,0 +1,20 @@
+[package]
+name = "gh"
+description = "GitHub command-line tool"
+license = "MIT"
+homepage = "https://cli.github.com/"
+repo = "cli/cli"
+latest = "2.98.0"
+
+[versions."2.98.0".artifacts."darwin/arm64"]
+url = "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_macOS_arm64.zip"
+format = "zip"
+sha256 = "8cfb027cc5310675f2b830eac8f9865c1155a45ffcf9757f699fdd5a22046ca4"
+tree_digest = "sha256:cc388c427861e5edd91cdde1e5cbea76bd5e7fc2922fbc9e78fb7fd8d169ed99"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."2.98.0".artifacts."darwin/arm64".files]]
+src = "bin/gh"
+dest = "bin/gh"
+mode = 0o755
