@@ -1,0 +1,20 @@
+[package]
+name = "golangci-lint"
+description = "Fast Go linters runner"
+license = "GPL-3.0"
+homepage = "https://golangci-lint.run"
+repo = "golangci/golangci-lint"
+latest = "2.13.1"
+
+[versions."2.13.1".artifacts."darwin/arm64"]
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.13.1/golangci-lint-2.13.1-darwin-arm64.tar.gz"
+format = "tar.gz"
+sha256 = "0c9818baf6fb8ad26c6d2ef51b68d5a1e260ef07727036b1431647cc44637c7c"
+tree_digest = "sha256:296c7811155918051c119e498921836488a17902db86ebe794f5b9cb3154b665"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."2.13.1".artifacts."darwin/arm64".files]]
+src = "golangci-lint"
+dest = "bin/golangci-lint"
+mode = 0o755

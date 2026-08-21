@@ -19,6 +19,7 @@ SCRIPT = Path(__file__).resolve().parent / "lint_index.sh"
 REPO = Path(__file__).resolve().parent.parent
 REQUIRED_FIRST_FOUR = ("fd", "jq", "just", "ripgrep")
 REQUIRED_GH_DIRENV = ("direnv", "gh")
+REQUIRED_GOFUMPT_GOLANGCI = ("gofumpt", "golangci-lint")
 
 
 class IndexLayoutTests(unittest.TestCase):
@@ -128,6 +129,20 @@ class RequiredIndexNamesTests(unittest.TestCase):
 
     def test_gh_direnv_layout(self) -> None:
         for name in REQUIRED_GH_DIRENV:
+            path = REPO / "index" / name[0] / f"{name}.toml"
+            self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
+            self.assertTrue(
+                index_layout.layout_ok(path, REPO),
+                f"{path.relative_to(REPO)}: bad index path",
+            )
+
+    def test_gofumpt_golangci_exist(self) -> None:
+        names = {p.stem for p in index_layout.list_index_files(REPO)}
+        missing = [n for n in REQUIRED_GOFUMPT_GOLANGCI if n not in names]
+        self.assertEqual(missing, [], f"missing index documents: {missing}")
+
+    def test_gofumpt_golangci_layout(self) -> None:
+        for name in REQUIRED_GOFUMPT_GOLANGCI:
             path = REPO / "index" / name[0] / f"{name}.toml"
             self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
             self.assertTrue(
