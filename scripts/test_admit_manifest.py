@@ -13,7 +13,10 @@ class AdmitManifestTests(unittest.TestCase):
         names = [p.name for p in am.PACKAGES]
         self.assertEqual(
             names,
-            ["jq", "ripgrep", "fd", "just", "gh", "direnv"],
+            [
+                "jq", "ripgrep", "fd", "just", "gh", "direnv",
+                "gofumpt", "golangci-lint",
+            ],
         )
 
     def test_jq_binary_uses_url_basename(self) -> None:
@@ -59,6 +62,24 @@ class AdmitManifestTests(unittest.TestCase):
         self.assertIn("bin/gh:bin/gh:755", argv)
         self.assertIn("upstream-sha256sums", argv)
         self.assertIn(gh.sha256, argv)
+
+    def test_gofumpt_binary_computed(self) -> None:
+        g = am.by_name("gofumpt")
+        argv = am.admit_argv(g, "/tmp/gofumpt_v0.11.0_darwin_arm64")
+        self.assertIn("binary", argv)
+        self.assertIn("computed", argv)
+        self.assertNotIn("--sha256", argv)
+        self.assertIn("gofumpt_v0.11.0_darwin_arm64:bin/gofumpt:755", argv)
+
+    def test_golangci_lint_tarball(self) -> None:
+        g = am.by_name("golangci-lint")
+        argv = am.admit_argv(g, "/tmp/golangci.tgz")
+        self.assertIn("tar.gz", argv)
+        self.assertIn("--strip", argv)
+        self.assertIn("1", argv)
+        self.assertIn("golangci-lint:bin/golangci-lint:755", argv)
+        self.assertIn("upstream-sha256sums", argv)
+        self.assertIn(g.sha256, argv)
 
     def test_direnv_binary_computed(self) -> None:
         d = am.by_name("direnv")
