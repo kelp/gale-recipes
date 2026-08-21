@@ -4,6 +4,11 @@ All notable changes to gale-recipes are documented here.
 
 ## Unreleased
 
+### Changed
+- `just lint` no longer runs `gale lint` on leftover
+  source recipes. Recipe lint is gone. The local gate
+  is `scripts/lint_index.sh` plus actionlint.
+
 ### Added
 - Darwin/arm64 catalog entry for `go` 1.26.1
   (official `go.dev/dl` GOROOT). Artifact tables
