@@ -1,0 +1,20 @@
+[package]
+name = "ripgrep"
+description = "Search tool like grep and The Silver Searcher"
+license = "Unlicense"
+homepage = "https://github.com/BurntSushi/ripgrep"
+repo = "BurntSushi/ripgrep"
+latest = "15.2.0"
+
+[versions."15.2.0".artifacts."darwin/arm64"]
+url = "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-aarch64-apple-darwin.tar.gz"
+format = "tar.gz"
+sha256 = "3750b2e93f37e0c692657da574d7019a101c0084da05a790c83fd335bad973e4"
+tree_digest = "sha256:0cb4149ae4af98e57f9f9b9656c189ad452bfe0d5005e73037ac8316c17b3bd2"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."15.2.0".artifacts."darwin/arm64".files]]
+src = "rg"
+dest = "bin/rg"
+mode = 0o755
