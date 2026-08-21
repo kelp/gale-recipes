@@ -5,9 +5,9 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
-- Darwin admit inputs for `gh` 2.98.0 and
-  `direnv` 2.37.1. Catalog TOML waits on macos-26
-  `gale admit` fragments.
+- Darwin/arm64 catalog entries for `gh` 2.98.0
+  and `direnv` 2.37.1. Artifact tables are
+  `gale admit` stdout from macos-26.
 - Darwin/arm64 catalog entries for `jq` 1.8.2,
   `ripgrep` 15.2.0, `fd` 10.4.2, and `just` 1.58.0.
   Artifact tables are `gale admit` stdout from

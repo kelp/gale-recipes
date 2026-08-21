@@ -18,6 +18,7 @@ import index_layout
 SCRIPT = Path(__file__).resolve().parent / "lint_index.sh"
 REPO = Path(__file__).resolve().parent.parent
 REQUIRED_FIRST_FOUR = ("fd", "jq", "just", "ripgrep")
+REQUIRED_GH_DIRENV = ("direnv", "gh")
 
 
 class IndexLayoutTests(unittest.TestCase):
@@ -113,6 +114,20 @@ class RequiredIndexNamesTests(unittest.TestCase):
 
     def test_first_four_layout(self) -> None:
         for name in REQUIRED_FIRST_FOUR:
+            path = REPO / "index" / name[0] / f"{name}.toml"
+            self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
+            self.assertTrue(
+                index_layout.layout_ok(path, REPO),
+                f"{path.relative_to(REPO)}: bad index path",
+            )
+
+    def test_gh_direnv_exist(self) -> None:
+        names = {p.stem for p in index_layout.list_index_files(REPO)}
+        missing = [n for n in REQUIRED_GH_DIRENV if n not in names]
+        self.assertEqual(missing, [], f"missing index documents: {missing}")
+
+    def test_gh_direnv_layout(self) -> None:
+        for name in REQUIRED_GH_DIRENV:
             path = REPO / "index" / name[0] / f"{name}.toml"
             self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
             self.assertTrue(

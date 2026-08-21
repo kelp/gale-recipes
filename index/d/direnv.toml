@@ -1,0 +1,20 @@
+[package]
+name = "direnv"
+description = "Per-directory environment variables"
+license = "MIT"
+homepage = "https://direnv.net"
+repo = "direnv/direnv"
+latest = "2.37.1"
+
+[versions."2.37.1".artifacts."darwin/arm64"]
+url = "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-arm64"
+format = "binary"
+sha256 = "4f569f3a36732bfd8b8fea7bfcc6ad87a59745c109022164d0ca4832451d5369"
+tree_digest = "sha256:166fc59a23a832baa651e32e7fea47d390b33f623a916d7d3633e50f7d84a0f3"
+hash_source = "computed"
+strip = 0
+
+[[versions."2.37.1".artifacts."darwin/arm64".files]]
+src = "direnv.darwin-arm64"
+dest = "bin/direnv"
+mode = 0o755
