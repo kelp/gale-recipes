@@ -15,7 +15,7 @@ class AdmitManifestTests(unittest.TestCase):
             names,
             [
                 "jq", "ripgrep", "fd", "just", "gh", "direnv",
-                "gofumpt", "golangci-lint",
+                "gofumpt", "golangci-lint", "uv",
             ],
         )
 
@@ -70,6 +70,17 @@ class AdmitManifestTests(unittest.TestCase):
         self.assertIn("computed", argv)
         self.assertNotIn("--sha256", argv)
         self.assertIn("gofumpt_v0.11.0_darwin_arm64:bin/gofumpt:755", argv)
+
+    def test_uv_ships_uv_and_uvx(self) -> None:
+        uv = am.by_name("uv")
+        argv = am.admit_argv(uv, "/tmp/uv.tgz")
+        self.assertIn("tar.gz", argv)
+        self.assertIn("--strip", argv)
+        self.assertIn("1", argv)
+        self.assertIn("uv:bin/uv:755", argv)
+        self.assertIn("uvx:bin/uvx:755", argv)
+        self.assertIn("upstream-sha256sums", argv)
+        self.assertIn(uv.sha256, argv)
 
     def test_golangci_lint_tarball(self) -> None:
         g = am.by_name("golangci-lint")
