@@ -138,6 +138,20 @@ PACKAGES: tuple[Package, ...] = (
         sha256="0c9818baf6fb8ad26c6d2ef51b68d5a1e260ef07727036b1431647cc44637c7c",
         files=("golangci-lint:bin/golangci-lint:755",),
     ),
+    Package(
+        name="uv",
+        version="0.12.5",
+        description="Extremely fast Python package installer and resolver, written in Rust",
+        license="Apache-2.0",
+        homepage="https://docs.astral.sh/uv/",
+        repo="astral-sh/uv",
+        url="https://github.com/astral-sh/uv/releases/download/0.12.5/uv-aarch64-apple-darwin.tar.gz",
+        format="tar.gz",
+        strip=1,
+        hash_source="upstream-sha256sums",
+        sha256="5bb0e5fe008a773c3dbcb97ff79cd89e1241464fe9d2f986d52ad8f1b037bd62",
+        files=("uv:bin/uv:755", "uvx:bin/uvx:755"),
+    ),
 )
 
 

@@ -1,0 +1,25 @@
+[package]
+name = "uv"
+description = "Extremely fast Python package installer and resolver, written in Rust"
+license = "Apache-2.0"
+homepage = "https://docs.astral.sh/uv/"
+repo = "astral-sh/uv"
+latest = "0.12.5"
+
+[versions."0.12.5".artifacts."darwin/arm64"]
+url = "https://github.com/astral-sh/uv/releases/download/0.12.5/uv-aarch64-apple-darwin.tar.gz"
+format = "tar.gz"
+sha256 = "5bb0e5fe008a773c3dbcb97ff79cd89e1241464fe9d2f986d52ad8f1b037bd62"
+tree_digest = "sha256:be69f4ade899f0a296f322f5b64cb0d1cc638614c9a3a5bb3bd593a1766dabed"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."0.12.5".artifacts."darwin/arm64".files]]
+src = "uv"
+dest = "bin/uv"
+mode = 0o755
+
+[[versions."0.12.5".artifacts."darwin/arm64".files]]
+src = "uvx"
+dest = "bin/uvx"
+mode = 0o755
