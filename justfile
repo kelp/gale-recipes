@@ -1,4 +1,4 @@
-# Lint recipes and workflows
+# Lint index documents and workflows
 lint:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -8,7 +8,8 @@ lint:
         exit 1
       }
     done
-    gale lint recipes/**/*.toml
+    # Recipe lint is gone with Delete the long tail.
+    # Leftover source recipes stay until Milestone 5.
     # Index lint needs gale from main at/after the
     # index-document dispatch. A stale bootstrap binary
     # failing here is an environment condition: run

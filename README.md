@@ -108,7 +108,7 @@ Dev tools are managed by gale itself:
 
 ```sh
 gale sync --recipes recipes  # install from local recipes
-just lint            # gale lint + actionlint
+just lint            # index lint + actionlint
 just update-gale     # rebuild gale from source
 ```
 
