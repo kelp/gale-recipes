@@ -54,3 +54,14 @@ jobs:
           GALE: /tmp/gale-index-lint
           INDEX_BASE: origin/main
         run: bash scripts/lint_index.sh .
+
+  # Protect-main (ruleset 17473700) still requires this
+  # context. The farm ledger checker is gone. This job
+  # only posts the required name. Drop ledger-check from
+  # the ruleset, require test + index-lint, then delete
+  # this job.
+  ledger-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Farm ledger-check is retired
+        run: echo "ledger-check is retired; test and index-lint are the gates"

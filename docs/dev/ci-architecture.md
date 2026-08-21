@@ -17,8 +17,10 @@ docs-only PRs.
 - `index-lint` — build a pinned gale and run
   `scripts/lint_index.sh`
 
-Protect-main should require `test` and `index-lint`
-in place of the retired `ledger-check`.
+Protect-main still requires the `ledger-check`
+context (ruleset 17473700). `test.yml` posts that
+name as a retired shim. After the ruleset requires
+`test` and `index-lint` instead, delete the shim.
 
 ### `admit-darwin.yml` — Admit Darwin
 
