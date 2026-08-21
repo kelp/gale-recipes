@@ -58,5 +58,9 @@ gh, go, gofumpt, golangci-lint, direnv, uv.
 directory-map change. Do not extend PlaceMapped
 in the lint-gate PR.
 
-A macOS admit workflow lands with the first
-catalog PR, not as an empty stub here.
+`scripts/admit_manifest.py` holds the first four
+(`jq`, `ripgrep`, `fd`, `just`) Darwin/arm64
+inputs. `.github/workflows/admit-darwin.yml` runs
+`scripts/admit_darwin.py` on `macos-26` and uploads
+fragments. Commit the fragments only after `gale
+admit` printed them.
