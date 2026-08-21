@@ -8,12 +8,6 @@ lint:
         exit 1
       }
     done
-    # Recipe lint is gone with Delete the long tail.
-    # Leftover source recipes stay until Milestone 5.
-    # Index lint needs gale from main at/after the
-    # index-document dispatch. A stale bootstrap binary
-    # failing here is an environment condition: run
-    # `just update-gale`. Zero files is a no-op.
     scripts/lint_index.sh .
     actionlint
 
@@ -28,43 +22,17 @@ agent-bootstrap:
 agent-status:
     @cat ~/.cache/gale-agent-bootstrap/status-recipes 2>/dev/null || echo "agent bootstrap has not run — try 'just agent-bootstrap'"
 
-# Check a built/installed package: scan Mach-O/ELF files
-# and verify every gale store path referenced is declared
-# as a runtime dep. Pass either --prefix or --archive.
-# Example:
-#   just check-install recipes/g/git.toml \
-#     --prefix ~/.gale/pkg/git/2.53.0
-check-install recipe *ARGS:
-    python3 scripts/check_install.py --recipe {{recipe}} {{ARGS}}
-
-# Run a recipe's [smoke] commands against the installed
-# package. Install the recipe first via gale install.
-# Example: just smoke recipes/g/git.toml
-smoke recipe *ARGS:
-    python3 scripts/run_smoke.py --recipe {{recipe}} {{ARGS}}
-
-# Generate the static build-status dashboard into _site/.
-gen-pages:
-    python3 scripts/gen_status_page.py --repo-root . --out-dir _site
-
 # Run unit tests for scripts/ (stdlib unittest).
 test:
     python3 -m unittest discover -s scripts -p 'test_*.py' -v
 
-# Serve the generated dashboard at http://localhost:8000/.
-# Run `just gen-pages` first.
-serve-pages:
-    python3 -m http.server -d _site 8000
-
-# Update gale from source (sibling repo).
-# Falls back to building from source if gale isn't
-# installed or is too old to have the update command.
+# Update gale from the sibling checkout into ~/.local/bin.
 update-gale:
-    #!/usr/bin/env sh
-    if command -v gale >/dev/null 2>&1 && gale update gale --path ../gale; then
-        exit 0
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d ../gale/cmd/gale ]; then
+      echo "update-gale: sibling ../gale checkout is missing" >&2
+      exit 1
     fi
-    echo "Bootstrapping gale from source..."
-    cd ../gale && go build -o /tmp/gale-bootstrap ./cmd/gale/
-    /tmp/gale-bootstrap install gale --path ../gale
-    rm -f /tmp/gale-bootstrap
+    mkdir -p "$HOME/.local/bin"
+    (cd ../gale && go build -o "$HOME/.local/bin/gale" ./cmd/gale/)
