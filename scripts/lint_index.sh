@@ -7,7 +7,9 @@
 # gale failing here is an environment condition, not a
 # catalog defect: rebuild with just update-gale.
 #
-# Zero index files: exit 0. Do not call gale with no args.
+# Zero index files on HEAD and no catalog on INDEX_BASE:
+# exit 0. Do not call gale with no args. A wipe of every
+# catalog file is still a deletion and is refused.
 #
 # INDEX_BASE, when set to a git ref that has index files,
 # runs `gale lint --base` on modifications and refuses
@@ -30,18 +32,19 @@ if issues:
 ' "$root"
 
 mapfile -t files < <(find index -type f -name '*.toml' 2>/dev/null | sort || true)
-if [ "${#files[@]}" -eq 0 ]; then
-  echo "no index files"
-  exit 0
-fi
 
 gale=${GALE:-gale}
-command -v "$gale" >/dev/null || {
-  echo "$gale not found — build gale from main (index lint) or set GALE" >&2
-  exit 1
+need_gale() {
+  command -v "$gale" >/dev/null || {
+    echo "$gale not found — build gale from main (index lint) or set GALE" >&2
+    exit 1
+  }
 }
 
-"$gale" lint "${files[@]}"
+if [ "${#files[@]}" -gt 0 ]; then
+  need_gale
+  "$gale" lint "${files[@]}"
+fi
 
 base=${INDEX_BASE:-}
 if [ -z "$base" ]; then
@@ -49,18 +52,22 @@ if [ -z "$base" ]; then
     base=origin/main
   fi
 fi
-if [ -z "$base" ]; then
-  exit 0
+
+if [ -n "$base" ]; then
+  while IFS= read -r old; do
+    [ -z "$old" ] && continue
+    if [ ! -f "$old" ]; then
+      echo "index file was removed: $old" >&2
+      exit 1
+    fi
+    need_gale
+    tmp=$(mktemp)
+    git show "$base:$old" >"$tmp"
+    "$gale" lint --base "$tmp" "$old"
+    rm -f "$tmp"
+  done < <(git ls-tree -r --name-only "$base" -- index 2>/dev/null | grep '\.toml$' || true)
 fi
 
-while IFS= read -r old; do
-  [ -z "$old" ] && continue
-  if [ ! -f "$old" ]; then
-    echo "index file was removed: $old" >&2
-    exit 1
-  fi
-  tmp=$(mktemp)
-  git show "$base:$old" >"$tmp"
-  "$gale" lint --base "$tmp" "$old"
-  rm -f "$tmp"
-done < <(git ls-tree -r --name-only "$base" -- index 2>/dev/null | grep '\.toml$' || true)
+if [ "${#files[@]}" -eq 0 ]; then
+  echo "no index files"
+fi

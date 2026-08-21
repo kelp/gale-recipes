@@ -43,7 +43,7 @@ jobs:
         run: bash scripts/test_verify_upstream_attestation.sh
 
   # Pin must be a gale commit that lints index documents
-  # (kelp/gale#293 / a0dba6c). Do not use the released
+  # (kelp/gale#293 / ecbdcf9). Do not use the released
   # binary from recipes/g/gale.toml until that release
   # includes the dispatch.
   index-lint:
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: kelp/gale
-          ref: a0dba6c0c8975e2742fa6000b3c878cab05bb3f2
+          ref: ecbdcf9e0dd7151bb4903d091bb0342553767cd8
           path: gale-src
 
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c  # v6.4.0
