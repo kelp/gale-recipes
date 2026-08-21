@@ -1,4 +1,4 @@
-# Admitting the first ten
+# Admitting Darwin/arm64 catalog entries
 
 Index artifacts come from `gale admit` only. Do not
 invent `tree_digest`. Do not set `attestation`.
@@ -58,9 +58,12 @@ gh, go, gofumpt, golangci-lint, direnv, uv.
 directory-map change. Do not extend PlaceMapped
 in the lint-gate PR.
 
-`scripts/admit_manifest.py` holds the first four
-(`jq`, `ripgrep`, `fd`, `just`) Darwin/arm64
-inputs. `.github/workflows/admit-darwin.yml` runs
-`scripts/admit_darwin.py` on `macos-26` and uploads
-fragments. Commit the fragments only after `gale
-admit` printed them.
+`scripts/admit_manifest.py` is the Darwin/arm64
+admit list. `.github/workflows/admit-darwin.yml`
+runs `scripts/admit_darwin.py` on `macos-26` and
+uploads fragments plus `{name}.failed.txt`.
+Names already on `origin/main` are skipped. A
+failed admit is omitted, not patched. Commit a
+fragment only after `gale admit` printed it. Drop
+omitted names from `PACKAGES` in the same commit
+as the surviving index files.

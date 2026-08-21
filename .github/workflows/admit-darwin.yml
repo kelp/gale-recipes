@@ -1,8 +1,9 @@
 name: Admit Darwin
 
-# Runs gale admit on macos-26 for the first-ten catalog.
-# Uploads fragments; does not commit. tree_digest comes
-# from admit stdout only.
+# Runs gale admit on macos-26 for PACKAGES not already
+# indexed on origin/main. Uploads fragments and failed
+# notes; does not commit. tree_digest comes from admit
+# stdout only.
 
 on:
   pull_request:
@@ -22,6 +23,11 @@ jobs:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Fetch origin/main
+        run: git fetch --no-tags origin main
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
@@ -40,9 +46,14 @@ jobs:
       - name: Admit darwin/arm64
         env:
           GALE: /tmp/gale-admit
+          INDEX_BASE: origin/main
         run: python3 scripts/admit_darwin.py --out fragments
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: always()
         with:
           name: admit-darwin-arm64
-          path: fragments/*.fragment.toml
+          path: |
+            fragments/*.fragment.toml
+            fragments/*.failed.txt
+          if-no-files-found: ignore

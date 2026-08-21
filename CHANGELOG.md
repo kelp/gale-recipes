@@ -5,6 +5,10 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Changed
+- Darwin admit skips names already on `origin/main`
+  and continues after a failed `gale admit`, so a
+  growth wave can land survivors. Fragments still
+  come from macos-26 admit stdout only.
 - `just lint` no longer runs `gale lint` on leftover
   source recipes. Recipe lint is gone. The local gate
   is `scripts/lint_index.sh` plus actionlint.
