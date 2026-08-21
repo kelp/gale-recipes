@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: kelp/gale
-          ref: 8d661ca376696bc7c5214906127b4a408b6e862a
+          ref: ecbdcf9e0dd7151bb4903d091bb0342553767cd8
           path: gale-src
 
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c  # v6.4.0
@@ -42,7 +42,7 @@ jobs:
           GALE: /tmp/gale-admit
         run: python3 scripts/admit_darwin.py --out fragments
 
-      - uses: actions/upload-artifact@ea9f4cc7ade83bcc0ba7c5742e6e1707b47413a8  # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: admit-darwin-arm64
           path: fragments/*.fragment.toml

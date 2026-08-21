@@ -5,6 +5,11 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- Darwin admit workflow for the first four catalog
+  packages (`jq`, `ripgrep`, `fd`, `just`). It runs
+  `gale admit` on `macos-26` and uploads fragments.
+  No `index/` entries are committed until those
+  fragments exist.
 - Index lint gate for the future fetch catalog
   under `index/`. Layout is `index/<letter>/<name>.toml`.
   `scripts/lint_index.sh` no-ops when both HEAD and
