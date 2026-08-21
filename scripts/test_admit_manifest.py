@@ -9,9 +9,12 @@ import admit_manifest as am
 
 
 class AdmitManifestTests(unittest.TestCase):
-    def test_four_phase1_packages(self) -> None:
+    def test_phase1_packages(self) -> None:
         names = [p.name for p in am.PACKAGES]
-        self.assertEqual(names, ["jq", "ripgrep", "fd", "just"])
+        self.assertEqual(
+            names,
+            ["jq", "ripgrep", "fd", "just", "gh", "direnv"],
+        )
 
     def test_jq_binary_uses_url_basename(self) -> None:
         jq = am.by_name("jq")
@@ -46,6 +49,24 @@ class AdmitManifestTests(unittest.TestCase):
         self.assertIn("0", argv)
         self.assertIn("just:bin/just:755", argv)
         self.assertIn("upstream-sha256sums", argv)
+
+    def test_gh_zip_strips_prefix(self) -> None:
+        gh = am.by_name("gh")
+        argv = am.admit_argv(gh, "/tmp/gh.zip")
+        self.assertIn("zip", argv)
+        self.assertIn("--strip", argv)
+        self.assertIn("1", argv)
+        self.assertIn("bin/gh:bin/gh:755", argv)
+        self.assertIn("upstream-sha256sums", argv)
+        self.assertIn(gh.sha256, argv)
+
+    def test_direnv_binary_computed(self) -> None:
+        d = am.by_name("direnv")
+        argv = am.admit_argv(d, "/tmp/direnv.darwin-arm64")
+        self.assertIn("binary", argv)
+        self.assertIn("computed", argv)
+        self.assertNotIn("--sha256", argv)
+        self.assertIn("direnv.darwin-arm64:bin/direnv:755", argv)
 
     def test_all_darwin_arm64(self) -> None:
         for p in am.PACKAGES:
