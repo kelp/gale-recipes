@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Layout tests for index/{letter}/{name}.toml.
+
+Does not invoke gale. Schema lint is just lint and the
+pinned-gale CI job.
+"""
+
+from __future__ import annotations
+
+import subprocess
+import tempfile
+import unittest
+from pathlib import Path
+
+import index_layout
+
+SCRIPT = Path(__file__).resolve().parent / "lint_index.sh"
+
+
+class IndexLayoutTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+
+    def touch(self, rel: str) -> Path:
+        path = self.root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("")
+        return path
+
+    def test_missing_index_dir_is_empty(self) -> None:
+        self.assertEqual(index_layout.list_index_files(self.root), [])
+
+    def test_good_path(self) -> None:
+        self.touch("index/j/just.toml")
+        files = index_layout.list_index_files(self.root)
+        self.assertEqual(len(files), 1)
+        self.assertTrue(index_layout.layout_ok(files[0], self.root))
+
+    def test_two_files_share_letter_bucket(self) -> None:
+        self.touch("index/j/jq.toml")
+        self.touch("index/j/just.toml")
+        files = index_layout.list_index_files(self.root)
+        self.assertEqual(len(files), 2)
+        for f in files:
+            self.assertTrue(index_layout.layout_ok(f, self.root))
+
+    def test_letter_mismatch(self) -> None:
+        path = self.touch("index/x/just.toml")
+        self.assertFalse(index_layout.layout_ok(path, self.root))
+
+    def test_uppercase_bucket(self) -> None:
+        path = self.touch("index/J/just.toml")
+        self.assertFalse(index_layout.layout_ok(path, self.root))
+
+    def test_file_in_index_root(self) -> None:
+        path = self.touch("index/just.toml")
+        self.assertFalse(index_layout.layout_ok(path, self.root))
+
+    def test_issues_lists_bad_paths(self) -> None:
+        self.touch("index/x/just.toml")
+        issues = index_layout.issues(self.root)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("index/x/just.toml", issues[0])
+
+    def test_lint_script_empty_tree(self) -> None:
+        got = subprocess.run(
+            [str(SCRIPT), str(self.root)],
+            check=False, capture_output=True, text=True,
+        )
+        self.assertEqual(got.returncode, 0, got.stderr)
+        self.assertIn("no index files", got.stdout)
+
+
+if __name__ == "__main__":
+    unittest.main()
