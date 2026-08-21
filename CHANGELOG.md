@@ -5,6 +5,9 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- Darwin/arm64 catalog entry for `go` 1.26.1
+  (official `go.dev/dl` GOROOT). Artifact tables
+  are `gale admit` stdout from macos-26.
 - Darwin/arm64 catalog entry for `uv` 0.12.5
   (`uv` and `uvx`). Artifact tables are
   `gale admit` stdout from macos-26.

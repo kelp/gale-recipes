@@ -1,0 +1,95 @@
+[package]
+name = "go"
+description = "The Go programming language"
+license = "BSD-3-Clause"
+homepage = "https://go.dev"
+repo = "golang/go"
+latest = "1.26.1"
+
+[versions."1.26.1".artifacts."darwin/arm64"]
+url = "https://go.dev/dl/go1.26.1.darwin-arm64.tar.gz"
+format = "tar.gz"
+sha256 = "353df43a7811ce284c8938b5f3c7df40b7bfb6f56cb165b150bc40b5e2dd541f"
+tree_digest = "sha256:30e3aa6ad9ae6c61e3dd0e77be513b9818a2dbe0be3060ea9883a00659348fe1"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "bin"
+dest = "bin"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "src"
+dest = "src"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "pkg"
+dest = "pkg"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "lib"
+dest = "lib"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "api"
+dest = "api"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "doc"
+dest = "doc"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "misc"
+dest = "misc"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "test"
+dest = "test"
+mode = 0o755
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "VERSION"
+dest = "VERSION"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "LICENSE"
+dest = "LICENSE"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "PATENTS"
+dest = "PATENTS"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "README.md"
+dest = "README.md"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "CONTRIBUTING.md"
+dest = "CONTRIBUTING.md"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "SECURITY.md"
+dest = "SECURITY.md"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "go.env"
+dest = "go.env"
+mode = 0o644
+
+[[versions."1.26.1".artifacts."darwin/arm64".files]]
+src = "codereview.cfg"
+dest = "codereview.cfg"
+mode = 0o644

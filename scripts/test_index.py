@@ -21,6 +21,7 @@ REQUIRED_FIRST_FOUR = ("fd", "jq", "just", "ripgrep")
 REQUIRED_GH_DIRENV = ("direnv", "gh")
 REQUIRED_GOFUMPT_GOLANGCI = ("gofumpt", "golangci-lint")
 REQUIRED_UV = ("uv",)
+REQUIRED_GO = ("go",)
 
 
 class IndexLayoutTests(unittest.TestCase):
@@ -158,6 +159,20 @@ class RequiredIndexNamesTests(unittest.TestCase):
 
     def test_uv_layout(self) -> None:
         for name in REQUIRED_UV:
+            path = REPO / "index" / name[0] / f"{name}.toml"
+            self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
+            self.assertTrue(
+                index_layout.layout_ok(path, REPO),
+                f"{path.relative_to(REPO)}: bad index path",
+            )
+
+    def test_go_exist(self) -> None:
+        names = {p.stem for p in index_layout.list_index_files(REPO)}
+        missing = [n for n in REQUIRED_GO if n not in names]
+        self.assertEqual(missing, [], f"missing index documents: {missing}")
+
+    def test_go_layout(self) -> None:
+        for name in REQUIRED_GO:
             path = REPO / "index" / name[0] / f"{name}.toml"
             self.assertTrue(path.is_file(), f"missing {path.relative_to(REPO)}")
             self.assertTrue(
