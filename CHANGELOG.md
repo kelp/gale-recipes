@@ -5,6 +5,9 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- Darwin/arm64 catalog entries for `gofumpt`
+  0.11.0 and `golangci-lint` 2.13.1. Artifact
+  tables are `gale admit` stdout from macos-26.
 - Darwin/arm64 catalog entries for `gh` 2.98.0
   and `direnv` 2.37.1. Artifact tables are
   `gale admit` stdout from macos-26.
