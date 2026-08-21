@@ -5,6 +5,10 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- Darwin/arm64 catalog entries for `jq` 1.8.2,
+  `ripgrep` 15.2.0, `fd` 10.4.2, and `just` 1.58.0.
+  Artifact tables are `gale admit` stdout from
+  macos-26; `tree_digest` was not invented.
 - Index lint gate for the future fetch catalog
   under `index/`. Layout is `index/<letter>/<name>.toml`.
   `scripts/lint_index.sh` no-ops when both HEAD and

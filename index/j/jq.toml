@@ -1,0 +1,20 @@
+[package]
+name = "jq"
+description = "Lightweight and flexible command-line JSON processor"
+license = "MIT"
+homepage = "https://jqlang.github.io/jq"
+repo = "jqlang/jq"
+latest = "1.8.2"
+
+[versions."1.8.2".artifacts."darwin/arm64"]
+url = "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-macos-arm64"
+format = "binary"
+sha256 = "2d75340ba57a4b4b4c8708a21c2dc8e958a48aaa8bba13b27f77f6e4c0eca07e"
+tree_digest = "sha256:b06590027b1128557f65d60fb422dc80c2a7be73c9fafa34b68010984b6fb0cd"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."1.8.2".artifacts."darwin/arm64".files]]
+src = "jq-macos-arm64"
+dest = "bin/jq"
+mode = 0o755

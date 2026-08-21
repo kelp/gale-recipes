@@ -1,0 +1,20 @@
+[package]
+name = "just"
+description = "Handy way to save and run project-specific commands"
+license = "CC0-1.0"
+homepage = "https://github.com/casey/just"
+repo = "casey/just"
+latest = "1.58.0"
+
+[versions."1.58.0".artifacts."darwin/arm64"]
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-apple-darwin.tar.gz"
+format = "tar.gz"
+sha256 = "50ae3e996c974a0bf32ea7d10f495070df33f1b43e0616b2769e3d4821ed8f48"
+tree_digest = "sha256:65e26ab18664bbd4354cc595fc14337d63aad08ebfecf29a587fb82f02e17226"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."1.58.0".artifacts."darwin/arm64".files]]
+src = "just"
+dest = "bin/just"
+mode = 0o755
