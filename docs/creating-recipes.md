@@ -25,6 +25,10 @@ recipes/
   j/jq.toml
 ```
 
+Fetch-catalog entries (when they exist) live under
+`index/<letter>/<name>.toml` and are produced by
+`gale admit`, not by copying a recipe.
+
 ## Recipe Structure
 
 Every recipe needs three sections: `[package]`,

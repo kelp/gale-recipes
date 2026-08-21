@@ -9,6 +9,11 @@ lint:
       }
     done
     gale lint recipes/**/*.toml
+    # Index lint needs gale from main at/after the
+    # index-document dispatch. A stale bootstrap binary
+    # failing here is an environment condition: run
+    # `just update-gale`. Zero files is a no-op.
+    scripts/lint_index.sh .
     actionlint
 
 # Install the agent-sandbox toolchain (gale, just, actionlint).

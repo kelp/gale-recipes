@@ -5,6 +5,12 @@ All notable changes to gale-recipes are documented here.
 ## Unreleased
 
 ### Added
+- Index lint gate for the future fetch catalog
+  under `index/`. Layout is `index/<letter>/<name>.toml`.
+  `scripts/lint_index.sh` no-ops when both HEAD and
+  INDEX_BASE have no catalog files, refuses a wipe of
+  every index file, and uses a pinned gale to run
+  `gale lint` once files exist. No catalog entries yet.
 - dtc recipe (v1.7.2) — Device Tree Compiler and
   libfdt, builds via plain `make` with the
   Python/YAML/Valgrind hooks disabled.
