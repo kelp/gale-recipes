@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SessionStart hook: install the recipe toolchain this container lacks.
+# SessionStart hook: install the index-lint toolchain this container lacks.
 #
 # Async so the session starts immediately. scripts/agent-bootstrap.sh takes an
 # flock, so re-running it blocks until the background run finishes — that, not

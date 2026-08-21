@@ -4,7 +4,24 @@ All notable changes to gale-recipes are documented here.
 
 ## Unreleased
 
+### Removed
+- Farm CI: `promote.yml`, `build.yml`, `build-chunk.yml`,
+  `verify.yml`, `ledger-check.yml`, `reproducibility.yml`,
+  `auto-update.yml`, `drift-check.yml`, and `pages.yml`.
+- All leftover `recipes/**` source TOML and
+  `.binaries.toml` ledgers. The catalog is `index/`.
+- Farm Python, authorship skills, and the farm-era
+  `gale.toml` / `.envrc` project profile.
+
 ### Changed
+- This repo is the fetch index. `just lint` and
+  `just test` are the local gates. `test.yml` posts a
+  retired `ledger-check` status so Protect-main can
+  merge until the ruleset requires `test` and
+  `index-lint` instead. Leftover `gale info` / `gale outdated`
+  against this `main` 404 — they still fetch
+  `recipes/<letter>/<name>.toml`. Install / sync /
+  update / lock read `index/`.
 - Darwin admit skips names already on `origin/main`
   and continues after a failed `gale admit`, so a
   growth wave can land survivors. Fragments still
