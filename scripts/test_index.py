@@ -7,6 +7,7 @@ pinned-gale CI job.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import tempfile
 import unittest
@@ -71,6 +72,35 @@ class IndexLayoutTests(unittest.TestCase):
         )
         self.assertEqual(got.returncode, 0, got.stderr)
         self.assertIn("no index files", got.stdout)
+
+    def git(self, *args: str) -> None:
+        subprocess.run(
+            ["git", *args],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+    def test_lint_script_refuses_wiping_the_catalog(self) -> None:
+        self.git("init")
+        self.git("config", "user.email", "test@example.com")
+        self.git("config", "user.name", "test")
+        path = self.touch("index/j/just.toml")
+        path.write_text("placeholder\n")
+        self.git("add", "index/j/just.toml")
+        self.git("commit", "-m", "index just")
+        path.unlink()
+        env = {**os.environ, "INDEX_BASE": "HEAD"}
+        got = subprocess.run(
+            [str(SCRIPT), str(self.root)],
+            check=False,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        self.assertNotEqual(got.returncode, 0, got.stdout)
+        self.assertIn("index file was removed", got.stderr)
 
 
 if __name__ == "__main__":
