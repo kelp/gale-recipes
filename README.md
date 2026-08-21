@@ -26,8 +26,8 @@ index/
 The fetch catalog under `index/` is letter-bucketed like
 recipes. Each file is an index document: `gale admit`
 prints the artifact tables; do not invent `tree_digest`.
-`gale lint` validates those files. There is no catalog
-yet; first entries are Darwin-only.
+`gale lint` validates those files. First entries are
+Darwin/arm64 (`jq`, `ripgrep`, `fd`, `just`).
 
 `.versions` sidecars were a compat index for gale v0.16.5.
 The format is retired and every file has been deleted; the
