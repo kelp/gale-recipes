@@ -1,0 +1,20 @@
+[package]
+name = "gofumpt"
+description = "Stricter gofmt"
+license = "BSD-3-Clause"
+homepage = "https://github.com/mvdan/gofumpt"
+repo = "mvdan/gofumpt"
+latest = "0.11.0"
+
+[versions."0.11.0".artifacts."darwin/arm64"]
+url = "https://github.com/mvdan/gofumpt/releases/download/v0.11.0/gofumpt_v0.11.0_darwin_arm64"
+format = "binary"
+sha256 = "18936628f195369a80a129c73ee33d23e39086286dab538781ba826effc7e10b"
+tree_digest = "sha256:e01d020a82f6d798e52637d8e141be0f0ba7b11a82c264b966a77a8e461a1db5"
+hash_source = "computed"
+strip = 0
+
+[[versions."0.11.0".artifacts."darwin/arm64".files]]
+src = "gofumpt_v0.11.0_darwin_arm64"
+dest = "bin/gofumpt"
+mode = 0o755
