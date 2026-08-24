@@ -7,7 +7,8 @@ bottles.
 Active product work lives in gale
 [`TODO.md`](https://github.com/kelp/gale/blob/main/TODO.md)
 Milestone 6. Do not ticket promote, ledger, verify-build,
-auto-update, or leftover `[build]` recipes here.
+farm `auto-update.yml`, or leftover `[build]` recipes
+here. Index version bumps are `index-update.yml`.
 
 ## Superseded (farm)
 

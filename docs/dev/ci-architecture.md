@@ -31,6 +31,15 @@ admit manifest that are not already on `origin/main`.
 Uploads fragments. Does not commit. `tree_digest`
 comes from admit stdout only.
 
+### `index-update.yml` — Index Update
+
+Daily (and `workflow_dispatch`). Finds GitHub
+releases newer than `package.latest`, waits three
+days after `published_at`, admits darwin/arm64, and
+opens one PR per package. Never pushes `main`.
+`tree_digest` comes from `gale admit`. This is not
+`auto-update.yml`.
+
 ## Retired farm CI
 
 `build.yml`, `build-chunk.yml`, `verify.yml`,

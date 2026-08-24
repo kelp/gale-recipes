@@ -43,6 +43,14 @@ gale lint index/<letter>/<name>.toml
 Do not write `[build] steps`. Fetch is the only
 installer.
 
+## Index updates
+
+`index-update.yml` watches GitHub releases. A version
+waits three days after `published_at`, then Darwin
+`gale admit` opens a PR. It never pushes `main`.
+`gale update` on a machine still only sees versions
+already in this index.
+
 ## Development
 
 ```sh
