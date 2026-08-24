@@ -18,3 +18,16 @@ strip = 1
 src = "rg"
 dest = "bin/rg"
 mode = 0o755
+
+[versions."15.2.0".artifacts."linux/amd64"]
+url = "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz"
+format = "tar.gz"
+sha256 = "33e15bcf1624b25cdd2a55813a47a2f95dbe126268203e76aa6a585d1e7b149c"
+tree_digest = "sha256:3caf9ae4dc51a82c6c8132599eb51278d98b913eb9d61bacc5c3694a26642864"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."15.2.0".artifacts."linux/amd64".files]]
+src = "rg"
+dest = "bin/rg"
+mode = 0o755

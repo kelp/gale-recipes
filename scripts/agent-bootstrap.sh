@@ -33,7 +33,7 @@ lock_file="$state_dir/lock-recipes"
 
 # Index-linting gale (post GHCR delete, kelp/gale#306).
 # Bump when the index-lint dispatch on gale main changes.
-GALE_FALLBACK_SHA="0b4c78d"
+GALE_FALLBACK_SHA="dbd2446"
 ACTIONLINT_VERSION="1.7.12"
 JUST_VERSION="1.48.0"
 

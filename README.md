@@ -24,7 +24,8 @@ Current Darwin/arm64 entries include the first ten
 (`jq`, `ripgrep`, `fd`, `just`, `gh`, `direnv`,
 `gofumpt`, `golangci-lint`, `uv`, `go`) and a later
 growth wave (`fzf`, `age`, `shfmt`, `actionlint`, `yq`,
-`shellcheck`, `starship`, `zoxide`).
+`shellcheck`, `starship`, `zoxide`). The first ten
+also have `linux/amd64`.
 
 Source-build recipes, `.binaries.toml` ledgers, and
 promote / verify-build CI are gone. Do not recreate

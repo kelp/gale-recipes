@@ -35,9 +35,11 @@ reference:
 ## Adding a package
 
 Run `gale admit` on Darwin/arm64 (see
-`.github/workflows/admit-darwin.yml`). Land the printed
-fragment under `index/<letter>/<name>.toml`. Do not
-invent `tree_digest`. `just lint` must pass.
+`.github/workflows/admit-darwin.yml`). Linux/amd64
+for the first ten is `scripts/admit_linux.py`.
+Land the printed fragment under
+`index/<letter>/<name>.toml`. Do not invent
+`tree_digest`. `just lint` must pass.
 
 Do not add leftover source recipes. The catalog is
 `index/` only.

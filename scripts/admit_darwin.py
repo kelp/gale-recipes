@@ -75,6 +75,8 @@ def admit_packages(
     work: Path,
     repo_root: Path,
     base_ref: str,
+    skip_indexed: bool = True,
+    write_header: bool = True,
     download: DownloadFn = _default_download,
     run_admit: RunAdmitFn = _default_run_admit,
 ) -> int:
@@ -83,7 +85,7 @@ def admit_packages(
     attempted = 0
     fragments = 0
     for pkg in packages:
-        if indexed_on_base(repo_root, pkg.name, base_ref):
+        if skip_indexed and indexed_on_base(repo_root, pkg.name, base_ref):
             print(f"skip {pkg.name}: indexed on {base_ref}", file=sys.stderr)
             continue
         attempted += 1
@@ -111,9 +113,8 @@ def admit_packages(
             (out / f"{pkg.name}.failed.txt").write_text(err)
             sys.stderr.write(proc.stderr)
             continue
-        (out / f"{pkg.name}.fragment.toml").write_text(
-            am.header(pkg) + "\n" + proc.stdout,
-        )
+        body = (am.header(pkg) + "\n" + proc.stdout) if write_header else proc.stdout
+        (out / f"{pkg.name}.fragment.toml").write_text(body)
         fragments += 1
     if attempted == 0:
         return 0

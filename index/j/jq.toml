@@ -18,3 +18,16 @@ strip = 0
 src = "jq-macos-arm64"
 dest = "bin/jq"
 mode = 0o755
+
+[versions."1.8.2".artifacts."linux/amd64"]
+url = "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64"
+format = "binary"
+sha256 = "b1c22172dd303f3be49e935aa56aa48a8b7a46e0bc838b4997d3bb451495870f"
+tree_digest = "sha256:30d17d673ad973ddf99168a57f63e1d29be439f59e72f5ece6b08cd0c778323e"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."1.8.2".artifacts."linux/amd64".files]]
+src = "jq-linux-amd64"
+dest = "bin/jq"
+mode = 0o755

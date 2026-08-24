@@ -199,5 +199,30 @@ class RequiredIndexNamesTests(unittest.TestCase):
             )
 
 
+class LinuxAmd64Tests(unittest.TestCase):
+    """The ten first. linux/amd64 on each latest block."""
+
+    FIRST_TEN = (
+        "jq", "ripgrep", "fd", "just", "gh",
+        "go", "gofumpt", "golangci-lint", "direnv", "uv",
+    )
+
+    def test_first_ten_have_linux_amd64(self) -> None:
+        import tomllib
+
+        missing = []
+        for name in self.FIRST_TEN:
+            path = REPO / "index" / name[0] / f"{name}.toml"
+            data = tomllib.loads(path.read_text())
+            latest = data["package"]["latest"]
+            arts = data["versions"][latest]["artifacts"]
+            if "linux/amd64" not in arts:
+                missing.append(name)
+            elif "darwin/arm64" not in arts:
+                missing.append(f"{name}: lost darwin/arm64")
+        self.assertEqual(missing, [], f"missing linux/amd64: {missing}")
+
+
 if __name__ == "__main__":
     unittest.main()
+

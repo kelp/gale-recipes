@@ -18,3 +18,16 @@ strip = 0
 src = "direnv.darwin-arm64"
 dest = "bin/direnv"
 mode = 0o755
+
+[versions."2.37.1".artifacts."linux/amd64"]
+url = "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-amd64"
+format = "binary"
+sha256 = "1f1b93dd6f38523fde26dfac96151ef9d31a374e3005cd3345fb93555ae0c9b5"
+tree_digest = "sha256:978bd8105d9ffe191c0e201a838f9e2b616101194b62bfdfbafbeb7ddf6c573b"
+hash_source = "computed"
+strip = 0
+
+[[versions."2.37.1".artifacts."linux/amd64".files]]
+src = "direnv.linux-amd64"
+dest = "bin/direnv"
+mode = 0o755

@@ -18,3 +18,16 @@ strip = 1
 src = "fd"
 dest = "bin/fd"
 mode = 0o755
+
+[versions."10.4.2".artifacts."linux/amd64"]
+url = "https://github.com/sharkdp/fd/releases/download/v10.4.2/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz"
+format = "tar.gz"
+sha256 = "e3257d48e29a6be965187dbd24ce9af564e0fe67b3e73c9bdcd180f4ec11bdde"
+tree_digest = "sha256:1c5d1c1edcdfc94a230d7a49ff7c0216dd4af72fe11e23397662fbb0c3e83890"
+hash_source = "computed"
+strip = 1
+
+[[versions."10.4.2".artifacts."linux/amd64".files]]
+src = "fd"
+dest = "bin/fd"
+mode = 0o755

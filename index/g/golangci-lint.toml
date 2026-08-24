@@ -18,3 +18,16 @@ strip = 1
 src = "golangci-lint"
 dest = "bin/golangci-lint"
 mode = 0o755
+
+[versions."2.13.1".artifacts."linux/amd64"]
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.13.1/golangci-lint-2.13.1-linux-amd64.tar.gz"
+format = "tar.gz"
+sha256 = "b17bfbc9d4aaa48be7f4f1ce3240bc3d8200c870c072bacf15c26219e2cfb9cc"
+tree_digest = "sha256:aa02c5d9f7359093e1c9f8e430b2822c18aecb2b0873d2c48897789b710ef0aa"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."2.13.1".artifacts."linux/amd64".files]]
+src = "golangci-lint"
+dest = "bin/golangci-lint"
+mode = 0o755

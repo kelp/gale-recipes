@@ -31,6 +31,12 @@ All notable changes to gale-recipes are documented here.
   is `scripts/lint_index.sh` plus actionlint.
 
 ### Added
+- linux/amd64 catalog entries for the first ten
+  (`jq`, `ripgrep`, `fd`, `just`, `gh`, `direnv`,
+  `gofumpt`, `golangci-lint`, `uv`, `go`). Same
+  versions as Darwin. `tree_digest` from
+  `gale admit`. Requires gale lint that allows
+  adding a platform (kelp/gale#334).
 - Darwin/arm64 catalog entries for `fzf` 0.74.3,
   `age` 1.3.1 (`age` and `age-keygen`), `shfmt`
   3.13.1, `actionlint` 1.7.12, `yq` 4.53.6,

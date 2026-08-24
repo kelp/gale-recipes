@@ -23,3 +23,21 @@ mode = 0o755
 src = "uvx"
 dest = "bin/uvx"
 mode = 0o755
+
+[versions."0.12.5".artifacts."linux/amd64"]
+url = "https://github.com/astral-sh/uv/releases/download/0.12.5/uv-x86_64-unknown-linux-musl.tar.gz"
+format = "tar.gz"
+sha256 = "a4742988791c9aeae68c78150d6cba762062ad2a47e53738c2779d2b596bfcdb"
+tree_digest = "sha256:a3020100b90f0d5f4117e7d02c80472b4575ff1e243586726d6632dc1bfe409a"
+hash_source = "upstream-sha256sums"
+strip = 1
+
+[[versions."0.12.5".artifacts."linux/amd64".files]]
+src = "uv"
+dest = "bin/uv"
+mode = 0o755
+
+[[versions."0.12.5".artifacts."linux/amd64".files]]
+src = "uvx"
+dest = "bin/uvx"
+mode = 0o755
