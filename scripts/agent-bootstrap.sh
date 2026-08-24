@@ -8,8 +8,9 @@
 # every script under scripts/ is stdlib-only Python (>= 3.11
 # for tomllib). See docs/dev/agent-environment.md.
 #
-# gale install / gale build cannot work here. `gale lint` is
-# offline and is the local gate for index documents.
+# gale install cannot work here. gale build is gone.
+# `gale lint` is offline and is the local gate for
+# index documents.
 #
 # Properties, matching ../gale/scripts/agent-bootstrap.sh:
 #

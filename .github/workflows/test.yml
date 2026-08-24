@@ -1,7 +1,7 @@
 name: Script Tests
 
 # Unit tests for repo tooling in scripts/ plus index lint.
-# Read-only: no secrets, no GHCR, no recipe builds.
+# Read-only: no secrets, no GHCR, no package installs.
 # No path filters: Protect-main may require these jobs on
 # every PR, including docs-only changes.
 

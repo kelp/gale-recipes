@@ -1,6 +1,8 @@
 # TODO
 
 The farm is gone. This repo is the fetch index.
+Gale does not compile packages and does not ship
+bottles.
 
 Active product work lives in gale
 [`TODO.md`](https://github.com/kelp/gale/blob/main/TODO.md)

@@ -1,9 +1,10 @@
 # CI Architecture
 
-gale-recipes is the fetch index. CI lints index
-documents and admits Darwin/arm64 artifacts. The
-first ten also have linux/amd64. It does not build
-bottles, push GHCR, or write ledgers.
+gale-recipes is the fetch index. Gale does not
+compile packages and does not ship bottles. CI
+lints index documents and admits Darwin/arm64
+artifacts. The first ten also have linux/amd64.
+It does not push GHCR or write ledgers.
 
 ## Workflows
 
@@ -37,5 +38,6 @@ comes from admit stdout only.
 `reproducibility.yml`, `drift-check.yml`, and
 `pages.yml` left with the farm. Do not recreate them.
 
-The `dashboard-data` branch is leftover remote state.
-It is not read by remaining workflows.
+GitHub Pages is off. Do not recreate `pages.yml`.
+The `dashboard-data` branch is leftover farm state
+and is gone.
