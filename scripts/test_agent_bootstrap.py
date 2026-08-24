@@ -17,7 +17,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
 BOOTSTRAP = SCRIPTS / "agent-bootstrap.sh"
-GALE_FALLBACK_SHA = "0b4c78d"
+GALE_FALLBACK_SHA = "dbd2446"
 
 
 class AgentBootstrapTests(unittest.TestCase):

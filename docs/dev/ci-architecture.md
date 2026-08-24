@@ -1,8 +1,9 @@
 # CI Architecture
 
 gale-recipes is the fetch index. CI lints index
-documents and admits Darwin/arm64 artifacts. It does
-not build bottles, push GHCR, or write ledgers.
+documents and admits Darwin/arm64 artifacts. The
+first ten also have linux/amd64. It does not build
+bottles, push GHCR, or write ledgers.
 
 ## Workflows
 

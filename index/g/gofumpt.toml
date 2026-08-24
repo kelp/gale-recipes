@@ -18,3 +18,16 @@ strip = 0
 src = "gofumpt_v0.11.0_darwin_arm64"
 dest = "bin/gofumpt"
 mode = 0o755
+
+[versions."0.11.0".artifacts."linux/amd64"]
+url = "https://github.com/mvdan/gofumpt/releases/download/v0.11.0/gofumpt_v0.11.0_linux_amd64"
+format = "binary"
+sha256 = "9f247ec294f5082375c7b062f3ddf48c8212a8711f65a6d75f5129f7fda0d7da"
+tree_digest = "sha256:4deb7d0727fbae17dd71096aa67c3bb742460ec6d0cb9a912f615de175d1097f"
+hash_source = "computed"
+strip = 0
+
+[[versions."0.11.0".artifacts."linux/amd64".files]]
+src = "gofumpt_v0.11.0_linux_amd64"
+dest = "bin/gofumpt"
+mode = 0o755

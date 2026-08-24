@@ -21,6 +21,28 @@ class AdmitManifestTests(unittest.TestCase):
             ],
         )
 
+    def test_linux_ten(self) -> None:
+        names = [p.name for p in am.LINUX_PACKAGES]
+        self.assertEqual(
+            names,
+            [
+                "jq", "ripgrep", "fd", "just", "gh", "direnv",
+                "gofumpt", "golangci-lint", "go", "uv",
+            ],
+        )
+        for pkg in am.LINUX_PACKAGES:
+            self.assertEqual(pkg.os, "linux")
+            self.assertEqual(pkg.arch, "amd64")
+            argv = am.admit_argv(pkg, "/tmp/x")
+            self.assertIn("linux", argv)
+            self.assertIn("amd64", argv)
+
+    def test_jq_linux_binary(self) -> None:
+        jq = [p for p in am.LINUX_PACKAGES if p.name == "jq"][0]
+        argv = am.admit_argv(jq, "/tmp/jq-linux-amd64")
+        self.assertIn("jq-linux-amd64:bin/jq:755", argv)
+        self.assertIn(jq.sha256, argv)
+
     def test_jq_binary_uses_url_basename(self) -> None:
         jq = am.by_name("jq")
         argv = am.admit_argv(jq, "/tmp/jq-macos-arm64")

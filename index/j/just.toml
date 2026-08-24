@@ -18,3 +18,16 @@ strip = 0
 src = "just"
 dest = "bin/just"
 mode = 0o755
+
+[versions."1.58.0".artifacts."linux/amd64"]
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-unknown-linux-musl.tar.gz"
+format = "tar.gz"
+sha256 = "4a5cc2f53e6f0f8c59092a6cc38291eb729d46a7dd95d3ae582008881b84931d"
+tree_digest = "sha256:2c2b0ddba18de310500b84325a413ca845b1aa46e6c93427923d65a119623a37"
+hash_source = "upstream-sha256sums"
+strip = 0
+
+[[versions."1.58.0".artifacts."linux/amd64".files]]
+src = "just"
+dest = "bin/just"
+mode = 0o755
