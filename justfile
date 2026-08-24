@@ -10,6 +10,9 @@ lint:
     done
     scripts/lint_index.sh .
     actionlint
+    if command -v zizmor >/dev/null; then
+      zizmor --offline .
+    fi
 
 # Install the agent-sandbox toolchain (gale, just, actionlint).
 # Blocks until the background SessionStart bootstrap finishes,

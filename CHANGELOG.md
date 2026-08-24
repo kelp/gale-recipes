@@ -39,6 +39,11 @@ All notable changes to gale-recipes are documented here.
   upstream GitHub releases, 3-day cooldown, Darwin
   admit, one PR per package. Never pushes `main`.
   Not the farm `auto-update.yml` job.
+- `zizmor` job on `test.yml`. SHA-pinned
+  `zizmor-action` v0.6.2 running zizmor 1.29.0.
+  Checkouts set `persist-credentials: false`
+  except the index-update push of
+  `index-update/*` branches.
 - linux/amd64 catalog entries for the first ten
   (`jq`, `ripgrep`, `fd`, `just`, `gh`, `direnv`,
   `gofumpt`, `golangci-lint`, `uv`, `go`). Same
