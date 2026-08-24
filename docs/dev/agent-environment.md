@@ -74,6 +74,5 @@ Everything below is offline and fast.
 
 - `.direnv/` may hold a dangling symlink from a macOS
   machine. There is no `/nix` here and no `direnv`.
-- The `dashboard-data` branch is leftover farm state.
-  Remaining workflows do not read it. GitHub Pages
-  still publishes that leftover dashboard.
+- The `dashboard-data` branch is leftover farm state
+  and is gone. GitHub Pages is off.
