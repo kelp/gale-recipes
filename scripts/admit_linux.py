@@ -18,11 +18,48 @@ import admit_darwin as ad
 import admit_manifest as am
 
 
+def _table_header(fragment: str) -> str:
+    for ln in fragment.splitlines():
+        s = ln.strip()
+        if s.startswith("[") and not s.startswith("[["):
+            return s
+    raise ValueError("fragment has no table header")
+
+
+def _next_table(text: str, start: int) -> int:
+    nl = text.find("\n", start)
+    if nl == -1:
+        return len(text)
+    pos = nl + 1
+    while pos < len(text):
+        nl = text.find("\n", pos)
+        line = text[pos:] if nl == -1 else text[pos:nl]
+        s = line.strip()
+        if s.startswith("[") and not s.startswith("[["):
+            return pos
+        if nl == -1:
+            return len(text)
+        pos = nl + 1
+    return len(text)
+
+
 def apply_fragment(index_path: Path, fragment: str) -> None:
+    frag = fragment.strip() + "\n"
+    header = _table_header(frag)
     text = index_path.read_text()
-    if not text.endswith("\n"):
-        text += "\n"
-    index_path.write_text(text + "\n" + fragment.strip() + "\n")
+    start = text.find(header)
+    if start == -1:
+        if not text.endswith("\n"):
+            text += "\n"
+        index_path.write_text(text + "\n" + frag)
+        return
+    end = _next_table(text, start)
+    prefix = text[:start].rstrip("\n") + "\n\n"
+    suffix = text[end:].lstrip("\n")
+    if suffix:
+        index_path.write_text(prefix + frag + "\n" + suffix)
+    else:
+        index_path.write_text(prefix + frag)
 
 
 def main() -> int:
