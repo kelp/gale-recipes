@@ -1,24 +1,28 @@
 # gale-recipes
 
-Index repository for [Gale](https://github.com/kelp/gale).
+Fetch index for [Gale](https://github.com/kelp/gale).
 
-Each document under `index/` is version-keyed TOML that
-names an upstream artifact: URL, `sha256`,
-`hash_source`, `tree_digest`, `format`, and a file map.
-Gale fetches those artifacts. Not-in-index is an error.
+Gale fetches upstream CLI binaries, pins their hashes
+in a lockfile, and puts them on PATH. It does not
+compile packages. It does not ship bottles.
+
+This repo names those binaries. Each document under
+`index/` is version-keyed TOML: URL, `sha256`,
+`hash_source`, `tree_digest`, `format`, and a file
+map. Gale fetches what the document names.
+Not-in-index is an error.
 
 ## Layout
 
 ```
 index/
   j/
-    jq.toml             # fetch catalog — authored by gale admit
+    jq.toml             # authored by gale admit
 ```
 
-The fetch catalog is letter-bucketed. Each file is an
-index document: `gale admit` prints the artifact tables;
-do not invent `tree_digest`. `gale lint` validates those
-files.
+The catalog is letter-bucketed. `gale admit` prints
+the artifact tables; do not invent `tree_digest`.
+`gale lint` validates those files.
 
 Current Darwin/arm64 entries include the first ten
 (`jq`, `ripgrep`, `fd`, `just`, `gh`, `direnv`,
@@ -27,9 +31,17 @@ growth wave (`fzf`, `age`, `shfmt`, `actionlint`, `yq`,
 `shellcheck`, `starship`, `zoxide`). The first ten
 also have `linux/amd64`.
 
-Source-build recipes, `.binaries.toml` ledgers, and
-promote / verify-build CI are gone. Do not recreate
-them.
+## Adding a package
+
+See [docs/writing-recipes.md](docs/writing-recipes.md).
+
+```sh
+gale admit --archive <file> --name <name> ...
+gale lint index/<letter>/<name>.toml
+```
+
+Do not write `[build] steps`. Fetch is the only
+installer.
 
 ## Development
 
@@ -38,5 +50,5 @@ just lint    # index lint + actionlint
 just test    # scripts/ unit tests
 ```
 
-`gale install` and `gale build` cannot run in the agent
-sandbox. Do not use them as proof.
+`gale install` cannot run in the agent sandbox.
+Do not use it as proof.

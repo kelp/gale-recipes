@@ -39,9 +39,9 @@ or `just agent-status`.
 
 ## Index documents cannot be installed here
 
-`gale install` and `gale build` depend on hosts the
-sandbox egress policy blocks. They do not fail fast. A
-`PreToolUse` hook blocks them; override with
+`gale install` depends on hosts the sandbox egress
+policy blocks. It does not fail fast. `gale build` is
+gone. A `PreToolUse` hook blocks both; override with
 `GALE_ALLOW_NETWORK_INSTALL=1` if you have a reason.
 
 The local gates are `just lint` and `just test`. The
@@ -65,7 +65,7 @@ Everything below is offline and fast.
 - **`session-start.sh`** — starts the bootstrap.
 - **`block-gale-install.sh`** — refuses
   `gale install|build|sync`.
-- **`lint-recipe.sh`** — parses every `.toml` you write,
+- **`lint-index.sh`** — parses every `.toml` you write,
   then runs `gale lint` on index documents. It is
   skipped, not failed, while the bootstrap is still
   installing `gale`.
@@ -74,5 +74,5 @@ Everything below is offline and fast.
 
 - `.direnv/` may hold a dangling symlink from a macOS
   machine. There is no `/nix` here and no `direnv`.
-- The `dashboard-data` branch is leftover farm state.
-  Remaining workflows do not read it.
+- The `dashboard-data` branch is leftover farm state
+  and is gone. GitHub Pages is off.

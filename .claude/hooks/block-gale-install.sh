@@ -16,7 +16,8 @@ grep -q 'GALE_ALLOW_NETWORK_INSTALL=1' <<<"$command_line" && exit 0
 cmd_start='(^|[;&|(][[:space:]]*)'
 if grep -Eq "${cmd_start}(\./)?gale[[:space:]]+(install|build|sync)([[:space:]]|$)" <<<"$command_line"; then
   cat >&2 <<'MSG'
-BLOCKED: gale install/build/sync cannot work in this sandbox.
+BLOCKED: gale install/sync cannot work in this sandbox.
+gale build is gone.
 
 The egress policy blocks artifact hosts. The command will burn
 minutes and then fail. Details: docs/dev/agent-environment.md.

@@ -14,6 +14,10 @@ All notable changes to gale-recipes are documented here.
   `gale.toml` / `.envrc` project profile.
 
 ### Changed
+- Product docs describe the fetch index. README,
+  CLAUDE.md, and writing-recipes.md no longer tell
+  a contributor that this repo compiles packages
+  or ships bottles. Matches kelp/gale#333.
 - This repo is the fetch index. `just lint` and
   `just test` are the local gates. `test.yml` posts a
   retired `ledger-check` status so Protect-main can
