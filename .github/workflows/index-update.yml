@@ -1,0 +1,138 @@
+name: Index Update
+
+# Daily lag-then-admit. Opens one PR per package.
+# Never pushes main. tree_digest comes from gale admit.
+# Not the farm auto-update job.
+
+on:
+  schedule:
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      count: ${{ steps.list.outputs.count }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Discover lagged upstream versions
+        id: list
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/index_update.py discover --out candidates.json
+          count=$(python3 -c 'import json; print(len(json.load(open("candidates.json"))))')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: index-update-candidates
+          path: candidates.json
+
+  admit:
+    needs: discover
+    if: needs.discover.outputs.count != '0'
+    runs-on: macos-26
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true # zizmor: ignore[artipacked] git push of index-update/* only
+
+      - name: Fetch origin/main
+        run: git fetch --no-tags origin main
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: index-update-candidates
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: kelp/gale
+          ref: 1f74eb971bbc819cf0a3f486139ec5601e5f674f
+          path: gale-src
+          persist-credentials: false
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c  # v6.4.0
+        with:
+          go-version-file: gale-src/go.mod
+
+      - name: Build gale
+        run: go build -o /tmp/gale-admit ./cmd/gale/
+        working-directory: gale-src
+
+      - name: Admit darwin/arm64
+        env:
+          GALE: /tmp/gale-admit
+        run: python3 scripts/index_update.py admit --candidates candidates.json --out fragments
+
+      - name: Open one PR per fragment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GALE: /tmp/gale-admit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          shopt -s nullglob
+          failed=0
+          for frag in fragments/*.fragment.toml; do
+            name=$(basename "$frag" .fragment.toml)
+            git checkout -f origin/main
+            if ! info=$(python3 scripts/index_update.py apply \
+              --root . \
+              --candidates candidates.json \
+              --name "$name" \
+              --fragment "$frag"); then
+              echo "apply failed: $name" >&2
+              failed=1
+              continue
+            fi
+            read -r _name ver path <<<"$info"
+            branch=$(PYTHONPATH=scripts python3 -c \
+              "import index_update as iu; print(iu.push_ref(iu.branch_name('$name', '$ver')))")
+            tmp=$(mktemp)
+            git show "origin/main:$path" >"$tmp"
+            if ! "$GALE" lint "$path" || ! "$GALE" lint --base "$tmp" "$path"; then
+              echo "lint failed: $name" >&2
+              rm -f "$tmp"
+              failed=1
+              continue
+            fi
+            rm -f "$tmp"
+            git checkout -B "$branch"
+            git add -- "$path"
+            if ! git commit -m "Index $_name $ver"; then
+              echo "commit failed: $name" >&2
+              failed=1
+              continue
+            fi
+            if ! git push -u origin "$branch"; then
+              echo "push failed: $name" >&2
+              failed=1
+              continue
+            fi
+            if [ "$(gh pr list --head "$branch" --json number --jq 'length')" != "0" ]; then
+              continue
+            fi
+            gh pr create --base main --head "$branch" \
+              --title "Index $_name $ver" \
+              --body "$(printf '%s\n' \
+                "Append \`${_name}\` \`${ver}\` after the 3-day cooldown." \
+                "" \
+                "The artifact URL is rewritten from the current latest." \
+                "\`tree_digest\` comes from \`gale admit\`. Do not invent one." \
+                "" \
+                "Human review required. This job cannot push \`main\`.")"
+          done
+          exit "$failed"

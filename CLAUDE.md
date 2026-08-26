@@ -44,7 +44,9 @@ Land the printed fragment under
 `index/<letter>/<name>.toml`. Do not invent
 `tree_digest`. `just lint` must pass.
 
-The catalog is `index/` only.
+The catalog is `index/` only. Version bumps are
+`index-update.yml`: 3-day lag, Darwin admit, PR
+only. Do not recreate farm `auto-update.yml`.
 
 ## Gotchas
 
