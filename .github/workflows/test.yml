@@ -69,12 +69,12 @@ jobs:
           persist-credentials: false
 
       - name: zizmor
-        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054  # v0.6.2
-        with:
-          version: v1.29.0
-          advanced-security: "false"
-          annotations: "true"
-          online-audits: "false"
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/workspace:ro" \
+            --workdir /workspace \
+            ghcr.io/zizmorcore/zizmor:1.29.0@sha256:863026d54f91271b10b60b67ad8054cb37120167e162482597db102b3026a284 \
+            --offline --color=always .
 
   # Protect-main (ruleset 17473700) still requires this
   # context. The farm ledger checker is gone. This job

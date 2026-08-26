@@ -18,8 +18,9 @@ docs-only PRs.
   `scripts/`
 - `index-lint` — build a pinned gale and run
   `scripts/lint_index.sh`
-- `zizmor` — GitHub Actions security lint. Fails
-  the job on findings. Not SARIF-only.
+- `zizmor` — GitHub Actions security lint via a
+  digest-pinned zizmor image. Fails the job on
+  findings. Offline. Not SARIF-only.
 
 Protect-main still requires the `ledger-check`
 context (ruleset 17473700). `test.yml` posts that
